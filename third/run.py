@@ -3,11 +3,12 @@ import random, time
 
 def RandomColour():
     c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+    #c = ["0", "1", "2", "3", "4", "5"] #darker
+    #c = ["a", "b", "c", "d", "e", "f"] #brighter
     colour = "#"
     for i in range(0,6):
         colour = colour + random.choice(c)
     return colour
-
 
 #// -------------------------------------
 #// Background module, in charge of all
@@ -19,9 +20,11 @@ class BG:
         for i in range(0, density):
             rx1 = random.randint(0, size[0])
             ry1 = random.randint(0, size[1])
-            siz = random.randint(1,3)
-            c   = random.choice(["a", "b", "c", "d", "e", "f"])
-            draw.rectangle([(rx1, ry1), (rx1+siz, ry1+siz)], RandomColour())
+            siz = random.randint(1,2)
+            c   = random.choice(["0", "1", "2", "3", "4", "5"])
+            # colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
+            colour = RandomColour()
+            draw.rectangle([(rx1, ry1), (rx1+siz, ry1+siz)], colour)
 
 class Bodies:
     def RandomPaddedCoords(self, pixel_padding):
@@ -32,7 +35,7 @@ class Bodies:
         return [x, y]
 
     def GenerateNodes(self, colour):
-        nodeAmount = 4
+        nodeAmount = 18
         nodeStorage = []
 
         #/ Generate the nodes coords on the screen.
@@ -44,24 +47,24 @@ class Bodies:
         for i in range(0, nodeAmount):
             print(nodeStorage)
             for b in range(0, nodeAmount):
-                if b != i and random.randint(0,10) > 5: #Parent does not equal the second check, connect B to I
+                if b != i and random.randint(0,10) > 9: #Parent does not equal the second check, connect B to I
                     firstNode = nodeStorage[i]
                     secndNode = nodeStorage[b]
-                    draw.line([(firstNode[0], firstNode[1]), (secndNode[0], secndNode[1])], colour, random.randint(4,7))
+                    draw.line([(firstNode[0], firstNode[1]), (secndNode[0], secndNode[1])], RandomColour(), random.randint(4,7))
 
 #// Image setup
-size = [10000, 10000]
+size = [3840, 1080]
 im = Image.open("op.jpg")
 draw = ImageDraw.Draw(im)
 
 #// Background
 BG = BG()
-BG.stars(10000)
+BG.stars(4147200)
 
 #// Bodies
 Bodies = Bodies()
-Bodies.GenerateNodes("#c21f1f")
-Bodies.GenerateNodes("#c21f1f")
-Bodies.GenerateNodes("#c21f1f")
+# Bodies.GenerateNodes("#c21f1f")
+# Bodies.GenerateNodes("#c21f1f")
+# Bodies.GenerateNodes("#c21f1f")
 
 im.save("op-af.jpg")
