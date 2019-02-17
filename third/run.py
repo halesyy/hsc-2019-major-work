@@ -13,11 +13,11 @@ def RandomColour():
     return colour
 
 
-def Progress():
+def Progress(optional_output=False):
     global current_progress
     filename = "development_progress/PROGRESS_{0}.jpg".format(current_progress)
     im.save(filename)
-    print("SAVED PROGRESS {0}".format(current_progress))
+    print("-- sp -- :: {0}".format(optional_output))
     current_progress = current_progress + 1
 
 #// -------------------------------------
@@ -67,32 +67,102 @@ class Bodies:
 
     #// Purpose of funtion is to track itself randomly and create a completely random
     #// set of lines.
-    def TrackingLine(self):
+    #// down_weight is a value which is then divided by 10000 to get the addition
+    #// to creating the excess that the down movement is given leverage to, meaning
+    #// 100 means it is 1.01 (1+100/10000) quicker.
+    def TrackingLine(self, weights):
         x = random.randint(0, size[0])
         y = 0
-        self.ColourPixelAt(x, y, 1, RandomColour())
+        #
+        # weights are scaled as up,down,left,right
+        # self.ColourPixelAt(x, y, 1, "#ffffff")
         iterations = 0
+        total_weight = sum(weights)
+        # print(total_weight)
+        # print("   -- "+str(movement))
+        predefinedColour = RandomColour()
+
         while y != size[1]:
-            movement = random.randint(1, 4)
-            #safety net
-            if movement == 1: #LEFT
-                x = x - 1 if x - 1 > 0 else x + 1
-                # x = x - 1
-            elif movement == 2: #RIGHT
-                x = x + 1 if x + 1 < size[0] else x - 1
-                # x = x + 1
-            elif movement == 3: #UP
+            movement = random.uniform(0, total_weight)
+            if movement < weights[0]: #UP
                 y = y - 1 if y + 1 > 0 else y + 1
-                # y = y + 1
-            else: #DOWN
+                y = y - 1
+            elif movement < weights[0]+weights[1]: #DOWN
                 y = y + 1
-            # if iterations > 1500000:
-            #     break
-            self.ColourPixelAt(x, y, 1, RandomColour())
+            elif movement < weights[0]+weights[1]+weights[2]: #LEFT
+                x = x - 1 if x - 1 > 0 else x + 1
+                x = x - 1
+            else: #RIGHT
+                x = x + 1 if x + 1 < size[0] else x - 1
+                x = x + 1
+
+            self.ColourPixelAt(x, y, 1, predefinedColour)
             iterations = iterations + 1
             if iterations % 500000 == 0:
                 Progress()
         print("Completion took {0} iterations...".format(iterations))
+
+    # Setting up a presentation for the tracking line, to change at certain
+    # iterations.
+    def SAS_TrackingLine(self, presentation, xy=False):
+        if xy == False:
+            x = random.randint(0, size[0])
+            y = 0
+        else:
+            x = xy[0]
+            y = xy[1]
+        #
+        iter = 0
+        movements = [0,0,0,0]
+        current_weightset = []
+        predefinedColour = ""
+        break_loop = False
+        while y != size[1]:
+            for i in range(0, len(presentation)):
+                if iter == presentation[i]["time"]:
+                    old_weightset = current_weightset
+                    old_colour = predefinedColour
+                    predefinedColour = RandomColour()
+                    current_weightset = presentation[i]["weights"]
+                    #saving into saves variable
+                    if current_weightset == "save_xy":
+                        saves[presentation[i]["save_as"]] = [x,y]
+                        print("Saved xy to {0}".format(presentation[i]["save_as"]))
+                        current_weightset = old_weightset
+                        predefinedColour  = old_colour
+                    #end the loop execution
+                    if current_weightset == "stop":
+                        print("Hit a stop, finished!")
+                        break_loop = True
+
+            if break_loop:
+                break
+
+            movement = random.uniform(0, sum(current_weightset))
+            # print(movement)
+            if movement < current_weightset[0]: #UP
+                y = y - 1 if y + 1 > 0 else y
+                # y = y - 1
+                movements[0]+=1
+            elif movement < current_weightset[0]+current_weightset[1]: #DOWN
+                y = y + 1
+                movements[1]+=1
+            elif movement < current_weightset[0]+current_weightset[1]+current_weightset[2]: #LEFT
+                x = x - 1 if x - 1 > 0 else x + 1
+                # x = x - 1
+                movements[2]+=1
+            else: #RIGHT
+                x = x + 1 if x + 1 < size[0] else x - 1
+                # x = x + 1
+                movements[3]+=1
+
+            self.ColourPixelAt(x, y, 1, predefinedColour)
+            iter = iter + 1
+            if iter % 500000 == 0:
+                Progress(movements)
+
+        # print(presentation)
+        print("Completion took {0} iterations...".format(iter))
 
 
 #// Image setup
@@ -100,18 +170,140 @@ size = [7680, 2160]
 im = Image.open("op.jpg")
 draw = ImageDraw.Draw(im)
 current_progress = 0
+#// A dictionary which is saved to with
+#// temporary values of x/y for differing operations
+saves = {}
 
 #// Background
 BG = BG()
-BG.stars(7500)
+BG.stars(int((size[0]*size[1])/4000))
 
 #// Bodies
 Bodies = Bodies()
-# Bodies.GenerateNodes("#c21f1f")
-# Bodies.GenerateNodes("#c21f1f")
-# Bodies.GenerateNodes("#c21f1f")
-for i in range(0, 1):
-    Bodies.TrackingLine()
 
+
+
+
+#J
+Bodies.SAS_TrackingLine([
+    {
+        "time": 0,
+        "weights": [1000,1050,1000,1000]
+    },
+    {
+        "time": 90000,
+        "weights": [980,980,1070,1000]
+    },
+    {
+        "time": 150000,
+        "weights": [1050,1000,1000,1000]
+    },
+    {
+        "time": 200000,
+        "weights": "stop"
+    }
+], [1500, 400])
+
+
+
+
+#A
+Bodies.SAS_TrackingLine([
+    {
+        "time": 0,
+        "weights": [1050,1000,1000,1000]
+    },
+    {
+        "time": 50000,
+        "weights": "save_xy",
+        "save_as": "a_mid"
+    },
+    {
+        "time": 100000,
+        "weights": [980,980,1000,1050]
+    },
+    {
+        "time": 150000,
+        "weights": [1000,1050,1000,1000]
+    },
+    {
+        "time": 250000,
+        "weights": "stop"
+    }
+], [2250, 1600])
+#A-
+Bodies.SAS_TrackingLine([
+    {
+        "time": 0,
+        "weights": [1000,1000,1000,1050]
+    },
+    {
+        "time": 70000,
+        "weights": "stop"
+    }
+], saves["a_mid"])
+
+
+
+#C
+Bodies.SAS_TrackingLine([
+    {
+        "time": 0,
+        "weights": [1000,1000,1070,1000]
+    },
+    {
+        "time": 60000,
+        "weights": [1000,1050,1000,1000]
+    },
+    {
+        "time": 150000,
+        "weights": [1000,1000,1000,1050]
+    },
+    {
+        "time": 250000,
+        "weights": "stop"
+    }
+], [5000, 400])
+
+
+
+#K
+Bodies.SAS_TrackingLine([
+    {
+        "time": 0,
+        "weights": [1000,1050,1000,1000]
+    },
+    {
+        "time": 50000,
+        "weights": "save_xy",
+        "save_as": "k_middle"
+    },
+    {
+        "time": 100000,
+        "weights": "stop"
+    }
+], [6000, 400])
+#k-topright
+Bodies.SAS_TrackingLine([
+    {
+        "time": 0,
+        "weights": [1050,1000,1000,1050]
+    },
+    {
+        "time": 60000,
+        "weights": "stop"
+    }
+], saves["k_middle"]) #got the coords of the middle point of K
+#k-bottom-right
+Bodies.SAS_TrackingLine([
+    {
+        "time": 0,
+        "weights": [1000,1050,1000,1050]
+    },
+    {
+        "time": 60000,
+        "weights": "stop"
+    }
+], saves["k_middle"]) #got the coords of the middle point of K
 
 im.save("op-af.jpg")
