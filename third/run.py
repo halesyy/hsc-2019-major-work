@@ -2,9 +2,9 @@ from PIL import Image, ImageDraw
 import random, time
 
 def RandomColour():
-    c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+    # c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
     # c = ["0", "1", "2", "3", "4", "5"] #darker
-    # c = ["a", "b", "c", "d", "e", "f"] #brighter
+    c = ["a", "b", "c", "d", "e", "f"] #brighter
     # c = random.choice(c)
     # colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
     colour = "#"
@@ -70,9 +70,13 @@ class Bodies:
     #// down_weight is a value which is then divided by 10000 to get the addition
     #// to creating the excess that the down movement is given leverage to, meaning
     #// 100 means it is 1.01 (1+100/10000) quicker.
-    def TrackingLine(self, weights):
-        x = random.randint(0, size[0])
-        y = 0
+    def TrackingLine(self, weights, xy=False):
+        if xy == False:
+            x = random.randint(0, size[0])
+            y = 0
+        else:
+            x = xy[0]
+            y = xy[1]
         #
         # weights are scaled as up,down,left,right
         # self.ColourPixelAt(x, y, 1, "#ffffff")
@@ -86,15 +90,15 @@ class Bodies:
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
                 y = y - 1 if y + 1 > 0 else y + 1
-                y = y - 1
+                # y = y - 1
             elif movement < weights[0]+weights[1]: #DOWN
                 y = y + 1
             elif movement < weights[0]+weights[1]+weights[2]: #LEFT
                 x = x - 1 if x - 1 > 0 else x + 1
-                x = x - 1
+                # x = x - 1
             else: #RIGHT
                 x = x + 1 if x + 1 < size[0] else x - 1
-                x = x + 1
+                # x = x + 1
 
             self.ColourPixelAt(x, y, 1, predefinedColour)
             iterations = iterations + 1
@@ -166,144 +170,142 @@ class Bodies:
 
 
 #// Image setup
-size = [7680, 2160]
-im = Image.open("op.jpg")
-draw = ImageDraw.Draw(im)
-current_progress = 0
-#// A dictionary which is saved to with
-#// temporary values of x/y for differing operations
-saves = {}
-
-#// Background
 BG = BG()
-BG.stars(int((size[0]*size[1])/4000))
-
-#// Bodies
 Bodies = Bodies()
 
-
+for i in range(10):
+    size = [128, 128]
+    # im = Image.open("op.jpg")
+    im = Image.open("../BITMAP/alphabet-bitmap-ds/big-circle.jpg")
+    draw = ImageDraw.Draw(im)
+    current_progress = 0
+    saves = {}
+    # BG.stars(int((size[0]*size[1])/4000))
+    Bodies.TrackingLine([1000, 1005, 1000, 1000], [63, 63])
+    im.save("op-af.jpg")
+    time.sleep(1)
 
 
 #J
-Bodies.SAS_TrackingLine([
-    {
-        "time": 0,
-        "weights": [1000,1050,1000,1000]
-    },
-    {
-        "time": 90000,
-        "weights": [980,980,1070,1000]
-    },
-    {
-        "time": 150000,
-        "weights": [1050,1000,1000,1000]
-    },
-    {
-        "time": 200000,
-        "weights": "stop"
-    }
-], [1500, 400])
-
-
-
-
-#A
-Bodies.SAS_TrackingLine([
-    {
-        "time": 0,
-        "weights": [1050,1000,1000,1000]
-    },
-    {
-        "time": 50000,
-        "weights": "save_xy",
-        "save_as": "a_mid"
-    },
-    {
-        "time": 100000,
-        "weights": [980,980,1000,1050]
-    },
-    {
-        "time": 150000,
-        "weights": [1000,1050,1000,1000]
-    },
-    {
-        "time": 250000,
-        "weights": "stop"
-    }
-], [2250, 1600])
-#A-
-Bodies.SAS_TrackingLine([
-    {
-        "time": 0,
-        "weights": [1000,1000,1000,1050]
-    },
-    {
-        "time": 70000,
-        "weights": "stop"
-    }
-], saves["a_mid"])
-
-
-
-#C
-Bodies.SAS_TrackingLine([
-    {
-        "time": 0,
-        "weights": [1000,1000,1070,1000]
-    },
-    {
-        "time": 60000,
-        "weights": [1000,1050,1000,1000]
-    },
-    {
-        "time": 150000,
-        "weights": [1000,1000,1000,1050]
-    },
-    {
-        "time": 250000,
-        "weights": "stop"
-    }
-], [5000, 400])
-
-
-
-#K
-Bodies.SAS_TrackingLine([
-    {
-        "time": 0,
-        "weights": [1000,1050,1000,1000]
-    },
-    {
-        "time": 50000,
-        "weights": "save_xy",
-        "save_as": "k_middle"
-    },
-    {
-        "time": 100000,
-        "weights": "stop"
-    }
-], [6000, 400])
-#k-topright
-Bodies.SAS_TrackingLine([
-    {
-        "time": 0,
-        "weights": [1050,1000,1000,1050]
-    },
-    {
-        "time": 60000,
-        "weights": "stop"
-    }
-], saves["k_middle"]) #got the coords of the middle point of K
-#k-bottom-right
-Bodies.SAS_TrackingLine([
-    {
-        "time": 0,
-        "weights": [1000,1050,1000,1050]
-    },
-    {
-        "time": 60000,
-        "weights": "stop"
-    }
-], saves["k_middle"]) #got the coords of the middle point of K
+# Bodies.SAS_TrackingLine([
+#     {
+#         "time": 0,
+#         "weights": [1000,1050,1000,1000]
+#     },
+#     {
+#         "time": 90000,
+#         "weights": [980,980,1070,1000]
+#     },
+#     {
+#         "time": 150000,
+#         "weights": [1050,1000,1000,1000]
+#     },
+#     {
+#         "time": 200000,
+#         "weights": "stop"
+#     }
+# ], [1500, 400])
+#
+#
+#
+#
+# #A
+# Bodies.SAS_TrackingLine([
+#     {
+#         "time": 0,
+#         "weights": [1050,1000,1000,1000]
+#     },
+#     {
+#         "time": 50000,
+#         "weights": "save_xy",
+#         "save_as": "a_mid"
+#     },
+#     {
+#         "time": 100000,
+#         "weights": [980,980,1000,1050]
+#     },
+#     {
+#         "time": 150000,
+#         "weights": [1000,1050,1000,1000]
+#     },
+#     {
+#         "time": 250000,
+#         "weights": "stop"
+#     }
+# ], [2250, 1600])
+# #A-
+# Bodies.SAS_TrackingLine([
+#     {
+#         "time": 0,
+#         "weights": [1000,1000,1000,1050]
+#     },
+#     {
+#         "time": 70000,
+#         "weights": "stop"
+#     }
+# ], saves["a_mid"])
+#
+#
+#
+# #C
+# Bodies.SAS_TrackingLine([
+#     {
+#         "time": 0,
+#         "weights": [1000,1000,1070,1000]
+#     },
+#     {
+#         "time": 60000,
+#         "weights": [1000,1050,1000,1000]
+#     },
+#     {
+#         "time": 150000,
+#         "weights": [1000,1000,1000,1050]
+#     },
+#     {
+#         "time": 250000,
+#         "weights": "stop"
+#     }
+# ], [5000, 400])
+#
+#
+#
+# #K
+# Bodies.SAS_TrackingLine([
+#     {
+#         "time": 0,
+#         "weights": [1000,1050,1000,1000]
+#     },
+#     {
+#         "time": 50000,
+#         "weights": "save_xy",
+#         "save_as": "k_middle"
+#     },
+#     {
+#         "time": 100000,
+#         "weights": "stop"
+#     }
+# ], [6000, 400])
+# #k-topright
+# Bodies.SAS_TrackingLine([
+#     {
+#         "time": 0,
+#         "weights": [1050,1000,1000,1050]
+#     },
+#     {
+#         "time": 60000,
+#         "weights": "stop"
+#     }
+# ], saves["k_middle"]) #got the coords of the middle point of K
+# #k-bottom-right
+# Bodies.SAS_TrackingLine([
+#     {
+#         "time": 0,
+#         "weights": [1000,1050,1000,1050]
+#     },
+#     {
+#         "time": 60000,
+#         "weights": "stop"
+#     }
+# ], saves["k_middle"]) #got the coords of the middle point of K
 
 im.save("op-af.jpg")

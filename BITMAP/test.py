@@ -10,7 +10,7 @@ import time, random
 import numpy as np
 from PIL import Image, ImageDraw
 
-bit_map     = Image.open("alphabet-bitmap-ds/j.jpg")
+bit_map     = Image.open("alphabet-bitmap-ds/big-circle.jpg")
 pixel_array = np.array(bit_map)
 xs = bit_map.size[0]
 ys = bit_map.size[1]
@@ -21,7 +21,7 @@ ys = bit_map.size[1]
 
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
-by = 4
+by = 16
 split = 1 / by
 squares = int(1 / split)
 total_squares = int(squares*squares)
