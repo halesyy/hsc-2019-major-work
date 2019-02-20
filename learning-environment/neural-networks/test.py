@@ -29,3 +29,4 @@ dataset = [
 # Cost function is "how bad our computer is going"
 # Takes in the data and predictions to the cost function,
 # which tells us how bad the computer is.
+# We want to "minimize" the cost output.
