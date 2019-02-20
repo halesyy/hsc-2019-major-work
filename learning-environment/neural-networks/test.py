@@ -25,3 +25,7 @@ dataset = [
 # Manual way 2: graphing a scatter plot, with the lengthxwidth being x/y values,
 # with the red/blue colour going on the plot. Plot the mystery value,
 # and see where it resides amongst the other colours.
+
+# Cost function is "how bad our computer is going"
+# Takes in the data and predictions to the cost function,
+# which tells us how bad the computer is.
