@@ -1,7 +1,7 @@
 from PIL import Image
 
-size = [1920, 1080]
-im = Image.new("RGB", size, "#000000")
+size = [10000, 10000]
+im = Image.new("RGB", size, "#ffffff")
 im.save("op.jpg")
 
 # draw = ImageDraw.Draw(im)
