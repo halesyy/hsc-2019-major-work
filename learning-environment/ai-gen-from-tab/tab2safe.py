@@ -174,7 +174,7 @@ def filterForArtistOrTab(urlset):
 # Iterates through each set of links presented to the bare content,
 # and finds links inside of those links, creating a large array of links
 # So far, we've processed: Metallica, Iron Maiden, Queen, Bach (classical), Classical artiss,
-# 
+# Deep Purple,
 def ArtistLinks():
     dsf = open("contentset.txt", "r+", encoding="utf8")
     ds  = dsf.read()
@@ -195,4 +195,5 @@ def DumpLinksToSafe(links):
 
 if __name__ == '__main__':
     ALINKS = ArtistLinks()
+    print("ABOUT TO PROCESS {0} LINKS... WARNING!".format(len(ALINKS)))
     DumpLinksToSafe(ALINKS)
