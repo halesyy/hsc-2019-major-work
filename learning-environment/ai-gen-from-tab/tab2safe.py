@@ -115,7 +115,8 @@ lines = tabs.split("\n")
 # 7 -> 12
 # itno = 0
 # converter, safe int
-safe = "-"*20
+safe = "\n\n"
+safe += "-"*30
 safe += "\n"
 for line, lineno in zip(lines, range(0, len(lines))):
     #start of a new tabstep
@@ -146,8 +147,8 @@ for line, lineno in zip(lines, range(0, len(lines))):
             safe += ' '
         safe += "" if lineno == len(lines)-1 else "\n"
 
-safe += "-"*20
-safe += "\n\n"
+# safe += "-"*30
+# safe += "\n\n"
 print(safe)
 
 
