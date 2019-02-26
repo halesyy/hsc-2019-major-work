@@ -3,6 +3,7 @@ Minimal character-level Vanilla RNN model. Written by Andrej Karpathy (@karpathy
 BSD License
 """
 import numpy as np
+from random import uniform
 
 # data I/O
 data = open('input.txt', 'r').read() # should be simple plain text file
@@ -23,6 +24,48 @@ Whh = np.random.randn(hidden_size, hidden_size)*0.01 # hidden to hidden
 Why = np.random.randn(vocab_size, hidden_size)*0.01 # hidden to output
 bh = np.zeros((hidden_size, 1)) # hidden bias
 by = np.zeros((vocab_size, 1)) # output bias
+
+
+
+
+
+
+
+
+
+# gradient checking
+def gradCheck(inputs, target, hprev):
+  global Wxh, Whh, Why, bh, by
+  num_checks, delta = 10, 1e-5
+  _, dWxh, dWhh, dWhy, dbh, dby, _ = lossFun(inputs, targets, hprev)
+  for param,dparam,name in zip([Wxh, Whh, Why, bh, by], [dWxh, dWhh, dWhy, dbh, dby], ['Wxh', 'Whh', 'Why', 'bh', 'by']):
+    s0 = dparam.shape
+    s1 = param.shape
+    assert s0 == s1, 'Error dims dont match: {0} and {1}.'.format(s0, s1)
+    print(name)
+    for i in xrange(num_checks):
+      ri = int(uniform(0,param.size))
+      # evaluate cost at [x + delta] and [x - delta]
+      old_val = param.flat[ri]
+      param.flat[ri] = old_val + delta
+      cg0, _, _, _, _, _, _ = lossFun(inputs, targets, hprev)
+      param.flat[ri] = old_val - delta
+      cg1, _, _, _, _, _, _ = lossFun(inputs, targets, hprev)
+      param.flat[ri] = old_val # reset old value for this parameter
+      # fetch both numerical and analytic gradient
+      grad_analytic = dparam.flat[ri]
+      grad_numerical = (cg0 - cg1) / ( 2 * delta )
+      rel_error = abs(grad_analytic - grad_numerical) / abs(grad_numerical + grad_analytic)
+      print("{0}, {1} => {2}".format(grad_numerical, grad_analytic, rel_error))
+      # rel_error should be on order of 1e-7 or less
+
+
+
+
+
+
+
+
 
 def lossFun(inputs, targets, hprev):
   """
@@ -60,6 +103,18 @@ def lossFun(inputs, targets, hprev):
     np.clip(dparam, -5, 5, out=dparam) # clip to mitigate exploding gradients
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
+
+
+
+
+
+
+
+
+
+
+
+
 def sample(h, seed_ix, n):
   """
   sample a sequence of integers from the model
@@ -77,6 +132,16 @@ def sample(h, seed_ix, n):
     x[ix] = 1
     ixes.append(ix)
   return ixes
+
+
+
+
+
+
+
+
+
+
 
 n, p = 0, 0
 mWxh, mWhh, mWhy = np.zeros_like(Wxh), np.zeros_like(Whh), np.zeros_like(Why)
