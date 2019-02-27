@@ -1,14 +1,16 @@
-mnot = """! ! ! $ 8 ' ' $ ! ! ( & ! ! ! ! ! ! ! !
- ! ! ! ! ! ! ! ! ! ! ! ) ) + ! ! $ ! $ ! $ ! % % % % % % % %
-A D C H F F F D A K P 9 A F 7 D G H G D
-A<71*& <63* < <8 1 1*! 83* ;6/ <70* <83 >>9 A>9 ?9 E ( > 4"""
-
+mnot = """
+<@H<! !!4 . >!   ! ! @ !!! 6 ! B%!  4& C!! !E !!%
+  3& !2!/  ! ! E?@  >!/;C  & !!!>&A2 !(!!!  /! !  7!  /!!  !7 %<>!6! >%  &!!  1! ! ! <%!!! ! . * !8!%6  //-2T& 1 ! !>! (> !& !&  !@!C  !    <8
+/"""
 import pyaudio
 import struct
 import math
 import numpy
 import time
 from multiprocessing import Process
+
+PLAY_AUDIO_FROM_TAB = True
+notePlayLength = 0.25
 
 conversionClassifier = "! $ % & ' ( ) * + . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï  Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß"
 conversionClassifier = conversionClassifier.split(' ')
@@ -105,8 +107,6 @@ def barFormat(ba):
 
 ## ALL REQUIRED THINGS FOR AUDIO STREAMING
 
-PLAY_AUDIO_FROM_TAB = False
-notePlayLength = 0.25
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 2

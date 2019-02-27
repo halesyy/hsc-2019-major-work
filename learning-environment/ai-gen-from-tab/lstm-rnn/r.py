@@ -14,9 +14,9 @@ char_to_ix = { ch:i for i,ch in enumerate(chars) }
 ix_to_char = { i:ch for i,ch in enumerate(chars) }
 
 # hyperparameters
-hidden_size = 100 # size of hidden layer of neurons
+hidden_size = 1000 # size of hidden layer of neurons
 seq_length = 25 # number of steps to unroll the RNN for
-learning_rate = 1e-1
+learning_rate = 1e-2
 
 # model parameters
 Wxh = np.random.randn(hidden_size, vocab_size)*0.01 # input to hidden
@@ -43,7 +43,7 @@ def gradCheck(inputs, target, hprev):
     s1 = param.shape
     assert s0 == s1, 'Error dims dont match: {0} and {1}.'.format(s0, s1)
     print(name)
-    for i in xrange(num_checks):
+    for i in range(num_checks):
       ri = int(uniform(0,param.size))
       # evaluate cost at [x + delta] and [x - delta]
       old_val = param.flat[ri]
@@ -114,7 +114,7 @@ def lossFun(inputs, targets, hprev):
 
 
 
-
+# @vectorize(['float32(float32, float32, float32)'], target='cuda')
 def sample(h, seed_ix, n):
   """
   sample a sequence of integers from the model
@@ -163,6 +163,7 @@ while True:
 
   # forward seq_length characters through the net and fetch gradient
   loss, dWxh, dWhh, dWhy, dbh, dby, hprev = lossFun(inputs, targets, hprev)
+  # gradCheck(inputs, targets, hprev)
   smooth_loss = smooth_loss * 0.999 + loss * 0.001
   if n % 100 == 0: print('iter {0}, loss: {1}'.format(n, smooth_loss)) # print progress
 
