@@ -1,10 +1,7 @@
 mnot = """
-  G H H
-/ > J E F J H G E C C C ? > > < < ; ; 9 @ >
-H F D D F I I E H J J M
-M F H H F E F C @ C F E C E = B
-; 9 9 ; 9 1 9 9 ; 9 ; J J
-O I J L9 $ B 8 <9 8 > = < ? : 8 / f J C ; H E 8 F! >9 ;61( 60+ : :
+  % A 5 6 4 < 2 G 0 2 3 5 7 9 ; = ? @ B D F G + 2 < 3 4 6 9 F 3
+. . 0 4 4 7 2 ; < > @ B D E . * > @ B . C ( 4 3 ( 3 1
+< 2 / 6 8 2 3 4 7 : ; = > @ A C * ) . . 4 2 9 ; = A @ B % ' G H / * 4 6 3 ) + 1 / 1
 """
 
 conversionClassifier = "! $ % & ' ( ) * + . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï  Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß"
