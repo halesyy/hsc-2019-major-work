@@ -1,7 +1,60 @@
-mnot = """
-<@H<! !!4 . >!   ! ! @ !!! 6 ! B%!  4& C!! !E !!%
-  3& !2!/  ! ! E?@  >!/;C  & !!!>&A2 !(!!!  /! !  7!  /!!  !7 %<>!6! >%  &!!  1! ! ! <%!!! ! . * !8!%6  //-2T& 1 ! !>! (> !& !&  !@!C  !    <8
-/"""
+mnot = """ < 7 2 5
+! 92 9 2 4 72 4 4 4 4 7
+& 2& 4/& 4/&
+A>8 A>8 A>8 A>8 A>8 B>8 C>9 A>8 A>8 A>8 A>8 B>8
+A>9 A>8 A>8&
+94& 94/ :6/ >84 >84 <84/
+A>8 A>8 A>8
+> C F
+A<74/&
+H J H J H J O J
+H K H F @ H F C L N
+! 1 ! * 4 2 1 ! * 4 2 1 ! * 2 / ! * 2 / : 9 7
+9 < 9 7 4 3 0 3 7 3 4 4 3 4 3 1 ; 3 = 8 : 8 < 8 5
+5 8 5 5 6 5 1 0 3 5 3
+5 * ? < 5 : 5 = : 8 5 . 3
+@ C @ B @ > @ ? = > ; ; @ B @
+D D D D G L J I J H H G J G D B D B ? = B ID GC B G
+:3 ; = = 3 5 8 C? C? =3 . : ; < : 6 < = : ; : = ; :6 5
+30 30 30 % % % % ; 8 3 3 8 8 6 3 1
+8 : ; : 8 6 8 : ; 6 5 3 1 1 3 8 8 5 5 8 5 9 : 5 < : 5 1 3 5 3 5
+1 5 9 5 5 6 1 5 6 8 9 5 6 1 5 8 3 0 1 5 : 5 ; 6 8 : 6 ;6 / C; C ; 0 6 C / C / C B ? / B C B ? 6
+! >91 >92 ! =81 ( ! $ ' ( ' ( * + A<6/ 1.2* !
+J G J G J H J G F G J G G J G
+1* 2+$ 4/)
+3* * * * * + * 4+ 3* 4+ 4+ 3* 3( 3* 4+ 3* 4+ & /& .% /& 0' .%
+83* % $ % % % % 3.% ! % ( % % % % % 61( 61( 1*!
+* 6 W / ( / & /
+
+
+
+*! 81 81 . * 81 ( ( ( 3* 3* 3* 3* 4+ 3* 3* 1(
+6/ 81 81 81 81 81 * * * * 8/ * * 81 *
+;8 9 4 4 1 4 2
+61 4/ 4/ 2* 2+ 2+ 41 41 2+ 4/ 2+ 4/ 2+&
+4/& 41 84 84 84 94
+94+ 94+ 94+ 94+ 94+ 94+ 94+ 1*! 1*! 1! E C 4
+=81 ! ! ! 81! ! ! 83* 94+ 94+ 94+ 4/& 4/& 61( 61( 61( 61( 61( 61( 61( 61( 61( 61( 61(
+H J H J H F F F H F E F E B E F E B @ = @ M Q M J M O Q R R R R O T R
+O M L M L M G M L M L L M L M J H L M O M L
+
+
+
+C C C C H C ? C F B C ?951'
+5
+! >:41+ 3 >:41 >:4 >:41 & ?46 ?84& & & A>94&& & & & A<8& A<84& & & A>9 A;6 A;6
+>:41+& @<83.% @<73.% @<83*% ?<72) ??=62+$ ?<6+$ ?<6+$ ?<6+$ ?<6+$
+?=60+$ ?=60+$ ?=60+$ ?=60+$ ?=60+$ ?=60+$ ?=60+$
+C?9 C?9 A C>9 ?9 C?9 <9 ?9 ?9
+A>94+ A>94+ A>94+ A=94+ A=94+ A=94+
+4 C? A= C?9 A<94+ A<74+ A<74/& A<74/& A<74/& A<74/& A<74/& A<74/& A<74/& A<74/& A<74/& A<74/& A<74/& A<74/&
+( / 2 ( 4/(
+F ;6 9 61 94 94 1 / ;61 * * 83 * 83 *
+A>8& A>8 A>81 A>8 41 4 > >;61( 6 6 6 9 6
+>94& 4 ( 94 ( 94 ( ?6 > 6 4
+>:41+ >:41+ >:41+ >:41+ @<6/ @<6/ @<6/ @<6/ A<4/*& A<4/*& A<4/*& A<4/*& A<4/*& @<6/ @<6/
+& ( . 1 2 6 : + 1 4 * / 4 & * @<6
+"""
 import pyaudio
 import struct
 import math
@@ -9,7 +62,7 @@ import numpy
 import time
 from multiprocessing import Process
 
-PLAY_AUDIO_FROM_TAB = True
+PLAY_AUDIO_FROM_TAB = False
 notePlayLength = 0.25
 
 conversionClassifier = "! $ % & ' ( ) * + . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï  Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß"
@@ -78,7 +131,7 @@ def verticalStep(v, e, B, G, D, A, E, ADDDIVIDER=False):
     return [e, B, G, D, A, E]
 
 def bar(un_notes):
-    e, B, G, D, A, E = "e|", "B|", "G|", "D|", "A|", "E|"
+    e, B, G, D, A, E = "e|--", "B|--", "G|--", "D|--", "A|--", "E|--"
     iter = 0
     for v in un_notes.split(' '):
         if len(v) >0 and v[0] == '':
@@ -86,7 +139,7 @@ def bar(un_notes):
         elif len(v) == 0:
             pass
         else:
-            e, B, G, D, A, E = verticalStep(v, e, B, G, D, A, E, True if iter%noterPerBar==0 else False)
+            e, B, G, D, A, E = verticalStep(v, e, B, G, D, A, E, True if (iter+1)%noterPerBar==0 else False)
             # actual horizontal manipulating
         iter += 1
     return [e, B, G, D, A, E]
