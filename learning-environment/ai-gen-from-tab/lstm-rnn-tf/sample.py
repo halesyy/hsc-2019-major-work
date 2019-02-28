@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import codecs
 from six.moves import cPickle
 
 
@@ -45,6 +46,11 @@ def sample(args):
             data = model.sample(sess, chars, vocab, args.n, args.prime,
                                args.sample).encode('utf-8')
             print(data.decode("utf-8"))
+            inter = codecs.open("./../intermediary.txt", "a+", "utf-8")
+            inter.truncate(0)
+            inter.write(data.decode("utf-8"))
+            inter.close()
 
 if __name__ == '__main__':
+    print("Starting to generate........")
     sample(args)
