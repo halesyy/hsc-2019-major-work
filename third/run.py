@@ -2,9 +2,9 @@ from PIL import Image, ImageDraw
 import random, time
 
 def RandomColour():
-    # c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+    c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
     # c = ["0", "1", "2", "3", "4", "5"] #darker
-    c = ["a", "b", "c", "d", "e", "f"] #brighter
+    # c = ["a", "b", "c", "d", "e", "f"] #brighter
     # c = random.choice(c)
     # colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
     colour = "#"
@@ -84,7 +84,8 @@ class Bodies:
         total_weight = sum(weights)
         # print(total_weight)
         # print("   -- "+str(movement))
-        predefinedColour = RandomColour()
+        # predefinedColour = RandomColour()
+        predefinedColour = '#c21f1f'
 
         while y != size[1]:
             movement = random.uniform(0, total_weight)
@@ -172,19 +173,21 @@ class Bodies:
 #// Image setup
 BG = BG()
 Bodies = Bodies()
+im = Image.open("../BITMAP/alphabet-bitmap-ds/big-circle.jpg")
+draw = ImageDraw.Draw(im)
+size = [128, 128]
 
-for i in range(10):
-    size = [128, 128]
+for i in range(1):
     # im = Image.open("op.jpg")
-    im = Image.open("../BITMAP/alphabet-bitmap-ds/big-circle.jpg")
-    draw = ImageDraw.Draw(im)
     current_progress = 0
     saves = {}
     # BG.stars(int((size[0]*size[1])/4000))
-    Bodies.TrackingLine([1000, 1005, 1000, 1000], [63, 63])
-    im.save("op-af.jpg")
-    time.sleep(1)
+    conscienceWeight = 1
+    partialPower = conscienceWeight * 10000
+    Bodies.TrackingLine([1000, (0/4*partialPower), (2/4*partialPower), 1000], [63, 63])
+    # time.sleep(1)
 
+im.save("op-af.jpg")
 
 #J
 # Bodies.SAS_TrackingLine([
@@ -308,4 +311,4 @@ for i in range(10):
 #     }
 # ], saves["k_middle"]) #got the coords of the middle point of K
 
-im.save("op-af.jpg")
+# im.save("op-af.jpg")
