@@ -40,21 +40,25 @@ parser.add_argument('--output_keep_prob', type=float, default=1.0, help='probabi
 parser.add_argument('--input_keep_prob', type=float, default=1.0, help='probability of keeping weights in the input layer')
 args = parser.parse_args()
 
-args.data_dir = "./data/kbible"
-args.save_dir = "./save/kbible"
-# args.init_from = "./save/kbible/"
-args.init_from = None
-args.save_every = 25
-args.batch_size = 5
-args.num_epochs = 5
-args.num_layers = 128
-args.learning_rate = 0.002
+# INPUT
+args.data_dir  = "./data/kbible/"
+# OUTPUT/STARTING POINT
+# args.save_dir  = "./save/kbible/3-256-3/"
+# args.init_from = None
+args.init_from = "./save/kbible/3-256-3/"
+args.save_every = 50
+args.batch_size = 300
+args.num_epochs = 400
+# MODEL VAL
+#metallica/2
+# args.rnn_size = 192
+# args.num_layers = 4
+# kbible/3
+args.rnn_size = 256
+args.num_layers = 3
+args.learning_rate = 0.005
 args.output_keep_prob = 1.0
 args.input_keep_prob = 1.0
-
-
-# print(args)
-# exit()
 
 import tensorflow as tf
 from utils import TextLoader

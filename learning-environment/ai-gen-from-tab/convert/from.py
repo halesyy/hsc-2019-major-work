@@ -1,17 +1,20 @@
 #encoding=utf-8
-mnot = open("./../intermediary.txt", "r+").read()
-
 import pyaudio
 import struct
 import math
 import numpy
 import time
+import codecs
 from multiprocessing import Process
+
+mnot = codecs.open("./../intermediary.txt", "r+", "utf-8").read()
+
+processing_directory = "./datasets/metallica/"
 
 PLAY_AUDIO_FROM_TAB = False
 notePlayLength = 0.25
 
-conversionClassifier = "! $ % & ' ( ) * + . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï  Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß"
+conversionClassifier = u"! $ % & ' ( ) * + . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { } ~ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß"
 conversionClassifier = conversionClassifier.split(' ')
 noterPerBar = 4
 
@@ -21,12 +24,23 @@ for conv, i in zip(conversionClassifier, range(0, len(conversionClassifier))):
     converter["{0}".format(conv)] = i
 backConverter = {v: k for k, v in converter.items()}
 
+
+
+
+
+
+
 def verticalStep(v, e, B, G, D, A, E, ADDDIVIDER=False):
     # print(v)
     tE, tA, tD, tG, tB, te = "", "", "", "", "", ""
     notes = []
     # each "note" is the deconstruction of the chord piece
     for noteString in v:
+
+        if noteString == '|':
+            ADDDIVIDER = True
+            break
+
         note = converter[noteString]
         notes.append(note)
         if note - 0 < 5:
@@ -76,22 +90,56 @@ def verticalStep(v, e, B, G, D, A, E, ADDDIVIDER=False):
 
     return [e, B, G, D, A, E]
 
+
+
+
+
+
+
+
+
 def bar(un_notes):
     e, B, G, D, A, E = "e|--", "B|--", "G|--", "D|--", "A|--", "E|--"
     iter = 0
+    un_notes = un_notes.strip()
+    if len(un_notes) > 0:
+        if un_notes[0] != '|': un_notes = "| "+un_notes
+        if un_notes[-1:] != '|': un_notes = un_notes+"|"
+
     for v in un_notes.split(' '):
         if len(v) >0 and v[0] == '':
             pass
         elif len(v) == 0:
             pass
         else:
-            e, B, G, D, A, E = verticalStep(v, e, B, G, D, A, E, True if (iter+1)%noterPerBar==0 else False)
+            e, B, G, D, A, E = verticalStep(v, e, B, G, D, A, E, False)
             # actual horizontal manipulating
         iter += 1
     return [e, B, G, D, A, E]
 
+
+
+
+
+
+
+
+
+
+
 def barFormat(ba):
     return "{0}\n{1}\n{2}\n{3}\n{4}\n{5}".format(ba[0], ba[1], ba[2], ba[3], ba[4], ba[5])
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -112,7 +160,6 @@ CHANNELS = 2
 RATE = 44100
 
 p = pyaudio.PyAudio()
-
 
 def data_for_freq(frequency: float, time: float = None):
     """get frames for a fixed frequency for a specified time or
@@ -176,7 +223,15 @@ def chord(numberArray, t=0.3):
 
 
 
-opt = open("tab.txt", "a+")
+
+
+
+
+
+
+
+
+opt = codecs.open("tab.txt", "a+", "utf-8")
 opt.truncate(0)
 
 if __name__ == '__main__':

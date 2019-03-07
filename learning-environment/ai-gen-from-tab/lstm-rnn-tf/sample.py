@@ -5,6 +5,7 @@ from __future__ import print_function
 import argparse
 import os
 import codecs
+import time
 from six.moves import cPickle
 
 
@@ -24,6 +25,8 @@ parser.add_argument('--sample', type=int, default=1,
                          'each timestep, 2 to sample on spaces')
 
 args = parser.parse_args()
+args.save_dir = "./save/kbible/3-256-3/" #save dir
+args.n = 1500
 
 import tensorflow as tf
 from model import Model
@@ -53,4 +56,8 @@ def sample(args):
 
 if __name__ == '__main__':
     print("Starting to generate........")
+    # print("Starting loop...")
+        # print("Starting to generate data no. {0}...".format(i))
     sample(args)
+        # time.sleep(20)
+        # i += 1
