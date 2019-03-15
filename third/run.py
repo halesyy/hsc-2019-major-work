@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-import random, time
+import random, time, math
 
 def RandomColour():
     c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
@@ -8,8 +8,7 @@ def RandomColour():
     # c = random.choice(c)
     # colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
     colour = "#"
-    for i in range(0,6):
-        colour = colour + random.choice(c)
+    for i in range(0,6): colour += random.choice(c)
     return colour
 
 
@@ -31,8 +30,9 @@ class BG:
             rx1 = random.randint(0, size[0])
             ry1 = random.randint(0, size[1])
             siz = random.randint(0,5)
-            c   = random.choice(["0", "1", "2", "3", "4", "5"])
-            colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
+            # c   = random.choice(["0", "1", "2", "3", "4", "5"])
+            # colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
+            colour = RandomColour()
             # colour = RandomColour()
             draw.rectangle([(rx1, ry1), (rx1+siz, ry1+siz)], colour)
 
@@ -70,42 +70,55 @@ class Bodies:
     #// down_weight is a value which is then divided by 10000 to get the addition
     #// to creating the excess that the down movement is given leverage to, meaning
     #// 100 means it is 1.01 (1+100/10000) quicker.
-    def TrackingLine(self, weights, xy=False):
-        if xy == False:
-            x = random.randint(0, size[0])
-            y = 0
-        else:
-            x = xy[0]
-            y = xy[1]
-        #
-        # weights are scaled as up,down,left,right
-        # self.ColourPixelAt(x, y, 1, "#ffffff")
+    def TrackingLine(self, weights, xy=False, boundby="a", colour='purple'):
+        if xy == False: x, y = random.randint(0, size[0]), 1
+        else: x, y = xy[0], xy[1]
+
+        print("tl: {0}, {1}".format(x, y))
         iterations = 0
         total_weight = sum(weights)
-        # print(total_weight)
-        # print("   -- "+str(movement))
-        # predefinedColour = RandomColour()
-        predefinedColour = '#c21f1f'
+        predefinedColour = colour
 
-        while y != size[1]:
+        bounds = {
+            "down":  size[1],   # within bottom
+            "up":    0,           # within top
+            "right": size[0],  # within right
+            "left":  0          # within left
+        }
+
+        if boundby == "a": pass #all
+        else:
+            for boundSet in boundby:
+                # each presents: ["up/down/left/right"] and a numeric val
+                # numeric value corresponds to where it has to be inside of
+                # for that section
+                # ["left", 4] means val has to break once reaching 4
+                direction = boundSet[0]
+                stoppingPoint = boundSet[1]
+                bounds[direction] = stoppingPoint
+
+        print(bounds)
+        while (y < bounds["down"]) and (y > bounds["up"]) and (x < bounds["right"]) and (x > bounds["left"]):
+            print("Going to draw!")
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
-                y = y - 1 if y + 1 > 0 else y + 1
-                # y = y - 1
+                # y = y - 1 if y + 1 > 0 else y + 1
+                y = y - 1
             elif movement < weights[0]+weights[1]: #DOWN
                 y = y + 1
             elif movement < weights[0]+weights[1]+weights[2]: #LEFT
-                x = x - 1 if x - 1 > 0 else x + 1
-                # x = x - 1
+                # x = x - 1 if x - 1 > 0 else x + 1
+                x = x - 1
             else: #RIGHT
-                x = x + 1 if x + 1 < size[0] else x - 1
-                # x = x + 1
+                # x = x + 1 if x + 1 < size[0] else x - 1
+                x = x + 1
 
-            self.ColourPixelAt(x, y, 1, predefinedColour)
+            # print("at {0},{1} drawing".format(x, y))
+            self.ColourPixelAt(x=x, y=y, width=1, colour=predefinedColour)
             iterations = iterations + 1
             if iterations % 500000 == 0:
                 Progress()
-        print("Completion took {0} iterations...".format(iterations))
+        # print("Completion took {0} iterations...".format(iterations))
 
     # Setting up a presentation for the tracking line, to change at certain
     # iterations.
@@ -166,28 +179,76 @@ class Bodies:
             if iter % 500000 == 0:
                 Progress(movements)
 
-        # print(presentation)
         print("Completion took {0} iterations...".format(iter))
 
+    # Brush stroke, simple
+    def brush(self, xy, angle, power="soft", boundby="a", colour='random'):
+        # print(xy)
+        # print(boundby)
+        powersets = {
+            "low": 0.7,
+            "medium": 4,
+            "high": 1*(10000)
+        }
+        while angle >= 360: angle -= 360
+        base, amplify = 1, powersets[power]
+        up, right, down, left = base, base, base, base
+        setup = [up, right, down, left]
+
+        selector = math.floor(angle / 90)
+        selectorAssistant = 0 if selector == 3 else selector+1
+
+        # bringing underAngle to an under90 value
+        underAngle = angle
+        while underAngle >= 90: underAngle -= 90
+
+        SecondaryAngler = round((underAngle / 90), 2) # minor
+        PrimaryAngler   = 1 - SecondaryAngler # major
+
+        setup[selector]          = round(base*(PrimaryAngler*amplify)+base, 2)
+        setup[selectorAssistant] = round(base*(SecondaryAngler*amplify)+base, 2)
+
+        # re-packing setup for general form
+        setup = [setup[0], setup[2], setup[3], setup[1]]
+        self.TrackingLine(setup, xy, boundby=boundby, colour=colour)
+
+    def tspurt(self, xy, colour="random", padding=10, power="medium"):
+        ur = False
+        for deg in range(0, 360, 9):
+            c = colour if colour != "random" else RandomColour()
+            self.brush(xy=xy, angle=deg, power=power, boundby=[
+                ["left",  xy[0]-padding],
+                ["right", xy[1]+padding],
+                ["down",  xy[0]+padding],
+                ["up",    xy[1]-padding]
+            ], colour=c)
 
 #// Image setup
-BG = BG()
-Bodies = Bodies()
-im = Image.open("../BITMAP/alphabet-bitmap-ds/big-circle.jpg")
+BG, Bodies, size = BG(), Bodies(), [128, 128]
+im   = Image.open("../BITMAP/alphabet-bitmap-ds/big-circle.jpg")
 draw = ImageDraw.Draw(im)
-size = [128, 128]
 
 for i in range(1):
-    # im = Image.open("op.jpg")
     current_progress = 0
     saves = {}
-    # BG.stars(int((size[0]*size[1])/4000))
-    conscienceWeight = 1
-    partialPower = conscienceWeight * 10000
-    Bodies.TrackingLine([1000, (0/4*partialPower), (2/4*partialPower), 1000], [63, 63])
-    # time.sleep(1)
+    # BG.stars(int((size[0]*size[1])/1000))
+    # Bodies.tspurt(xy=[63, 63], power="high",   padding=5)
+    Bodies.tspurt(xy=[20, 92], power="low",    padding=5)
+    Bodies.ColourPixelAt(20, 92, 2, "#c21f1f")
+    Bodies.tspurt(xy=[92, 18], power="medium", padding=5)
 
+im.save("op-af.png")
+im.save("op-af.jpeg")
 im.save("op-af.jpg")
+
+
+
+
+
+
+
+
+
 
 #J
 # Bodies.SAS_TrackingLine([
