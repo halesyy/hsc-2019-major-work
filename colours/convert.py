@@ -45,5 +45,6 @@ print("\n\n")
 for i, letter in enumerate(convert):
     print(colours[letter], end=" ")
 print("\n\n")
+
 # im = Image.fromarray(nparray)
-# im.save("con.png")
+# im.save("con.jpg")
