@@ -10,7 +10,7 @@ import time, random
 import numpy as np
 from PIL import Image, ImageDraw
 
-BitMap = Image.open("alphabet-bitmap-ds/face.jpg")
+BitMap = Image.open("alphabet-bitmap-ds/a.jpg")
 PixelArr = np.array(BitMap)
 
 xs = BitMap.size[0]
@@ -32,25 +32,26 @@ squarePixels = (xs*ys)/squares
 xSplit = int((xs) / (1 / split))
 ySplit = int((ys) / (1 / split))
 
-# | Quick anti-alias removal, black & white ONLY,
-# | lesser is reduced to black, and higher is
-# | ceiling'd to white
-for i in range(0, xs):
-    for b in range(0, ys):
-        if pixel_array[i, b][0] < 200:
-            pixel_array[i, b] = [0, 0, 0]
-        else:
-            pixel_array[i, b] = [255, 255, 255]
 
 # | Quick anti-alias removal, black & white ONLY,
 # | lesser is reduced to black, and higher is
 # | ceiling'd to white
-for i in range(0, xs):
-    for b in range(0, ys):
-        if pixel_array[i, b][0] < 200:
-            pixel_array[i, b] = [0, 0, 0]
-        else:
-            pixel_array[i, b] = [255, 255, 255]
+# for i in range(0, xs):
+#     for b in range(0, ys):
+#         if pixel_array[i, b][0] < 200:
+#             pixel_array[i, b] = [0, 0, 0]
+#         else:
+#             pixel_array[i, b] = [255, 255, 255]
+
+# | Quick anti-alias removal, black & white ONLY,
+# | lesser is reduced to black, and higher is
+# | ceiling'd to white
+# for i in range(0, xs):
+#     for b in range(0, ys):
+#         if pixel_array[i, b][0] < 200:
+#             pixel_array[i, b] = [0, 0, 0]
+#         else:
+#             pixel_array[i, b] = [255, 255, 255]
 
 
 class PixelArray(object):
@@ -61,7 +62,10 @@ class PixelArray(object):
     def __init__(self, PA):
         self.OGPixelArray = PA
         self.Squares = []
-        self.SquareCache = []
+        # - convert the "pixel array" location
+        # into the square information and insert
+        # seq
+        self.PixelArrCache = np.zeros(shape=(xSplit*xSplit, ySplit*ySplit), dtype=list)
 
     # -
     def ExpoFilter(self):
@@ -97,14 +101,16 @@ class PixelArray(object):
         PixelArr = self.OGPixelArray
         storeX, storeY = xStart, yStart
         # For Inserting
+        # print(squareNo)
         insertX, insertY, iteration = 0, 0, 0
         for i in range(0, (xSplit * ySplit)):
             iteration = i+1
             # - storing into the "bundled" array to return
             # later
+            # - storing in the bundle return [Y, X]
             bundled[insertY, insertX] = PixelArr[storeY, storeX]
-            self.SquareCache[storeY][storeX] = [i, insertY, insertX]
-            print(storeY, storeX)
+            # - storing in the caches [Y, X]
+            self.PixelArrCache[storeY, storeX] = {"square": squareNo, "insertY": storeY, "insertX": storeX, "squareLocX": insertY, "squareLocY": insertX}
             if (iteration % int(xSplit) == 0):
                 storeX = xStart
                 storeY +=  1
@@ -116,13 +122,73 @@ class PixelArray(object):
         # bundled[0, 0] = [255, 255, 255]
         return bundled
 
+    def SquareToPixelArr(self, SquareNo, Coords):
+        # print(self.OGPixelArray)
+        # - coords = [X, Y]
+        for eachInfoBundle in self.PixelArrCache:
+            for cacheInformation in eachInfoBundle:
+                # print(cacheInformation)
+                if (SquareNo == cacheInformation["square"]) and (Coords[0] == cacheInformation["squareLocX"]) and (Coords[1] == cacheInformation["squareLocY"]):
+                    return cacheInformation
+
+    def Square2PAEditor(self, SquareNo, Coords):
+        # print(SquareNo, Coords, "\n")
+        CInformation = self.SquareToPixelArr(SquareNo, Coords)
+        return [CInformation["insertY"], CInformation["insertX"]]
+
+
+    def Change(self, src="PixelArr", xy=[], squareno=False, to=[]):
+        # - src = PixelArr or Squares,
+        # - Each edit has to edit the OGPixelArray
+        x, y = xy[0], xy[1]
+        # - Default format: [Y, X] when accessing
+        if src == "Squares":
+            SquareNo = squareno
+            EditInfo = self.Square2PAEditor(SquareNo, [x, y])
+            self.OGPixelArray[EditInfo[1], EditInfo[0]] = to
+
+    def ShowOG(self):
+        OGPA = self.OGPixelArray
+        im = Image.fromarray(OGPA)
+        im.show()
+        return self
+
+    def SaveOG(self):
+        OGPA = self.OGPixelArray
+        im = Image.fromarray(OGPA)
+        im.save("og.png")
+        return self
 
 
 
 PA = PixelArray(PixelArr)
 PA  .ExpoFilter()
 PA  .SortSquares()
-print(PA.Squares[3][3, 2])
+
+# PA.ShowOG().SaveOG()
+
+PA.Change("Squares", xy=[1, 1], squareno=15
+, to=[255, 255, 255])
+# PA.Change("Squares", xy=[1, 2], squareno=15, to=[255, 255, 255])
+# PA.SaveOG()
+PA.ShowOG()
+
+
+# EditInfo = PA.Square2PAEditor(6, [0, 0])
+# print(EditInfo)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # | Quick square is-empty clause, checking
 # | if data in the square is totally black,
