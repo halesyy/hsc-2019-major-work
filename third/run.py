@@ -1,5 +1,8 @@
 from PIL import Image, ImageDraw
-import random, time, math
+import random, time, math, textwrap
+
+inColour  = None
+outColour = None
 
 def RandomColour():
     c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
@@ -11,6 +14,37 @@ def RandomColour():
     for i in range(0,6): colour += random.choice(c)
     return colour
 
+def Complementary(hex):
+    # - #abcdef
+    hex  = hex.replace('#', '')
+    hexp = textwrap.wrap(hex, 2)
+    for i, h in enumerate(hexp):
+        hexp[i] = 255-int("0x{0}".format(h), 0)
+    print(hexp)
+    for i, h in enumerate(hexp):
+        # print(i, h)
+        # print(int(h))
+        # print(hexp)
+        # print(hex(int(h)))
+        hexp[i] = h.to_bytes(1, byteorder='big').hex()
+    return "{0}{1}".format("#", "".join(hexp))
+
+
+def ComRandom(reset=True):
+    global inColour, outColour
+    # - colour imparting
+    if outColour != None and reset: inColour, outColour = None, None
+    if inColour == None: inColour = RandomColour()
+    else: outColour = Complementary(inColour)
+    # - colour returning
+    if outColour == None:
+        return inColour
+    else:
+        return outColour
+
+# print(ComRandom())
+# print(ComRandom())
+# print(inColour, outColour)
 
 def Progress(optional_output=False):
     global current_progress
@@ -74,7 +108,7 @@ class Bodies:
         if xy == False: x, y = random.randint(0, size[0]), 1
         else: x, y = xy[0], xy[1]
 
-        print("tl: {0}, {1}".format(x, y))
+        # print("tl: {0}, {1}".format(x, y))
         iterations = 0
         total_weight = sum(weights)
         predefinedColour = colour
@@ -97,9 +131,11 @@ class Bodies:
                 stoppingPoint = boundSet[1]
                 bounds[direction] = stoppingPoint
 
-        print(bounds)
-        while (y < bounds["down"]) and (y > bounds["up"]) and (x < bounds["right"]) and (x > bounds["left"]):
-            print("Going to draw!")
+        # print(bounds)
+        # print("")
+
+        while (x < bounds["down"]) and (y > bounds["up"]) and (y < bounds["right"]) and (x > bounds["left"]):
+            # print("Going to draw!")
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
                 # y = y - 1 if y + 1 > 0 else y + 1
@@ -208,168 +244,49 @@ class Bodies:
         setup[selector]          = round(base*(PrimaryAngler*amplify)+base, 2)
         setup[selectorAssistant] = round(base*(SecondaryAngler*amplify)+base, 2)
 
-        # re-packing setup for general form
+        # - re-packing setup for general form
+
         setup = [setup[0], setup[2], setup[3], setup[1]]
         self.TrackingLine(setup, xy, boundby=boundby, colour=colour)
 
     def tspurt(self, xy, colour="random", padding=10, power="medium"):
-        ur = False
+        ur, s = True, 5
+        c  = colour if colour != "random" else ComRandom()
         for deg in range(0, 360, 9):
-            c = colour if colour != "random" else RandomColour()
+            # c = colour if colour != "random" else ComRandom()
             self.brush(xy=xy, angle=deg, power=power, boundby=[
-                ["left",  xy[0]-padding],
-                ["right", xy[1]+padding],
-                ["down",  xy[0]+padding],
-                ["up",    xy[1]-padding]
+                ["left",  xy[0]-padding+(random.randint(1, 5*s)*ur)],
+                ["right", xy[1]+padding+(random.randint(1, 5*s)*ur)],
+                ["down",  xy[0]+padding+(random.randint(1, 5*s)*ur)],
+                ["up",    xy[1]-padding+(random.randint(1, 5*s)*ur)]
             ], colour=c)
 
 #// Image setup
 BG, Bodies, size = BG(), Bodies(), [128, 128]
 im   = Image.open("../BITMAP/alphabet-bitmap-ds/big-circle.jpg")
 draw = ImageDraw.Draw(im)
+pd = 12
 
-for i in range(1):
-    current_progress = 0
-    saves = {}
-    # BG.stars(int((size[0]*size[1])/1000))
-    # Bodies.tspurt(xy=[63, 63], power="high",   padding=5)
-    Bodies.tspurt(xy=[20, 92], power="low",    padding=5)
-    Bodies.ColourPixelAt(20, 92, 2, "#c21f1f")
-    Bodies.tspurt(xy=[92, 18], power="medium", padding=5)
+Bodies.tspurt(xy=[63, 63], power="high", padding=pd)
+Bodies.tspurt(xy=[20, 80], power="high", padding=pd)
+
+# for x in range(15):
+#     xp = random.randint(0, 128)
+    # Bodies.tspurt(xy=[xp, 0], power="high", padding=pd)
+
+# for x in range(15):
+#     xp = random.randint(0, 128)
+    # Bodies.tspurt(xy=[xp, 128], power="high", padding=pd)
+
+# for y in range(15):
+#     yp = random.randint(0, 128)
+    # Bodies.tspurt(xy=[0, yp], power="high", padding=pd)
+
+# for y in range(15):
+#     yp = random.randint(0, 128)
+#     Bodies.tspurt(xy=[128, yp], power="high", padding=pd)
 
 im.save("op-af.png")
 im.save("op-af.jpeg")
 im.save("op-af.jpg")
-
-
-
-
-
-
-
-
-
-
-#J
-# Bodies.SAS_TrackingLine([
-#     {
-#         "time": 0,
-#         "weights": [1000,1050,1000,1000]
-#     },
-#     {
-#         "time": 90000,
-#         "weights": [980,980,1070,1000]
-#     },
-#     {
-#         "time": 150000,
-#         "weights": [1050,1000,1000,1000]
-#     },
-#     {
-#         "time": 200000,
-#         "weights": "stop"
-#     }
-# ], [1500, 400])
-#
-#
-#
-#
-# #A
-# Bodies.SAS_TrackingLine([
-#     {
-#         "time": 0,
-#         "weights": [1050,1000,1000,1000]
-#     },
-#     {
-#         "time": 50000,
-#         "weights": "save_xy",
-#         "save_as": "a_mid"
-#     },
-#     {
-#         "time": 100000,
-#         "weights": [980,980,1000,1050]
-#     },
-#     {
-#         "time": 150000,
-#         "weights": [1000,1050,1000,1000]
-#     },
-#     {
-#         "time": 250000,
-#         "weights": "stop"
-#     }
-# ], [2250, 1600])
-# #A-
-# Bodies.SAS_TrackingLine([
-#     {
-#         "time": 0,
-#         "weights": [1000,1000,1000,1050]
-#     },
-#     {
-#         "time": 70000,
-#         "weights": "stop"
-#     }
-# ], saves["a_mid"])
-#
-#
-#
-# #C
-# Bodies.SAS_TrackingLine([
-#     {
-#         "time": 0,
-#         "weights": [1000,1000,1070,1000]
-#     },
-#     {
-#         "time": 60000,
-#         "weights": [1000,1050,1000,1000]
-#     },
-#     {
-#         "time": 150000,
-#         "weights": [1000,1000,1000,1050]
-#     },
-#     {
-#         "time": 250000,
-#         "weights": "stop"
-#     }
-# ], [5000, 400])
-#
-#
-#
-# #K
-# Bodies.SAS_TrackingLine([
-#     {
-#         "time": 0,
-#         "weights": [1000,1050,1000,1000]
-#     },
-#     {
-#         "time": 50000,
-#         "weights": "save_xy",
-#         "save_as": "k_middle"
-#     },
-#     {
-#         "time": 100000,
-#         "weights": "stop"
-#     }
-# ], [6000, 400])
-# #k-topright
-# Bodies.SAS_TrackingLine([
-#     {
-#         "time": 0,
-#         "weights": [1050,1000,1000,1050]
-#     },
-#     {
-#         "time": 60000,
-#         "weights": "stop"
-#     }
-# ], saves["k_middle"]) #got the coords of the middle point of K
-# #k-bottom-right
-# Bodies.SAS_TrackingLine([
-#     {
-#         "time": 0,
-#         "weights": [1000,1050,1000,1050]
-#     },
-#     {
-#         "time": 60000,
-#         "weights": "stop"
-#     }
-# ], saves["k_middle"]) #got the coords of the middle point of K
-
 # im.save("op-af.jpg")

@@ -10,103 +10,115 @@ import time, random
 import numpy as np
 from PIL import Image, ImageDraw
 
-bit_map     = Image.open("alphabet-bitmap-ds/face.jpg")
-pixel_array = np.array(bit_map)
+BitMap = Image.open("alphabet-bitmap-ds/face.jpg")
+PixelArr = np.array(BitMap)
 
-
-xs = bit_map.size[0]
-ys = bit_map.size[1]
+xs = BitMap.size[0]
+ys = BitMap.size[1]
 
 #// Manual Colour-coding array
 #// To be in JSON file one day
 
-
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
+
 by = 4
 split = 1 / by
 squares = int(1 / split)
 squaresx = squares
-total_squares = int(squares*squares)
-square_pixels = (xs*ys)/squares
+totalSquares = int(squares*squares)
+squarePixels = (xs*ys)/squares
 
-x_split = int((xs) / (1 / split))
-y_split = int((ys) / (1 / split))
+xSplit = int((xs) / (1 / split))
+ySplit = int((ys) / (1 / split))
 
 
 class PixelArray(object):
+    # - dynamically set variables
+    # Squares
+    # OGPixelArray is a numpy array
+
     def __init__(self, PA):
         self.OGPixelArray = PA
+        self.Squares = []
+        self.SquareCache = []
+
+    # -
+    def ExpoFilter(self):
+        PixelArr = self.OGPixelArray
+        for i in range(0, xs):
+            for b in range(0, ys):
+                if PixelArr[i, b][0] < 200:
+                    PixelArr[i, b] = [0, 0, 0]
+                else:
+                    PixelArr[i, b] = [255, 255, 255]
+        self.OGPixelArray = PixelArr
+
+    def SortSquares(self):
+        PixelArr = self.OGPixelArray
+        Squares = [None for f in range(0, squares*squares)]
+        startX, startY, iteration = 0, 0, 0
+        for i in range(0, int(squares*squares)):
+            # print(startX, startY)
+            iteration += 1
+            Squares[i] = self.SquareBundlerStartFrom(i, startX, startY)
+            if iteration % int(xs/xSplit) == 0:
+                startY = startY + ySplit
+                startX = 0
+            else:
+                startX = startX + xSplit
+        self.Squares = Squares
+
+    def SquareBundlerStartFrom(self, squareNo, xStart, yStart):
+        # Presetting the values for the bundled variables in a
+        # 2D Numpy Array
+        bundled = np.zeros(shape=(xSplit, ySplit), dtype=object)
+        # Where we will start from for finding the X/Y values
+        PixelArr = self.OGPixelArray
+        storeX, storeY = xStart, yStart
+        # For Inserting
+        insertX, insertY, iteration = 0, 0, 0
+        for i in range(0, (xSplit * ySplit)):
+            iteration = i+1
+            # - storing into the "bundled" array to return
+            # later
+            bundled[insertY, insertX] = PixelArr[storeY, storeX]
+            self.SquareCache[storeY][storeX] = [i, insertY, insertX]
+            print(storeY, storeX)
+            if (iteration % int(xSplit) == 0):
+                storeX = xStart
+                storeY +=  1
+                insertX = 0
+                insertY += 1
+            else:
+                storeX += 1
+                insertX += 1
+        # bundled[0, 0] = [255, 255, 255]
+        return bundled
 
 
 
-# PA = PixelArray(pixel_array)
 
+PA = PixelArray(PixelArr)
+PA  .ExpoFilter()
+PA  .SortSquares()
+print(PA.Squares[3][3, 2])
 
 
 #// Quick anti-alias removal, black & white ONLY
-for i in range(0, xs):
-    for b in range(0, ys):
-        if pixel_array[i, b][0] < 200:
-            pixel_array[i, b] = [0, 0, 0]
-        else:
-            pixel_array[i, b] = [255, 255, 255]
+
 
 # print(pixel_array)
 
 #preview the edited image
 # im2 = Image.fromarray(pixel_array.astype("uint8"), "RGB")
 
-def square_bundler(x_start, y_start):
-    global x_split, y_split, split, squares, square_pixels, pixel_array
-    # Presetting the values for the bundled variables in a
-    # 2D Numpy Array
-    bundled = np.zeros(shape=(x_split, y_split), dtype=object)
-    # Where we will start from for finding the X/Y values
-    store_x = x_start
-    store_y = y_start
-    # For Inserting
-    insert_x = 0
-    insert_y = 0
-    for i in range(0, (x_split * y_split)):
-        iteration = i+1
-        # Seems that the y/x values are swapped, so we have
-        # to later chance that if we are to set back as image.
-        # @NOTE this.
-        bundled[insert_y, insert_x] = pixel_array[store_y, store_x]
-
-        if (iteration % int(x_split) == 0):
-            store_x = x_start
-            store_y = store_y + 1
-            insert_x = 0
-            insert_y = insert_y + 1
-        else:
-            store_x  = store_x + 1
-            insert_x = insert_x + 1
-    # bundled[0, 0] = [255, 255, 255]
-    return bundled
+# def square_bundler(x_start, y_start):
 
 # Iterating in the right order to get the top-left x/y value
 # set out appropriately.
-def sort_all_squares():
-    all_squares = [None for f in range(0, squares*squares)]
-    start_x = 0
-    start_y = 0
-    iteration = 0
+# def sort_all_squares():
 
-    for i in range(0, int(squares*squares)):
-        # print(start_x, start_y)
-        iteration = iteration + 1
-        # print("it {0} out of {1}".format(iteration, squares*squares+1))
-        # print(start_x, start_y, ":")
-        all_squares[i] = square_bundler(start_x, start_y)
-        if iteration % int(xs/x_split) == 0:
-            start_y = start_y + y_split
-            start_x = 0
-        else:
-            start_x = start_x + x_split
-
-    return all_squares
 
 
 
@@ -196,30 +208,12 @@ def gradient_check(xy1, xy2):
 
 
 
-sqrs = sort_all_squares()
-for i in range(1, total_squares+1):
-    # print(str(is_empty(sqrs[i-1]))+" ", end="")
-    if i%(by)==0:
-        # print()
-        pass
+# sqrs = sort_all_squares()
+# for i in range(1, total_squares+1):
+#     print(str(is_empty(sqrs[i-1]))+" ", end="")
+#     if i%(by)==0:
+#         print()
+
 # bit_map.show()
-sqrs[0][0, 0] = [255, 255, 255]
-pa = squares2pa(sqrs)
-# should return a pixel_array format
-# pa = Image.fromarray(pa)
-# pa.show()
-
-# sqrs[1][0, 2] = [255, 255, 255]
-# sqrs[0][0, 3] = [255, 255, 255]
-# sqrs[0][0, 4] = [255, 255, 255]
-
-# print(pixel_array)
-# print(pixel_array[0, 0])
-
-# arr = np.array(bm)
-# print(arr[32, 32])
-# pixel_array[0, 0] = [255, 255, 255]
-
-# pa = Image.fromarray(pixel_array)
-# pa.show()
-# pa.save('fkn-around.png')
+# sqrs[0][0, 0] = [255, 255, 255]
+# pa = squares2pa(sqrs)
