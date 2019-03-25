@@ -309,12 +309,12 @@ class PixelArray(object):
 
             # for b in range(Brute):
             Movements = {
-                "U": Choice+xSplit,
+                "U": Choice-xSplit,
                 "R": Choice+1,
-                "UR": Choice+xSplit+1,
-                "UL": Choice+xSplit-1,
-                "BL": Choice-xSplit-1,
-                "BR": Choice-xSplit+1,
+                "UR": Choice-xSplit+1,
+                "UL": Choice-xSplit-1,
+                "BL": Choice+xSplit-1,
+                "BR": Choice+xSplit+1,
                 "L": Choice-1,
                 "D": Choice+xSplit
             }
@@ -328,6 +328,7 @@ class PixelArray(object):
                 Movements = dict(MovementsShf)
 
             print(Movements)
+            print(ConsiderableSquares1d)
 
             # - iterating the above possible movements,
             # - and finding if any are in there
@@ -342,7 +343,10 @@ class PixelArray(object):
 
             print(DirectionSequence)
 
+
         self.PrintSquareMap(highlight=Choice)
+        print('---')
+        self.PrintSquareMap(highlight=Movements[Movement])
         print(ConsiderableSquares) # - all squares
 
         # G = Grid(matrix=Considerable)
