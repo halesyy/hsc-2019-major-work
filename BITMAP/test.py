@@ -232,7 +232,8 @@ class PixelArray(object):
                     isEmpty = 0
         return bool(isEmpty)
 
-    def Contains(self, squareNo):
+    def Contains(self, squareNo, highlight="no"):
+        if squareNo == highlight: return 2
         return not self.Empty(squareNo)
 
     def ContainsArray(self, cast=bool):
@@ -256,10 +257,10 @@ class PixelArray(object):
             if ic % squares == 0: access += 1
         return mapArray
 
-    def PrintSquareMap(self):
+    def PrintSquareMap(self, highlight="no"):
         for i in range(len(self.Squares)):
             ic = i + 1
-            print(int(self.Contains(i)), end="  ")
+            print(int(self.Contains(i, highlight=highlight)), end="  ")
             if ic % squares == 0: print("\n")
 
 
@@ -300,25 +301,48 @@ class PixelArray(object):
             # - random line to start on
             LineNo = random.randint(0, len(ConsiderableSquares)-1)
             Line = ConsiderableSquares[LineNo]
-
             CoveredSquares = []
             Choice = random.choice(Line)
             CoveredSquares.append(Choice)
+            # - ea arr+= [Movement, where it ends]
+            DirectionSequence = [["O", Choice]]
 
-            for b in range(Brute):
-                Movements = {
-                    "U": Choice+xSplit,
-                    "R": Choice+1,
-                    "UR": Choice+xSplit+1,
-                    "UL": Choice+xSplit-1,
-                    "BL": Choice-xSplit-1,
-                    "BR": Choice-xSplit+1,
-                    "L": Choice-1,
-                    "D": Choice+xSplit
-                }
+            # for b in range(Brute):
+            Movements = {
+                "U": Choice+xSplit,
+                "R": Choice+1,
+                "UR": Choice+xSplit+1,
+                "UL": Choice+xSplit-1,
+                "BL": Choice-xSplit-1,
+                "BR": Choice-xSplit+1,
+                "L": Choice-1,
+                "D": Choice+xSplit
+            }
+
             print(Movements)
 
-        self.PrintSquareMap()
+            # - shuffling the list
+            if len(Movements) != 0:
+                MovementsShf = list(Movements.items())
+                random.shuffle(MovementsShf)
+                Movements = dict(MovementsShf)
+
+            print(Movements)
+
+            # - iterating the above possible movements,
+            # - and finding if any are in there
+
+            for Movement in Movements:
+                if Movements[Movement] in ConsiderableSquares1d:
+                    # print("Able to do {0}".format(Movements[Movement]))
+                    DirectionSequence.append([Movement, Movements[Movement]])
+                    break
+            else:
+                print("Don't think I found any...")
+
+            print(DirectionSequence)
+
+        self.PrintSquareMap(highlight=Choice)
         print(ConsiderableSquares) # - all squares
 
         # G = Grid(matrix=Considerable)
