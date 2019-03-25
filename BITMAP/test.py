@@ -10,6 +10,11 @@ import time, random
 import numpy as np
 from PIL import Image, ImageDraw
 
+# Pathfinding!
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+
 BitMap = Image.open("alphabet-bitmap-ds/a.jpg")
 PixelArr = np.array(BitMap)
 
@@ -22,7 +27,7 @@ ys = BitMap.size[1]
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
 
-by    = 16
+by    = 8
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -230,11 +235,40 @@ class PixelArray(object):
     def Contains(self, squareNo):
         return not self.Empty(squareNo)
 
+    def ContainsArray(self, cast=bool):
+        access = 0
+        mapArray = [[]]
+        for i in range(len(self.Squares)):
+            ic = i + 1
+            if access > (len(mapArray)-1): mapArray.append([])
+            mapArray[access].append(cast(self.Contains(i)))
+            if ic % squares == 0: access += 1
+        # print("finished at {0}".format(i))
+        return mapArray
+
+    def ContainsArrayPoints(self):
+        access = 0
+        mapArray = [[]]
+        for i in range(len(self.Squares)):
+            ic = i + 1
+            if access > (len(mapArray)-1): mapArray.append([])
+            if self.Contains(i): mapArray[access].append(i)
+            if ic % squares == 0: access += 1
+        return mapArray
+
     def PrintSquareMap(self):
         for i in range(len(self.Squares)):
             ic = i + 1
             print(int(self.Contains(i)), end="  ")
             if ic % squares == 0: print("\n")
+
+
+
+
+
+
+
+
 
 
     # - | finding the "best path" to
@@ -243,6 +277,72 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
+        Brute = 100 # length of tries in the actual pathfinding
+        OverallBrute = 1 # times to try to getting the path
+        ConsiderableSquares = self.ContainsArrayPoints()
+        ConsiderableSquares1d = [] # - a flat array
+        for cs in ConsiderableSquares:
+            for each in cs:
+                ConsiderableSquares1d.append(each)
+
+        # | - the parent, starting on a random
+        # | - line then sub-bruting till it
+        # | - finds a dead end and goes till
+        # | it covers every square and resolves
+        # | the path
+
+        CoveredSquares = []
+
+        # | We're done WHEN: all CoveredSquares are in ConsiderableSquares
+
+        for i in range(OverallBrute):
+
+            # - random line to start on
+            LineNo = random.randint(0, len(ConsiderableSquares)-1)
+            Line = ConsiderableSquares[LineNo]
+
+            CoveredSquares = []
+            Choice = random.choice(Line)
+            CoveredSquares.append(Choice)
+
+            for b in range(Brute):
+                Movements = {
+                    "U": Choice+xSplit,
+                    "R": Choice+1,
+                    "UR": Choice+xSplit+1,
+                    "UL": Choice+xSplit-1,
+                    "BL": Choice-xSplit-1,
+                    "BR": Choice-xSplit+1,
+                    "L": Choice-1,
+                    "D": Choice+xSplit
+                }
+            print(Movements)
+
+        self.PrintSquareMap()
+        print(ConsiderableSquares) # - all squares
+
+        # G = Grid(matrix=Considerable)
+        # Start, End = G.node(7, 1), G.node(8, 8)
+        # finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+        # path, runs = finder.find_path(Start, End, G)
+        # print('operations:', runs, 'path length:', len(path))
+        # print(G.grid_str(path=path, start=Start, end=End))
+        # print(Considerable)
+        # for i in range(OverallBrute):
+        #     square = 0
+            # - iterating by ylen of the Contains array,
+            # - then the individual lines
+            # randomLine = random.choice(Considerable)
+
+            # for line in Considerable: # y-roaming line
+            #     for contains in line: # indiv x-roaming line
+
+
+                    # square += 1
+
+        # else:
+        #     pass
+            # print("IT DIDNT FUCKING WORK", end="")
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
@@ -274,9 +374,6 @@ class PixelArray(object):
 PA=PixelArray(PixelArr)
 PA.AARemove()
 PA.SortSquares()
-
-# print(PA.Empty(1))
-PA.PrintSquareMap()
 
 PA.Path()
 
