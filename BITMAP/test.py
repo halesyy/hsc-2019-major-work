@@ -4,18 +4,22 @@
 #// black-background image that contains a prominent set of colours
 #// that are significant in meaning.
 
-#// Image.fromarray(numpyarray[.astype('uint8')], 'RGB')
 
 import time, random
 import numpy as np
 from PIL import Image, ImageDraw
+import pprint as pprint
+pp = pprint.PrettyPrinter(indent=4)
+pp = pp.pprint
+import os
+os.system("clear")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-BitMap = Image.open("alphabet-bitmap-ds/a.jpg")
+BitMap = Image.open("alphabet-bitmap-ds/h.jpg")
 PixelArr = np.array(BitMap)
 
 xs = BitMap.size[0]
@@ -27,7 +31,7 @@ ys = BitMap.size[1]
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
 
-by    = 8
+by    = 24
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -260,8 +264,8 @@ class PixelArray(object):
     def PrintSquareMap(self, highlight="no"):
         for i in range(len(self.Squares)):
             ic = i + 1
-            print(int(self.Contains(i, highlight=highlight)), end="  ")
-            if ic % squares == 0: print("\n")
+            print(int(self.Contains(i, highlight=highlight)), end=" ")
+            if ic % squares == 0: print("")
 
 
 
@@ -278,9 +282,13 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        Brute = 100 # length of tries in the actual pathfinding
-        OverallBrute = 1 # times to try to getting the path
-        ConsiderableSquares = self.ContainsArrayPoints()
+        # between 0 -> 10
+        Compression = 10 # overall tests, for the "sloppiness"
+        Leveler     = 3 # the expected overhead of moves required
+                        # to finally get to the ending area of
+                        # total control.
+
+        ConsiderableSquares   = self.ContainsArrayPoints()
         ConsiderableSquares1d = [] # - a flat array
         for cs in ConsiderableSquares:
             for each in cs:
@@ -289,88 +297,64 @@ class PixelArray(object):
         # | - the parent, starting on a random
         # | - line then sub-bruting till it
         # | - finds a dead end and goes till
-        # | it covers every square and resolves
-        # | the path
+        # | - it covers every square and resolves
+        # | - the path
+        Brute, OverallBrute = round(len(ConsiderableSquares1d)*Leveler), 10000*Compression # Brute=overall attempts, Overall=individual attempts at pathfinding
+        Brute, OverallBrute = 1, 2
 
         CoveredSquares = []
-
+        AllCovered = False
         # | We're done WHEN: all CoveredSquares are in ConsiderableSquares
 
         for i in range(OverallBrute):
 
-            # - random line to start on
-            LineNo = random.randint(0, len(ConsiderableSquares)-1)
-            Line = ConsiderableSquares[LineNo]
-            CoveredSquares = []
-            Choice = random.choice(Line)
-            CoveredSquares.append(Choice)
-            # - ea arr+= [Movement, where it ends]
-            DirectionSequence = [["O", Choice]]
+            Choice = random.choice(ConsiderableSquares1d)
+            DirectionSequence = [["O", Choice]] # the operations of movement dir's
+            CoveredArea = [Choice] # the covered area through pathfinding
 
-            # for b in range(Brute):
-            Movements = {
-                "U": Choice-xSplit,
-                "R": Choice+1,
-                "UR": Choice-xSplit+1,
-                "UL": Choice-xSplit-1,
-                "BL": Choice+xSplit-1,
-                "BR": Choice+xSplit+1,
-                "L": Choice-1,
-                "D": Choice+xSplit
-            }
+            CurrentPlace = random.choice(ConsiderableSquares1d)
+            Movement = "O"
 
-            print(Movements)
+            if AllCovered: break
 
-            # - shuffling the list
-            if len(Movements) != 0:
-                MovementsShf = list(Movements.items())
-                random.shuffle(MovementsShf)
-                Movements = dict(MovementsShf)
+            for i in range(Brute):
+                # checking if all CoveredArea numbers makeup the entire length
+                self.PrintSquareMap(highlight=CurrentPlace)
 
-            print(Movements)
-            print(ConsiderableSquares1d)
+                AllCovered = True
+                for ConsLoc in ConsiderableSquares1d:
+                    if ConsLoc not in CoveredArea:
+                        AllCovered = False
 
-            # - iterating the above possible movements,
-            # - and finding if any are in there
-
-            for Movement in Movements:
-                if Movements[Movement] in ConsiderableSquares1d:
-                    # print("Able to do {0}".format(Movements[Movement]))
-                    DirectionSequence.append([Movement, Movements[Movement]])
+                if AllCovered == True:
+                    print("Done @ {0}".format(i+1))
+                    pp(DirectionSequence)
                     break
-            else:
-                print("Don't think I found any...")
 
-            print(DirectionSequence)
+                Movements = {
+                    "U":   CurrentPlace-squaresx,
+                    "R":   (CurrentPlace+1)           if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+                    "UR":  CurrentPlace-squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+                    "UL":  CurrentPlace-squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
+                    "BL":  CurrentPlace+squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
+                    "BR":  CurrentPlace+squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+                    "L":   CurrentPlace-1             if ((CurrentPlace)%squaresx!=0) else -1, #lc
+                    "D":   CurrentPlace+squaresx}
 
+                # print("- - - - - - - - - -")
 
-        self.PrintSquareMap(highlight=Choice)
-        print('---')
-        self.PrintSquareMap(highlight=Movements[Movement])
-        print(ConsiderableSquares) # - all squares
-
-        # G = Grid(matrix=Considerable)
-        # Start, End = G.node(7, 1), G.node(8, 8)
-        # finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-        # path, runs = finder.find_path(Start, End, G)
-        # print('operations:', runs, 'path length:', len(path))
-        # print(G.grid_str(path=path, start=Start, end=End))
-        # print(Considerable)
-        # for i in range(OverallBrute):
-        #     square = 0
-            # - iterating by ylen of the Contains array,
-            # - then the individual lines
-            # randomLine = random.choice(Considerable)
-
-            # for line in Considerable: # y-roaming line
-            #     for contains in line: # indiv x-roaming line
+                for Movement, Place in sorted(Movements.items(), key=lambda x: random.random()):
+                    if Place in ConsiderableSquares1d:
+                        DirectionSequence.append([Movement, Place])
+                        CoveredArea.append(Place)
+                        CurrentPlace = Place
+                        break
+                else:
+                    print("n.", end="")
 
 
-                    # square += 1
-
-        # else:
-        #     pass
-            # print("IT DIDNT FUCKING WORK", end="")
+        # print("Considerable Squares 1d: {0}\n\n".format(ConsiderableSquares1d)) # - all squares
+        # print("Direction: {0}".format(DirectionSequence))
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
