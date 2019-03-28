@@ -5,7 +5,7 @@
 #// that are significant in meaning.
 
 
-import time, random
+import time, random, math
 import numpy as np
 from PIL import Image, ImageDraw
 import pprint as pprint
@@ -19,7 +19,7 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-BitMap = Image.open("alphabet-bitmap-ds/h.jpg")
+BitMap = Image.open("alphabet-bitmap-ds/a.jpg")
 PixelArr = np.array(BitMap)
 
 xs = BitMap.size[0]
@@ -31,7 +31,7 @@ ys = BitMap.size[1]
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
 
-by    = 24
+by    = 4
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -267,9 +267,30 @@ class PixelArray(object):
             print(int(self.Contains(i, highlight=highlight)), end=" ")
             if ic % squares == 0: print("")
 
+    # - taking the square, and applying the direction sequence
+    # - to where to apply each period
+    def SquareBounds(self, squareNo, direction):
+        # Cached = self.PixelArrCache[]
+        # bounds = {
+        #        "down":  size[1],   # within bottom
+        #        "up":    0,           # within top
+        #        "right": size[0],  # within right
+        #        "left":  0          # within left
+        # }
+        # 1. taking the square, and getting the bounds
+        #    specifically for top, left, right and down
+        # 2.
+        # 1. taking the squareNo,
 
+        squareNo = 3
+        X = math.ceil((squareNo+1)/squaresx)
+        Y = math.ceil((squareNo)%squaresx)+1
 
+        Right = xSplit * X
+        Down = ySplit * Y
+        print(Right, Down)
 
+        pass
 
 
 
@@ -282,13 +303,11 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        # between 0 -> 10
         Compression = 10 # overall tests, for the "sloppiness"
         Leveler     = 3 # the expected overhead of moves required
                         # to finally get to the ending area of
                         # total control.
-
-        ConsiderableSquares   = self.ContainsArrayPoints()
+        ConsiderableSquares = self.ContainsArrayPoints()
         ConsiderableSquares1d = [] # - a flat array
         for cs in ConsiderableSquares:
             for each in cs:
@@ -300,26 +319,21 @@ class PixelArray(object):
         # | - it covers every square and resolves
         # | - the path
         Brute, OverallBrute = round(len(ConsiderableSquares1d)*Leveler), 10000*Compression # Brute=overall attempts, Overall=individual attempts at pathfinding
-        Brute, OverallBrute = 1, 2
-
+        # Brute, OverallBrute = 2, 1
         CoveredSquares = []
         AllCovered = False
-        # | We're done WHEN: all CoveredSquares are in ConsiderableSquares
 
         for i in range(OverallBrute):
 
             Choice = random.choice(ConsiderableSquares1d)
             DirectionSequence = [["O", Choice]] # the operations of movement dir's
             CoveredArea = [Choice] # the covered area through pathfinding
-
-            CurrentPlace = random.choice(ConsiderableSquares1d)
-            Movement = "O"
-
+            Movement, CurrentPlace = "O", random.choice(ConsiderableSquares1d)
             if AllCovered: break
 
             for i in range(Brute):
                 # checking if all CoveredArea numbers makeup the entire length
-                self.PrintSquareMap(highlight=CurrentPlace)
+                # self.PrintSquareMap(highlight=CurrentPlace)
 
                 AllCovered = True
                 for ConsLoc in ConsiderableSquares1d:
@@ -327,9 +341,10 @@ class PixelArray(object):
                         AllCovered = False
 
                 if AllCovered == True:
-                    print("Done @ {0}".format(i+1))
-                    pp(DirectionSequence)
-                    break
+                    self.DirectionSequenceDone = True
+                    self.DirectionSequence = DirectionSequence
+                    return DirectionSequence
+                else: self.DirectionSequenceDone = False
 
                 Movements = {
                     "U":   CurrentPlace-squaresx,
@@ -341,20 +356,34 @@ class PixelArray(object):
                     "L":   CurrentPlace-1             if ((CurrentPlace)%squaresx!=0) else -1, #lc
                     "D":   CurrentPlace+squaresx}
 
-                # print("- - - - - - - - - -")
-
                 for Movement, Place in sorted(Movements.items(), key=lambda x: random.random()):
                     if Place in ConsiderableSquares1d:
                         DirectionSequence.append([Movement, Place])
                         CoveredArea.append(Place)
                         CurrentPlace = Place
                         break
-                else:
-                    print("n.", end="")
+                else: print("n.", end="")
 
 
-        # print("Considerable Squares 1d: {0}\n\n".format(ConsiderableSquares1d)) # - all squares
-        # print("Direction: {0}".format(DirectionSequence))
+
+    # - | formating the self.DirectionSequence into
+    # - | a fair format.
+    def PathFormat(self):
+        if self.DirectionSequenceDone == False:
+            print("Path has not been established...")
+            return False
+        SequenceConvert = {
+            "U": 0,
+            "D": 180,
+            "L": 270,
+            "R": 90,
+            "UR": 45,
+            "UL": 315,
+            "BL": 225,
+            "BR": 135}
+
+        self.SquareBounds(1, "d")
+
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
@@ -388,7 +417,7 @@ PA.AARemove()
 PA.SortSquares()
 
 PA.Path()
-
+PA.PathFormat()
 PA.SaveOG()
 
 
