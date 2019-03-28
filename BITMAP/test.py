@@ -12,7 +12,7 @@ import pprint as pprint
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
 import os
-os.system("clear")
+os.system("cls")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -65,10 +65,8 @@ class PixelArray(object):
         PixelArr = self.OGPixelArray
         for i in range(0, xs):
             for b in range(0, ys):
-                if PixelArr[i, b][0] < 200:
-                    PixelArr[i, b] = [0, 0, 0]
-                else:
-                    PixelArr[i, b] = [255, 255, 255]
+                if PixelArr[i, b][0] < 120: PixelArr[i, b] = [0, 0, 0]
+                else: PixelArr[i, b] = [255, 255, 255]
         self.OGPixelArray = PixelArr
 
     def SortSquares(self):
@@ -124,15 +122,17 @@ class PixelArray(object):
                     return cacheInformation
 
     def AllColourInSquare(self, squareNo, colour=[255, 255, 255]):
-        # PixelArr = self.OGPixelArray
+        print(squareNo)
         area = []
         for eachInfoBundle in self.PixelArrCache:
             for cacheInformation in eachInfoBundle:
                 if (cacheInformation != 0) and (squareNo == cacheInformation["square"]):
                     x, y = cacheInformation["insertX"], cacheInformation["insertY"]
                     # y, x
+                    print(self.OGPixelArray[y, x], colour)
                     if str(self.OGPixelArray[y, x]) == str(colour).replace(',', ''):
                         area.append(cacheInformation)
+        print(area)
         return area
 
 
@@ -183,7 +183,17 @@ class PixelArray(object):
         # saving data
         self.lastFinishingPoint = [ASC1["insertX"], ASC1["insertY"]]
 
-
+    def PathVisualize(self):
+        i = 0
+        for DirectionSpace in self.DirectionSequence:
+            Direction, SquareNo = DirectionSpace[0], DirectionSpace[1]
+            if i == 0:
+                First = SquareNo
+            elif i == 1:
+                self.Start_RandomLineBetweenFilledSquares(first=First, second=SquareNo)
+            # elif i > 1:
+            #     self.Next_RandomLineFromLastInFilledSquares(SquareNo)
+            i += 1
 
 
 
@@ -216,7 +226,6 @@ class PixelArray(object):
 
     # - takes a square, and creates a new image and fills it
     # - with the area data provided by the following functions.
-
     def ShowSquareAlone(self, squareNo):
         fa = Image.new(mode="RGB", size=[16, 16])
         faa = np.array(fa)
@@ -240,6 +249,7 @@ class PixelArray(object):
         if squareNo == highlight: return 2
         return not self.Empty(squareNo)
 
+    # - inserting all the "contains" info into an array that can be edited
     def ContainsArray(self, cast=bool):
         access = 0
         mapArray = [[]]
@@ -251,6 +261,7 @@ class PixelArray(object):
         # print("finished at {0}".format(i))
         return mapArray
 
+    # - inserting all the "contains" info into an array that can be edited
     def ContainsArrayPoints(self):
         access = 0
         mapArray = [[]]
@@ -319,14 +330,16 @@ class PixelArray(object):
 
 
 
+
+
     # - | finding the "best path" to
     # - | to follow in the writing algorithm,
     # - | writes all the path code and
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        Compression = 10 # overall tests, for the "sloppiness"
-        Leveler     = 3 # the expected overhead of moves required
+        Compression = 3 # overall tests, for the "sloppiness"
+        Leveler     = 2.5 # the expected overhead of moves required
                         # to finally get to the ending area of
                         # total control.
         ConsiderableSquares = self.ContainsArrayPoints()
@@ -345,18 +358,19 @@ class PixelArray(object):
         CoveredSquares = []
         AllCovered = False
 
+
         for i in range(OverallBrute):
 
             Choice = random.choice(ConsiderableSquares1d)
             DirectionSequence = [["O", Choice]] # the operations of movement dir's
             CoveredArea = [Choice] # the covered area through pathfinding
             Movement, CurrentPlace = "O", random.choice(ConsiderableSquares1d)
+            # print("origin square: {0}".format(CurrentPlace))
             if AllCovered: break
 
             for i in range(Brute):
                 # checking if all CoveredArea numbers makeup the entire length
                 # self.PrintSquareMap(highlight=CurrentPlace)
-
                 AllCovered = True
                 for ConsLoc in ConsiderableSquares1d:
                     if ConsLoc not in CoveredArea:
@@ -365,6 +379,8 @@ class PixelArray(object):
                 if AllCovered == True:
                     self.DirectionSequenceDone = True
                     self.DirectionSequence = DirectionSequence
+                    # print("finished in {0}".format(i))
+                    self.PrintSquareMap()
                     return DirectionSequence
                 else: self.DirectionSequenceDone = False
 
@@ -388,6 +404,7 @@ class PixelArray(object):
 
 
 
+
     # - | formating the self.DirectionSequence into
     # - | a fair format.
     def PathFormat(self):
@@ -405,14 +422,16 @@ class PixelArray(object):
             "BL": 225,
             "BR": 135}
         # print(self.DirectionSequence)
+        i = 0
         for DirectionSpace in self.DirectionSequence:
             Direction, SquareNo = DirectionSpace[0], DirectionSpace[1]
             Angle = AngleConvert[Direction]
             Bounds = self.SquareBounds(SquareNo, Direction)
             X, Y = self.SquareCentre(SquareNo)
-            print('[', X, ',', Y, ',', Angle, ",", Bounds, ']')
+            # if i!=0: print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', SquareNo, ',\'', Direction, '\'',  '],')
+            # print(Direction)
             # print(X, Y)
-
+            i += 1
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
@@ -447,6 +466,8 @@ PA.SortSquares()
 
 PA.Path()
 PA.PathFormat()
+PA.PathVisualize()
+# print(PA.SquareCentre(1))
 
 PA.SaveOG()
 
