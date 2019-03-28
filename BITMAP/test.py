@@ -31,7 +31,7 @@ ys = BitMap.size[1]
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
 
-by    = 4
+by = 8
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -270,28 +270,50 @@ class PixelArray(object):
     # - taking the square, and applying the direction sequence
     # - to where to apply each period
     def SquareBounds(self, squareNo, direction):
-        # Cached = self.PixelArrCache[]
-        # bounds = {
-        #        "down":  size[1],   # within bottom
-        #        "up":    0,           # within top
-        #        "right": size[0],  # within right
-        #        "left":  0          # within left
-        # }
-        # 1. taking the square, and getting the bounds
-        #    specifically for top, left, right and down
-        # 2.
-        # 1. taking the squareNo,
 
         squareNo = 3
         X = math.ceil((squareNo+1)/squaresx)
         Y = math.ceil((squareNo)%squaresx)+1
 
-        Right = xSplit * X
-        Down = ySplit * Y
-        print(Right, Down)
+        Right = xSplit * Y
+        Down = ySplit * X
+        Left = Right - xSplit
+        Up = Down - ySplit
+        if Left < 0: Left = 0
+        if Up < 0: Up = 0
 
-        pass
+        DirectionConvert = {
+            "O":   [0, 0, 0, 0],
+            "L":   [0, 0, Left, 0],
+            "D":   [0, Down, 0, 0],
+            "UR":  [Up, 0, 0, Right],
+            "UL":  [Up, 0, Left, 0],
+            "BL":  [0, Down, Left, 0],
+            "BR":  [0, Down, 0, Right],
+            "R":   [0, 0, 0, Right],
+            "U":   [Up, 0, 0, 0]}
 
+        return DirectionConvert[direction]
+
+    # - taking the square, and applying the direction sequence
+    # - to where to apply each period
+    def SquareCentre(self, squareNo):
+
+        X = math.ceil((squareNo+1)/squaresx)
+        Y = math.ceil((squareNo)%squaresx)+1
+
+        Right = xSplit * Y
+        Down = ySplit * X
+        Left = Right - xSplit
+        Up = Down - ySplit
+        if Left < 0: Left = 0
+        if Up < 0: Up = 0
+
+        Right -= round(xSplit/2)
+        Down  -= round(ySplit/2)
+        # print(squareNo, Right, Down)
+
+        return [Right, Down]
 
 
 
@@ -362,7 +384,7 @@ class PixelArray(object):
                         CoveredArea.append(Place)
                         CurrentPlace = Place
                         break
-                else: print("n.", end="")
+                else: print("n", end="")
 
 
 
@@ -372,7 +394,8 @@ class PixelArray(object):
         if self.DirectionSequenceDone == False:
             print("Path has not been established...")
             return False
-        SequenceConvert = {
+        AngleConvert = {
+            "O": -1,
             "U": 0,
             "D": 180,
             "L": 270,
@@ -381,8 +404,14 @@ class PixelArray(object):
             "UL": 315,
             "BL": 225,
             "BR": 135}
-
-        self.SquareBounds(1, "d")
+        # print(self.DirectionSequence)
+        for DirectionSpace in self.DirectionSequence:
+            Direction, SquareNo = DirectionSpace[0], DirectionSpace[1]
+            Angle = AngleConvert[Direction]
+            Bounds = self.SquareBounds(SquareNo, Direction)
+            X, Y = self.SquareCentre(SquareNo)
+            print('[', X, ',', Y, ',', Angle, ",", Bounds, ']')
+            # print(X, Y)
 
 
     # - iter functions to make it easier to iterate
@@ -418,6 +447,7 @@ PA.SortSquares()
 
 PA.Path()
 PA.PathFormat()
+
 PA.SaveOG()
 
 
