@@ -122,17 +122,17 @@ class PixelArray(object):
                     return cacheInformation
 
     def AllColourInSquare(self, squareNo, colour=[255, 255, 255]):
-        print(squareNo)
+        # print(squareNo)
         area = []
         for eachInfoBundle in self.PixelArrCache:
             for cacheInformation in eachInfoBundle:
                 if (cacheInformation != 0) and (squareNo == cacheInformation["square"]):
                     x, y = cacheInformation["insertX"], cacheInformation["insertY"]
                     # y, x
-                    print(self.OGPixelArray[y, x], colour)
+                    # print(self.OGPixelArray[y, x], colour)
                     if str(self.OGPixelArray[y, x]) == str(colour).replace(',', ''):
                         area.append(cacheInformation)
-        print(area)
+        # print(area)
         return area
 
 
@@ -428,7 +428,7 @@ class PixelArray(object):
             Angle = AngleConvert[Direction]
             Bounds = self.SquareBounds(SquareNo, Direction)
             X, Y = self.SquareCentre(SquareNo)
-            # if i!=0: print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', SquareNo, ',\'', Direction, '\'',  '],')
+            if i!=0: print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', SquareNo, ',\'', Direction, '\'',  '],')
             # print(Direction)
             # print(X, Y)
             i += 1
