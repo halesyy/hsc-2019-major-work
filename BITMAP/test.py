@@ -31,7 +31,7 @@ ys = BitMap.size[1]
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
 
-by = 8
+by = 4
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -339,7 +339,7 @@ class PixelArray(object):
     # - | into the further creation realm
     def Path(self):
         Compression = 3 # overall tests, for the "sloppiness"
-        Leveler     = 2.5 # the expected overhead of moves required
+        Leveler     = 2 # the expected overhead of moves required
                         # to finally get to the ending area of
                         # total control.
         ConsiderableSquares = self.ContainsArrayPoints()
@@ -361,16 +361,15 @@ class PixelArray(object):
 
         for i in range(OverallBrute):
 
-            Choice = random.choice(ConsiderableSquares1d)
-            DirectionSequence = [["O", Choice]] # the operations of movement dir's
-            CoveredArea = [Choice] # the covered area through pathfinding
             Movement, CurrentPlace = "O", random.choice(ConsiderableSquares1d)
-            # print("origin square: {0}".format(CurrentPlace))
+            DirectionSequence = [["O", CurrentPlace]] # the operations of movement dir's
+            CoveredArea = [CurrentPlace] # the covered area through pathfinding
+            # recording the direction and meta info
+            StepInformation, Original, LinearDirections = [], CurrentPlace, [CurrentPlace]
             if AllCovered: break
 
             for i in range(Brute):
                 # checking if all CoveredArea numbers makeup the entire length
-                # self.PrintSquareMap(highlight=CurrentPlace)
                 AllCovered = True
                 for ConsLoc in ConsiderableSquares1d:
                     if ConsLoc not in CoveredArea:
@@ -380,7 +379,9 @@ class PixelArray(object):
                     self.DirectionSequenceDone = True
                     self.DirectionSequence = DirectionSequence
                     # print("finished in {0}".format(i))
-                    self.PrintSquareMap()
+                    self.PrintSquareMap(highlight=Original)
+                    pp(LinearDirections)
+                    # pp(StepInformation)
                     return DirectionSequence
                 else: self.DirectionSequenceDone = False
 
@@ -398,11 +399,44 @@ class PixelArray(object):
                     if Place in ConsiderableSquares1d:
                         DirectionSequence.append([Movement, Place])
                         CoveredArea.append(Place)
+
+                        # print(Movement, Place)
+
+                        StepInformation.append({
+                            "before": CurrentPlace,
+                            "after": Place,
+                            "movements": Movements,
+                            "newPlace": Place,
+                            "beforePlace": CurrentPlace,
+                            "direction": Movement
+                        })
+
                         CurrentPlace = Place
+
+                        # placing into direction
+                        LinearDirections.append("{0}:{1}".format(Movement, Place))
                         break
+
+
                 else: print("n", end="")
 
-
+    # - takes squareNo and applies where it will be after
+    # - direction is applied
+    def DirectionApplySquareNo(self, SquareNo, Direction):
+        CurrentPlace = SquareNo
+        Movements = {
+            "O":   CurrentPlace,
+            "U":   CurrentPlace-squaresx,
+            "R":   (CurrentPlace+1)           if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+            "UR":  CurrentPlace-squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+            "UL":  CurrentPlace-squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
+            "BL":  CurrentPlace+squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
+            "BR":  CurrentPlace+squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+            "L":   CurrentPlace-1             if ((CurrentPlace)%squaresx!=0) else -1, #lc
+            "D":   CurrentPlace+squaresx
+        }
+        # print("from {0} in dir {1} makes {2}".format(SquareNo, Direction, Movements[Direction]))
+        return Movements[Direction]
 
 
     # - | formating the self.DirectionSequence into
@@ -421,17 +455,19 @@ class PixelArray(object):
             "UL": 315,
             "BL": 225,
             "BR": 135}
-        # print(self.DirectionSequence)
+        print(self.DirectionSequence)
         i = 0
         for DirectionSpace in self.DirectionSequence:
-            Direction, SquareNo = DirectionSpace[0], DirectionSpace[1]
-            Angle = AngleConvert[Direction]
-            Bounds = self.SquareBounds(SquareNo, Direction)
-            X, Y = self.SquareCentre(SquareNo)
-            if i!=0: print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', SquareNo, ',\'', Direction, '\'',  '],')
-            # print(Direction)
-            # print(X, Y)
-            i += 1
+            if i == 1:
+                Direction, SquareNo, PastDirection = DirectionSpace[0], DirectionSpace[1], self.DirectionSequence[i-1]
+                # THIS IS THE MOST IMPORTANT KEYWORD THAT IS IN THIS ENTIRE CODEBASE VVV
+                # we're going from PastDirection, to the SquareNo in Direction
+                Angle = AngleConvert[Direction]
+                Bounds = self.SquareBounds(self.DirectionApplySquareNo(SquareNo, Direction), Direction)
+                Bounds = self.SquareBounds(SquareNo, Direction)
+                X, Y = self.SquareCentre(SquareNo)
+                # print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', SquareNo, ',\'', Direction, '\'',  '],')
+                i += 1
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache

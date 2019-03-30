@@ -122,20 +122,27 @@ class Bodies:
 
         if boundby == "a": pass #all
         else:
-            for boundSet in boundby:
-                # each presents: ["up/down/left/right"] and a numeric val
-                # numeric value corresponds to where it has to be inside of
-                # for that section
-                # ["left", 4] means val has to break once reaching 4
-                direction = boundSet[0]
-                stoppingPoint = boundSet[1]
-                bounds[direction] = stoppingPoint
+            for boundDefiner in boundby:
+                if boundDefiner == 'left' or boundDefiner == 'up':
+                    bounds[boundDefiner] += boundby[boundDefiner]
+                elif boundDefiner == 'down' or boundDefiner == 'right':
+                    bounds[boundDefiner] -= boundby[boundDefiner]
 
-        # print(bounds)
-        # print("")
+            # for boundSet in boundby:
+            #     # each presents: ["up/down/left/right"] and a numeric val
+            #     # numeric value corresponds to where it has to be inside of
+            #     # for that section
+            #     # ["left", 4] means val has to break once reaching 4
+            #     direction = boundSet[0]
+            #     stoppingPoint = boundSet[1]
+            #     bounds[direction] = stoppingPoint
 
-        while (x < bounds["down"]) and (y > bounds["up"]) and (y < bounds["right"]) and (x > bounds["left"]):
-            # print("Going to draw!")
+
+        # RULES:
+        #
+        print(bounds)
+        while (x < bounds["right"]) and (y > bounds["up"]) and (y < bounds["down"]) and (x > bounds["left"]):
+            print("Going to draw! y={2}, x={0} < {1}".format(x, bounds["down"], y))
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
                 # y = y - 1 if y + 1 > 0 else y + 1
@@ -264,83 +271,42 @@ class Bodies:
 
 #// Image setup
 BG, Bodies, size = BG(), Bodies(), [64, 64]
-# im   = Image.open("../BITMAP/alphabet-bitmap-ds/a.jpg")
 im = Image.new("RGB", size=[64, 64])
+im   = Image.open("../BITMAP/alphabet-bitmap-ds/a.jpg")
 draw = ImageDraw.Draw(im)
 pd = 12
 
 Series = [
-    [ 20 , 44 , 180 , [0, 8, 0, 0] , 42 ,' D ' ],
-[ 20 , 36 , 0 , [0, 0, 0, 0] , 34 ,' U ' ],
-[ 12 , 44 , 225 , [0, 8, 24, 0] , 41 ,' BL ' ],
-[ 20 , 36 , 45 , [0, 0, 0, 32] , 34 ,' UR ' ],
-[ 12 , 44 , 225 , [0, 8, 24, 0] , 41 ,' BL ' ],
-[ 20 , 44 , 90 , [0, 0, 0, 32] , 42 ,' R ' ],
-[ 20 , 36 , 0 , [0, 0, 0, 0] , 34 ,' U ' ],
-[ 20 , 44 , 180 , [0, 8, 0, 0] , 42 ,' D ' ],
-[ 20 , 36 , 0 , [0, 0, 0, 0] , 34 ,' U ' ],
-[ 28 , 28 , 45 , [0, 0, 0, 32] , 27 ,' UR ' ],
-[ 28 , 20 , 0 , [0, 0, 0, 0] , 19 ,' U ' ],
-[ 20 , 28 , 225 , [0, 8, 24, 0] , 26 ,' BL ' ],
-[ 20 , 36 , 180 , [0, 8, 0, 0] , 34 ,' D ' ],
-[ 20 , 28 , 0 , [0, 0, 0, 0] , 26 ,' U ' ],
-[ 28 , 28 , 90 , [0, 0, 0, 32] , 27 ,' R ' ],
-[ 20 , 20 , 315 , [0, 0, 24, 0] , 18 ,' UL ' ],
-[ 28 , 12 , 45 , [0, 0, 0, 32] , 11 ,' UR ' ],
-[ 36 , 4 , 45 , [0, 0, 0, 32] , 4 ,' UR ' ],
-[ 28 , 4 , 270 , [0, 0, 24, 0] , 3 ,' L ' ],
-[ 36 , 12 , 135 , [0, 8, 0, 32] , 12 ,' BR ' ],
-[ 36 , 20 , 180 , [0, 8, 0, 0] , 20 ,' D ' ],
-[ 44 , 28 , 135 , [0, 8, 0, 32] , 29 ,' BR ' ],
-[ 44 , 20 , 0 , [0, 0, 0, 0] , 21 ,' U ' ],
-[ 44 , 28 , 180 , [0, 8, 0, 0] , 29 ,' D ' ],
-[ 44 , 36 , 180 , [0, 8, 0, 0] , 37 ,' D ' ],
-[ 44 , 44 , 180 , [0, 8, 0, 0] , 45 ,' D ' ],
-[ 44 , 36 , 0 , [0, 0, 0, 0] , 37 ,' U ' ],
-[ 44 , 44 , 180 , [0, 8, 0, 0] , 45 ,' D ' ],
-[ 44 , 36 , 0 , [0, 0, 0, 0] , 37 ,' U ' ],
-[ 36 , 36 , 270 , [0, 0, 24, 0] , 36 ,' L ' ],
-[ 44 , 44 , 135 , [0, 8, 0, 32] , 45 ,' BR ' ],
-[ 52 , 44 , 90 , [0, 0, 0, 32] , 46 ,' R ' ],
-[ 44 , 44 , 270 , [0, 0, 24, 0] , 45 ,' L ' ],
-[ 36 , 36 , 315 , [0, 0, 24, 0] , 36 ,' UL ' ],
-[ 36 , 28 , 0 , [0, 0, 0, 0] , 28 ,' U ' ],
-[ 36 , 36 , 180 , [0, 8, 0, 0] , 36 ,' D ' ],
-[ 44 , 36 , 90 , [0, 0, 0, 32] , 37 ,' R ' ],
-[ 36 , 28 , 315 , [0, 0, 24, 0] , 28 ,' UL ' ]
+    [ 40 , 8 , -1 , [0, 0, 0, 0] , 2 ,' O ' ],
+    [ 24 , 24 , 225 , [0, 16, 48, 0] , 5 ,' BL ' ],
+    [ 24 , 8 , 0 , [0, 0, 0, 0] , 1 ,' U ' ],
+    [ 24 , 24 , 180 , [0, 16, 0, 0] , 5 ,' D ' ],
+    [ 24 , 40 , 180 , [0, 16, 0, 0] , 9 ,' D ' ],
+    [ 24 , 24 , 0 , [0, 0, 0, 0] , 5 ,' U ' ],
+    [ 40 , 24 , 90 , [0, 0, 0, 64] , 6 ,' R ' ],
+    [ 56 , 40 , 135 , [0, 16, 0, 64] , 11 ,' BR ' ],
+    [ 40 , 40 , 270 , [0, 0, 48, 0] , 10 ,' L ' ],
+    [ 40 , 24 , 0 , [0, 0, 0, 0] , 6 ,' U ' ],
+    [ 56 , 40 , 135 , [0, 16, 0, 64] , 11 ,' BR ' ],
+    [ 40 , 24 , 315 , [0, 0, 48, 0] , 6 ,' UL ' ],
+    [ 24 , 40 , 225 , [0, 16, 48, 0] , 9 ,' BL ' ],
+    [ 8 , 40 , 270 , [0, 0, 48, 0] , 8 ,' L ' ],
+    [ 8 , 56 , 180 , [0, 16, 0, 0] , 12 ,' D ' ]
 ]
 for S in Series:
     X, Y, Angle, Direction, SN, Dir = S
     Bounds = {
-        "up": Direction[0],
-        "down": Direction[1],
-        "left": Direction[2],
+        "up":    Direction[0],
+        "down":  Direction[1],
+        "left":  Direction[2],
         "right": Direction[3]
     }
+    # Bounds = [["up"], ["down"], ["left"], ["right"]]
+    print(SN)
+    print(Bounds)
     Bodies.brush([X, Y], angle=Angle, power="high", boundby=Bounds, colour='#c21f1f')
-    # Bodies.brush([Y, X], angle=Angle, power="superhigh", boundby=Bounds, colour='#c21f1f')
 
-
-# Bodies.tspurt(xy=[63, 63], power="high", padding=pd)
-# Bodies.tspurt(xy=[20, 80], power="high", padding=pd)
-
-# for x in range(15):
-#     xp = random.randint(0, 128)
-    # Bodies.tspurt(xy=[xp, 0], power="high", padding=pd)
-
-# for x in range(15):
-#     xp = random.randint(0, 128)
-    # Bodies.tspurt(xy=[xp, 128], power="high", padding=pd)
-
-# for y in range(15):
-#     yp = random.randint(0, 128)
-    # Bodies.tspurt(xy=[0, yp], power="high", padding=pd)
-
-# for y in range(15):
-#     yp = random.randint(0, 128)
-#     Bodies.tspurt(xy=[128, yp], power="high", padding=pd)
 
 im.save("op-af.png")
 im.save("op-af.jpeg")
 im.save("op-af.jpg")
-# im.save("op-af.jpg")
