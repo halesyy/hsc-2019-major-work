@@ -19,7 +19,8 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-BitMap = Image.open("alphabet-bitmap-ds/a.jpg")
+BitMap = Image.open("alphabet-bitmap-ds/painting1.jpg")
+# BitMap = Image.open("alphabet-bitmap-ds/painting1.jpg")
 PixelArr = np.array(BitMap)
 
 xs = BitMap.size[0]
@@ -31,7 +32,7 @@ ys = BitMap.size[1]
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
 
-by = 4
+by = 30
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -282,7 +283,6 @@ class PixelArray(object):
     # - to where to apply each period
     def SquareBounds(self, squareNo, direction):
 
-        squareNo = 3
         X = math.ceil((squareNo+1)/squaresx)
         Y = math.ceil((squareNo)%squaresx)+1
 
@@ -338,8 +338,8 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        Compression = 3 # overall tests, for the "sloppiness"
-        Leveler     = 2 # the expected overhead of moves required
+        Compression = 5 # overall tests, for the "sloppiness"
+        Leveler     = 50 # the expected overhead of moves required
                         # to finally get to the ending area of
                         # total control.
         ConsiderableSquares = self.ContainsArrayPoints()
@@ -380,7 +380,8 @@ class PixelArray(object):
                     self.DirectionSequence = DirectionSequence
                     # print("finished in {0}".format(i))
                     self.PrintSquareMap(highlight=Original)
-                    pp(LinearDirections)
+                    print("\n\n")
+                    # pp(LinearDirections)
                     # pp(StepInformation)
                     return DirectionSequence
                 else: self.DirectionSequenceDone = False
@@ -455,19 +456,23 @@ class PixelArray(object):
             "UL": 315,
             "BL": 225,
             "BR": 135}
-        print(self.DirectionSequence)
+        # print(self.DirectionSequence)
         i = 0
         for DirectionSpace in self.DirectionSequence:
-            if i == 1:
+            if i >= 1:
                 Direction, SquareNo, PastDirection = DirectionSpace[0], DirectionSpace[1], self.DirectionSequence[i-1]
                 # THIS IS THE MOST IMPORTANT KEYWORD THAT IS IN THIS ENTIRE CODEBASE VVV
                 # we're going from PastDirection, to the SquareNo in Direction
+                OldSquareNo = PastDirection[1]
+                # OldSquareNo -> SquareNo, by Direction
+                # print(OldSquareNo, '->', SquareNo, 'by', Direction)
+
                 Angle = AngleConvert[Direction]
-                Bounds = self.SquareBounds(self.DirectionApplySquareNo(SquareNo, Direction), Direction)
+                # Bounds = self.SquareBounds(self.DirectionApplySquareNo(SquareNo, Direction), Direction)
                 Bounds = self.SquareBounds(SquareNo, Direction)
-                X, Y = self.SquareCentre(SquareNo)
-                # print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', SquareNo, ',\'', Direction, '\'',  '],')
-                i += 1
+                X, Y = self.SquareCentre(OldSquareNo)
+                print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', OldSquareNo, ',\'', Direction, '\'',  ']', end=", ")
+            i += 1
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
