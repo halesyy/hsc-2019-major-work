@@ -280,7 +280,7 @@ class Bodies:
 #// Image setup
 BG, Bodies = BG(), Bodies()
 # im = Image.new("RGB", size=[300, 300])
-im = Image.open("../BITMAP/alphabet-bitmap-ds/a.jpg")
+im = Image.open("../BITMAP/alphabet-bitmap-ds/c.jpg")
 xs, ys = im.size[0], im.size[1]
 size = [xs, ys]
 draw = ImageDraw.Draw(im)
