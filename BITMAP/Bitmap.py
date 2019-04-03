@@ -4,27 +4,26 @@
 #// black-background image that contains a prominent set of colours
 #// that are significant in meaning.
 
-
 import time, random, math
 import numpy as np
 from PIL import Image, ImageDraw
 import pprint as pprint
+import os, sys
+
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
-import os
-os.system("cls")
+os.system("clear")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-BitMap = Image.open("alphabet-bitmap-ds/painting1.jpg")
-# BitMap = Image.open("alphabet-bitmap-ds/painting1.jpg")
-PixelArr = np.array(BitMap)
+# BitMap = Image.open("../BITMAP/alphabet-bitmap-ds/selfie.jpg")
+# PixelArr = np.array(BitMap)
 
-xs = BitMap.size[0]
-ys = BitMap.size[1]
+# xs = BitMap.size[0]
+# ys = BitMap.size[1]
 
 #// Manual Colour-coding array
 #// To be in JSON file one day
@@ -32,18 +31,15 @@ ys = BitMap.size[1]
 #// Requirement splitting for Vision rules
 #// % value, 0.25 = 25% means splitting into 4 parts x 4 parts
 
-by = 30
+# Meta retention-data,
+# not defined by the type of image,
+# but the self-manipulation.
+by = 5
 split = 1 / by
-squares  = int(1 / split)
+squares = int(1 / split)
 squaresx = squares
 totalSquares = int(squares*squares)
-squarePixels = (xs*ys)/squares
-
-xSplit = int((xs) / (1 / split))
-ySplit = int((ys) / (1 / split))
-
-
-
+xs, ys = 0, 0
 
 class PixelArray(object):
     # - dynamically set variables
@@ -51,18 +47,28 @@ class PixelArray(object):
     # OGPixelArray is a numpy array
 
     def __init__(self, PA):
+        # cp-string for data collection and retention
+        global xs, ys, xSplit, ySplit, squarePixels, totalSquares, squaresx, squares, split, by
+
         self.OGPixelArray = PA
-        self.BitMap = []
+        self.BitMap = Image.fromarray(PA)
+        xs, ys = self.BitMap.size[0], self.BitMap.size[1]
+
+        squarePixels = (xs*ys)/squares
+        xSplit = int((xs) / (1 / split))
+        ySplit = int((ys) / (1 / split))
+
         self.Squares = []
         # - convert the "pixel array" location
-        # into the square information and insert
-        # seq
+        #   into the square information and insert
+        #   seq
         self.PixelArrCache = np.zeros(shape=(squares*xSplit*xSplit+1, squares*ySplit*ySplit+1), dtype=list)
 
     # | Quick anti-alias removal, black & white ONLY,
     # | lesser is reduced to black, and higher is
     # | ceiling'd to white
     def AARemove(self):
+        global xs, ys, xSplit, ySplit, squarePixels, totalSquares, squaresx, squares, split, by
         PixelArr = self.OGPixelArray
         for i in range(0, xs):
             for b in range(0, ys):
@@ -339,7 +345,7 @@ class PixelArray(object):
     # - | into the further creation realm
     def Path(self):
         Compression = 5 # overall tests, for the "sloppiness"
-        Leveler     = 50 # the expected overhead of moves required
+        Leveler     = 1.8 # the expected overhead of moves required
                         # to finally get to the ending area of
                         # total control.
         ConsiderableSquares = self.ContainsArrayPoints()
@@ -419,7 +425,7 @@ class PixelArray(object):
                         break
 
 
-                else: print("n", end="")
+                else: print("n")
 
     # - takes squareNo and applies where it will be after
     # - direction is applied
@@ -458,6 +464,7 @@ class PixelArray(object):
             "BR": 135}
         # print(self.DirectionSequence)
         i = 0
+        Series = []
         for DirectionSpace in self.DirectionSequence:
             if i >= 1:
                 Direction, SquareNo, PastDirection = DirectionSpace[0], DirectionSpace[1], self.DirectionSequence[i-1]
@@ -471,8 +478,10 @@ class PixelArray(object):
                 # Bounds = self.SquareBounds(self.DirectionApplySquareNo(SquareNo, Direction), Direction)
                 Bounds = self.SquareBounds(SquareNo, Direction)
                 X, Y = self.SquareCentre(OldSquareNo)
-                print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', OldSquareNo, ',\'', Direction, '\'',  ']', end=", ")
+                # print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', OldSquareNo, ',\'', Direction, '\'',  ']', end=", ")
+                Series.append([X, Y, Angle, Bounds, OldSquareNo, Direction])
             i += 1
+        return Series
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
@@ -501,16 +510,16 @@ class PixelArray(object):
 
 
 
-PA=PixelArray(PixelArr)
-PA.AARemove()
-PA.SortSquares()
-
-PA.Path()
-PA.PathFormat()
-PA.PathVisualize()
-# print(PA.SquareCentre(1))
-
-PA.SaveOG()
+# PA=PixelArray(PixelArr)
+# PA.AARemove()
+# PA.SortSquares()
+#
+# PA.Path()
+# PA.PathFormat()
+# PA.PathVisualize()
+# # print(PA.SquareCentre(1))
+#
+# PA.SaveOG()
 
 
 
