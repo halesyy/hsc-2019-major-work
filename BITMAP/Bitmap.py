@@ -34,7 +34,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-by = 5
+by = 8
 split = 1 / by
 squares = int(1 / split)
 squaresx = squares
