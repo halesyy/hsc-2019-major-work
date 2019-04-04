@@ -34,7 +34,8 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-by = 8
+Complexity = 0
+by = 16
 split = 1 / by
 squares = int(1 / split)
 squaresx = squares
@@ -344,10 +345,18 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
+        # 16 -> 3
+        # 08 -> 1.2
+        #
+
         Compression = 5 # overall tests, for the "sloppiness"
-        Leveler     = 1.8 # the expected overhead of moves required
+        Leveler     = 3 # the expected overhead of moves required
                         # to finally get to the ending area of
                         # total control.
+        Leveler     = (by/8)*(1.8+Complexity) if by >= 8 else 3
+        # leveler-specific itemic values
+        if by == 8: Leveler = 1.5
+
         ConsiderableSquares = self.ContainsArrayPoints()
         ConsiderableSquares1d = [] # - a flat array
         for cs in ConsiderableSquares:

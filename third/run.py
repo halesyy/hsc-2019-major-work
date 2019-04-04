@@ -117,7 +117,7 @@ class Bodies:
         # print("tl: {0}, {1}".format(x, y))
         iterations = 0
         total_weight = sum(weights)
-        predefinedColour = colour
+        # predefinedColour = colour
 
         bounds = {
             "down":  size[1],   # within bottom
@@ -134,21 +134,11 @@ class Bodies:
                 elif boundDefiner == 'down' or boundDefiner == 'right':
                     bounds[boundDefiner] -= boundby[boundDefiner]
 
-            # for boundSet in boundby:
-            #     # each presents: ["up/down/left/right"] and a numeric val
-            #     # numeric value corresponds to where it has to be inside of
-            #     # for that section
-            #     # ["left", 4] means val has to break once reaching 4
-            #     direction = boundSet[0]
-            #     stoppingPoint = boundSet[1]
-            #     bounds[direction] = stoppingPoint
-
-
         # RULES:
-        #
-        print(bounds)
+        c = ComRandom() if colour == "random" else colour
         while (x < bounds["right"]) and (y > bounds["up"]) and (y < bounds["down"]) and (x > bounds["left"]):
-            print("Going to draw! y={2}, x={0} < {1}".format(x, bounds["down"], y))
+            # print("Going to draw! y={2}, x={0} < {1}".format(x, bounds["down"], y))
+
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
                 # y = y - 1 if y + 1 > 0 else y + 1
@@ -163,7 +153,7 @@ class Bodies:
                 x = x + 1
 
             # print("at {0},{1} drawing".format(x, y))
-            self.ColourPixelAt(x=x, y=y, width=1, colour=predefinedColour)
+            self.ColourPixelAt(x=x, y=y, width=1, colour=c)
             iterations = iterations + 1
             if iterations % 500000 == 0:
                 Progress()
@@ -234,14 +224,14 @@ class Bodies:
 
     # Brush stroke, simple
     def brush(self, xy, angle, power="soft", boundby="a", colour='random', getfromlast=False):
-        # print(xy)
-        # print(boundby)
         powersets = {
             "low": 0.7,
             "medium": 4,
             "high": 1*(10000),
             "superhigh": 10000*10000
         }
+
+
         while angle >= 360: angle -= 360
         base, amplify = 1, powersets[power]
         up, right, down, left = base, base, base, base
@@ -261,15 +251,14 @@ class Bodies:
         setup[selectorAssistant] = round(base*(SecondaryAngler*amplify)+base, 2)
 
         # - re-packing setup for general form
-
         setup = [setup[0], setup[2], setup[3], setup[1]]
         self.TrackingLine(setup, xy, boundby=boundby, colour=colour, getfromlast=getfromlast)
 
     def tspurt(self, xy, colour="random", padding=10, power="medium"):
         ur, s = True, 5
-        c  = colour if colour != "random" else ComRandom()
+        c = RandomColour() if colour == "random" else colour
         for deg in range(0, 360, 9):
-            # c = colour if colour != "random" else ComRandom()
+            print(c)
             self.brush(xy=xy, angle=deg, power=power, boundby=[
                 ["left",  xy[0]-padding+(random.randint(1, 5*s)*ur)],
                 ["right", xy[1]+padding+(random.randint(1, 5*s)*ur)],
@@ -279,8 +268,13 @@ class Bodies:
 
 #// Image setup
 BG, Bodies = BG(), Bodies()
-# im = Image.new("RGB", size=[300, 300])
-im = Image.open("../BITMAP/alphabet-bitmap-ds/c.jpg")
+im = Image.open("../BITMAP/alphabet-bitmap-ds/f.jpg")
+# To be safe, converting the >im< variable into
+# something universally accessible. FFM availability.
+# rs = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
+# rs.paste(im, im)
+# im = rs
+# Sizing manipulation.
 xs, ys = im.size[0], im.size[1]
 size = [xs, ys]
 draw = ImageDraw.Draw(im)
@@ -297,11 +291,6 @@ PA.SortSquares()
 PA.PrintSquareMap()
 PA.Path()
 Series = PA.PathFormat()
-# print(Series)
-
-# print(np.array(im))
-# PA.AARemove()
-# PA.Save()
 
 #   O < < (YEET ON THIS CODE)
 # \_|_/   (-----------------)
@@ -320,9 +309,9 @@ if len(Series) > 0:
             "right": Direction[3]}
         print(SN, Bounds)
         Bodies.brush([X, Y], angle=Angle,
-            power="medium",
+            power="high",
             boundby=Bounds,
-            colour='#2b80ff',
+            colour="random",
             getfromlast=(False if z == 0 else True))
         z += 1
 
