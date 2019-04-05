@@ -34,8 +34,8 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity = 0
-by = 16
+Complexity = 10
+by = 25
 split = 1 / by
 squares = int(1 / split)
 squaresx = squares
@@ -140,7 +140,6 @@ class PixelArray(object):
                     # print(self.OGPixelArray[y, x], colour)
                     if str(self.OGPixelArray[y, x]) == str(colour).replace(',', ''):
                         area.append(cacheInformation)
-        # print(area)
         return area
 
 
@@ -164,6 +163,25 @@ class PixelArray(object):
 
     def SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
         self.Change(src="Squares", xy=[x, y], squareno=s, to=to)
+
+
+
+    def TrimFromSplitter(self, NewBy):
+        OldSquares = self.Squares
+        OldBy = by
+        by = NewBy
+
+        # new default
+        split = 1 / by
+        squares = int(1 / split)
+        self.SortSquares()
+
+        by = OldBy
+
+        # old default
+        self.Squares = OldSquares
+        by = NewBy
+
 
 
     def Start_RandomLineBetweenFilledSquares(self, first, second):
@@ -355,7 +373,7 @@ class PixelArray(object):
                         # total control.
         Leveler     = (by/8)*(1.8+Complexity) if by >= 8 else 3
         # leveler-specific itemic values
-        if by == 8: Leveler = 1.5
+        # if by == 8: Leveler = 1.5
 
         ConsiderableSquares = self.ContainsArrayPoints()
         ConsiderableSquares1d = [] # - a flat array

@@ -137,7 +137,7 @@ class Bodies:
         # RULES:
         c = ComRandom() if colour == "random" else colour
         while (x < bounds["right"]) and (y > bounds["up"]) and (y < bounds["down"]) and (x > bounds["left"]):
-            # print("Going to draw! y={2}, x={0} < {1}".format(x, bounds["down"], y))
+            # c = ComRandom() if colour == "random" else colour
 
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
@@ -268,10 +268,11 @@ class Bodies:
 
 #// Image setup
 BG, Bodies = BG(), Bodies()
-im = Image.open("../BITMAP/alphabet-bitmap-ds/f.jpg")
+im = Image.open("../BITMAP/alphabet-bitmap-ds/selfie.jpg")
 # To be safe, converting the >im< variable into
 # something universally accessible. FFM availability.
-# rs = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
+rs   = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
+imBB = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
 # rs.paste(im, im)
 # im = rs
 # Sizing manipulation.
@@ -300,6 +301,7 @@ Series = PA.PathFormat()
 
 if len(Series) > 0:
     z = 0
+    draw = ImageDraw.Draw(imBB)
     for S in Series:
         X, Y, Angle, Direction, SN, Dir = S
         Bounds = {
@@ -309,12 +311,13 @@ if len(Series) > 0:
             "right": Direction[3]}
         print(SN, Bounds)
         Bodies.brush([X, Y], angle=Angle,
-            power="high",
+            power="medium",
             boundby=Bounds,
             colour="random",
             getfromlast=(False if z == 0 else True))
         z += 1
 
 im.save("op-af.png")
-im.save("op-af.jpeg")
-im.save("op-af.jpg")
+imBB.save("op-bb.png")
+# im.save("op-af.jpeg")
+# im.save("op-af.jpg")
