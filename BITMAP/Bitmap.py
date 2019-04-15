@@ -12,18 +12,12 @@ import os, sys
 
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
-os.system("clear")
+os.system("cls")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
-
-# BitMap = Image.open("../BITMAP/alphabet-bitmap-ds/selfie.jpg")
-# PixelArr = np.array(BitMap)
-
-# xs = BitMap.size[0]
-# ys = BitMap.size[1]
 
 #// Manual Colour-coding array
 #// To be in JSON file one day
@@ -34,8 +28,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity = 10
-by = 25
+Complexity, by = 0, 8
 split = 1 / by
 squares = int(1 / split)
 squaresx = squares
@@ -79,6 +72,7 @@ class PixelArray(object):
 
     def SortSquares(self):
         PixelArr = self.OGPixelArray
+        print("from ss: ", str(squares), )
         Squares = [None for f in range(0, squares*squares)]
         startX, startY, iteration = 0, 0, 0
         for i in range(0, int(squares*squares)):
@@ -129,6 +123,7 @@ class PixelArray(object):
                 if (cacheInformation != 0) and (SquareNo == cacheInformation["square"]) and (Coords[0] == cacheInformation["squareLocX"]) and (Coords[1] == cacheInformation["squareLocY"]):
                     return cacheInformation
 
+    # | Return the colours in the square number
     def AllColourInSquare(self, squareNo, colour=[255, 255, 255]):
         # print(squareNo)
         area = []
@@ -166,21 +161,40 @@ class PixelArray(object):
 
 
 
-    def TrimFromSplitter(self, NewBy):
-        OldSquares = self.Squares
-        OldBy = by
-        by = NewBy
 
-        # new default
+
+
+
+    def Trim(self, NewBy):
+        global by, split, squares, totalSquares, xs, ys, xSplit, ySplit
+        OldSquares, OldBy = self.Squares, by
+
+        # NEW, FOR SPLIT TRIMMING
+        by = NewBy
         split = 1 / by
-        squares = int(1 / split)
+        squares, squaresx = int(1 / split), int(1 / split)
+        totalSquares = int(squares*squares)
+        xSplit = int((xs) / (1 / split))
+        ySplit = int((ys) / (1 / split))
         self.SortSquares()
 
-        by = OldBy
+        for k, sqr in enumerate(self.Squares):
+            #SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
+            if not self.Empty(k):
+                self.SQCHange(s=k, x=0, y=0, to=[0, 0, 0])
 
-        # old default
+        # OLD, GOING BACK TO OLD DATA
+        by = OldBy
+        split = 1 / by
+        squares, squaresx = int(1 / split), int(1 / split)
+        totalSquares = int(squares*squares)
+        xSplit = int((xs) / (1 / split))
+        ySplit = int((ys) / (1 / split))
         self.Squares = OldSquares
-        by = NewBy
+        self.SortSquares()
+
+
+
 
 
 
@@ -347,7 +361,7 @@ class PixelArray(object):
 
         Right -= round(xSplit/2)
         Down  -= round(ySplit/2)
-        # print(squareNo, Right, Down)
+        print("centre position: ", squareNo, Right, Down)
 
         return [Right, Down]
 
@@ -454,6 +468,9 @@ class PixelArray(object):
 
                 else: print("n")
 
+
+
+
     # - takes squareNo and applies where it will be after
     # - direction is applied
     def DirectionApplySquareNo(self, SquareNo, Direction):
@@ -471,6 +488,10 @@ class PixelArray(object):
         }
         # print("from {0} in dir {1} makes {2}".format(SquareNo, Direction, Movements[Direction]))
         return Movements[Direction]
+
+
+
+
 
 
     # - | formating the self.DirectionSequence into
@@ -510,6 +531,11 @@ class PixelArray(object):
             i += 1
         return Series
 
+
+
+
+
+
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
     # | - information series.
@@ -533,42 +559,3 @@ class PixelArray(object):
         BitMap = self.BitMap
         self.OGPixelArray = np.array(BitMap)
         if removeAA: self.AARemove()
-
-
-
-
-# PA=PixelArray(PixelArr)
-# PA.AARemove()
-# PA.SortSquares()
-#
-# PA.Path()
-# PA.PathFormat()
-# PA.PathVisualize()
-# # print(PA.SquareCentre(1))
-#
-# PA.SaveOG()
-
-
-
-
-
-
-# | Quick square is-empty clause, checking
-# | if data in the square is totally black,
-# | if so, return 1, else return 0.
-
-
-
-
-
-
-
-
-def gradient_check(xy1, xy2):
-    # getting the slope from xy1 to xy2, essentially to get the positioning
-    # and get a valuemeter for it
-    # if xy2 is to the LEFT of  xy1, then they are going left
-    # if xy2 is to the UNDER of xy1, then they are going down
-    # see the pattern? xy1 is the initial, and xy2 helps give
-    # reference.
-    pass

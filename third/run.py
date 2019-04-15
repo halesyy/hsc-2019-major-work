@@ -20,7 +20,7 @@ def Complementary(hex):
     hexp = textwrap.wrap(hex, 2)
     for i, h in enumerate(hexp):
         hexp[i] = 255-int("0x{0}".format(h), 0)
-    print(hexp)
+    # print(hexp)
     for i, h in enumerate(hexp):
         # print(i, h)
         # print(int(h))
@@ -110,9 +110,10 @@ class Bodies:
         if xy == False: x, y = random.randint(0, size[0]), 1
         else: x, y = xy[0], xy[1]
 
-        # if getfromlast == True:
-        #     x, y = lastxy[0], lastxy[1]
-        #     print("Getting from last")
+        # print(getfromlast)
+        if getfromlast == True:
+            x, y = lastxy[0], lastxy[1]
+            # print("Getting from last")
 
         # print("tl: {0}, {1}".format(x, y))
         iterations = 0
@@ -268,7 +269,7 @@ class Bodies:
 
 #// Image setup
 BG, Bodies = BG(), Bodies()
-im = Image.open("../BITMAP/alphabet-bitmap-ds/selfie.jpg")
+im = Image.open("../BITMAP/alphabet-bitmap-ds/b.jpg")
 # To be safe, converting the >im< variable into
 # something universally accessible. FFM availability.
 rs   = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
@@ -302,6 +303,7 @@ Series = PA.PathFormat()
 if len(Series) > 0:
     z = 0
     draw = ImageDraw.Draw(imBB)
+
     for S in Series:
         X, Y, Angle, Direction, SN, Dir = S
         Bounds = {
@@ -309,13 +311,17 @@ if len(Series) > 0:
             "down":  Direction[1],
             "left":  Direction[2],
             "right": Direction[3]}
-        print(SN, Bounds)
+
+        # print((False if z == 0 else True))
         Bodies.brush([X, Y], angle=Angle,
             power="medium",
             boundby=Bounds,
             colour="random",
             getfromlast=(False if z == 0 else True))
+
         z += 1
+
+PA.Trim(32)
 
 im.save("op-af.png")
 imBB.save("op-bb.png")
