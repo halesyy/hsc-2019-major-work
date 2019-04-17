@@ -19,7 +19,7 @@ This objective entails:
 
 This is more formally referred in four principles: **Breaking, segmenting, reunifying, perfecting**
 
-Before this can be worked on, some technical breakthroughs need to be completed:
+#### Technical goals required breakthroughs before objectives can be initiated and completed
 
 * ~~Coming up with a "BitMap" schema that can be universally applied~~
 * ~~Creating a drawing tool that can run from angles, and draw in a "computer-derived runner" with nifty tricks~~
