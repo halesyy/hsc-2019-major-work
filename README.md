@@ -24,5 +24,5 @@ Before this can be worked on, some technical breakthroughs need to be completed:
 * ~~Coming up with a "BitMap" schema that can be universally applied~~
 * ~~Creating a drawing tool that can run from angles, and draw in a "computer-derived runner" with nifty tricks~~
 * ~~Creating a square-based BitMap accessor with meta-programming functions to help analyse the segments~~
-* ~~Coming up with a solution to the "travelling salesman" problem, allowing the computer to solve a pilgrim-like puzzle to navigate the bitmap segment to fill in the shape from the broken segment ~~
+* ~~Coming up with a solution to the "travelling salesman" problem, allowing the computer to solve a pilgrim-like puzzle to navigate the bitmap segment to fill in the shape from the broken segment~~
 * Creating a parent integration family of functional algorithms to canvas an a segment onto a wholesome to-be appropriation
