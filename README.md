@@ -12,17 +12,17 @@ Technically from a development standpoint, I am working on Agile development on 
 
 This objective entails:
 
-[O] Breaking down the original artwork to be appropriated, "The Mona Lisa"
-[O] Segmenting the artwork into "bitmap-acceptable" formats, for the `/bitmap` to parse and paint over, and potentially trim
-[O] Re-joining the individual segments into the new, appropriated form and combining all the segments into one, the "reunification"
-[O] Final touches
+* Breaking down the original artwork to be appropriated, "The Mona Lisa"
+* Segmenting the artwork into "bitmap-acceptable" formats, for the `/bitmap` to parse and paint over, and potentially trim
+* Re-joining the individual segments into the new, appropriated form and combining all the segments into one, the "reunification"
+* Final touches
 
 This is more formally referred in four principles: **Breaking, segmenting, reunifying, perfecting**
 
 Before this can be worked on, some technical breakthroughs need to be completed:
 
-[X] Coming up with a "BitMap" schema that can be universally applied
-[X] Creating a drawing tool that can run from angles, and draw in a "computer-derived runner" with nifty tricks
-[X] Creating a square-based BitMap accessor with meta-programming functions to help analyse the segments
-[X] Coming up with a solution to the "travelling salesman" problem, allowing the computer to solve a pilgrim-like puzzle to navigate the bitmap segment to fill in the shape from the broken segment 
-[O] Creating a parent integration family of functional algorithms to canvas an a segment onto a wholesome to-be appropriation
+* ~~Coming up with a "BitMap" schema that can be universally applied~~
+* ~~Creating a drawing tool that can run from angles, and draw in a "computer-derived runner" with nifty tricks~~
+* ~~Creating a square-based BitMap accessor with meta-programming functions to help analyse the segments~~
+* ~~Coming up with a solution to the "travelling salesman" problem, allowing the computer to solve a pilgrim-like puzzle to navigate the bitmap segment to fill in the shape from the broken segment ~~
+* Creating a parent integration family of functional algorithms to canvas an a segment onto a wholesome to-be appropriation
