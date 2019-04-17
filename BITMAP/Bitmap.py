@@ -28,7 +28,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity, by = 0, 8
+Complexity, by = 0, 16
 split = 1 / by
 squares = int(1 / split)
 squaresx = squares
@@ -154,7 +154,7 @@ class PixelArray(object):
         if src == "Squares":
             SquareNo = squareno
             EditInfo = self.Square2PAEditor(SquareNo, [x, y])
-            self.OGPixelArray[EditInfo[1], EditInfo[0]] = to
+            self.OGPixelArray[EditInfo[0], EditInfo[1]] = to
 
     def SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
         self.Change(src="Squares", xy=[x, y], squareno=s, to=to)
@@ -165,7 +165,7 @@ class PixelArray(object):
 
 
 
-    def Trim(self, NewBy):
+    def Trim(self, NewBy, to=[0, 0, 0]):
         global by, split, squares, totalSquares, xs, ys, xSplit, ySplit
         OldSquares, OldBy = self.Squares, by
 
@@ -180,8 +180,9 @@ class PixelArray(object):
 
         for k, sqr in enumerate(self.Squares):
             #SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
+            print(k, " empty check in trim: ", self.Empty(k))
             if not self.Empty(k):
-                self.SQCHange(s=k, x=0, y=0, to=[0, 0, 0])
+                self.SQCHange(s=k, x=0, y=0, to=to)
 
         # OLD, GOING BACK TO OLD DATA
         by = OldBy
