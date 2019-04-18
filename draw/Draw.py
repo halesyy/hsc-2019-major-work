@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw
 import random, time, math, textwrap, sys, os
+import numpy as np
 
 class Colour:
 
@@ -34,23 +35,15 @@ class Colour:
         return "{0}{1}".format("#", "".join(hexp))
 
     """Manager for comp colours, in terms of getting first, second, and flushing variables"""
-    def Complementary(reset=True):
+    def Complementary(self, reset=True):
         # - colour imparting
         if self.colour2 != None and reset: self.colour1, self.colour2 = None, None
-        if self.colour1 == None: self.colour1 = RandomColour()
+        if self.colour1 == None: self.colour1 = self.Random()
         else: self.colour2 = Complementary(self.colour1)
         # conditionally returning colour1 or 2
-        return self.colour1 if self.colour2 == None else return self.colour2
+        return self.colour1 if self.colour2 == None else self.colour2
 
-class Manager:
 
-    """Outputting into the ./development_progress folder in order for a working product"""
-    def Progress(self, optionalOutput=False):
-        global current_progress
-        filename = "development_progress/PROGRESS_{0}.jpg".format(current_progress)
-        im.save(filename)
-        print("-- sp -- :: {0}".format(optional_output))
-        current_progress = current_progress + 1
 
 
 """
@@ -102,27 +95,26 @@ class Bodies:
                     secndNode = nodeStorage[b]
                     draw.line([(firstNode[0], firstNode[1]), (secndNode[0], secndNode[1])], RandomColour(), random.randint(4,7))
 
-    #// Purpose of funtion is to track itself randomly and create a completely random
-    #// set of lines.
-    #// down_weight is a value which is then divided by 10000 to get the addition
-    #// to creating the excess that the down movement is given leverage to, meaning
-    #// 100 means it is 1.01 (1+100/10000) quicker.
     """
     To use the given weights variable to define the randomness of each
     positional movement (up/down/left/right) starting from the given xy,
     with the boundings telling the loop where to stop in terms of the
     drawing needle's placement.
     """
+    lastxy = False
+
     def TrackingLine(self, weights, xy=False, boundby="a", colour='purple', getfromlast=False):
-        global lastxy
+        global draw, size
 
         if xy == False: x, y = random.randint(0, size[0]), 1
         else: x, y = xy[0], xy[1]
 
-        # print(getfromlast)
+        print(getfromlast)
         if getfromlast == True:
-            x, y = lastxy[0], lastxy[1]
-            # print("Getting from last")
+            if self.lastxy == False:
+                pass
+            else:
+                x, y = self.lastxy[0], self.lastxy[1]
 
         # print("tl: {0}, {1}".format(x, y))
         iterations = 0
@@ -145,30 +137,25 @@ class Bodies:
                     bounds[boundDefiner] -= boundby[boundDefiner]
 
         # RULES:
-        c = ComRandom() if colour == "random" else colour
+        CLR = Colour()
+        c   = CLR.Complementary() if colour == "random" else colour
         while (x < bounds["right"]) and (y > bounds["up"]) and (y < bounds["down"]) and (x > bounds["left"]):
-            # c = ComRandom() if colour == "random" else colour
 
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
-                # y = y - 1 if y + 1 > 0 else y + 1
                 y = y - 1
             elif movement < weights[0]+weights[1]: #DOWN
                 y = y + 1
             elif movement < weights[0]+weights[1]+weights[2]: #LEFT
-                # x = x - 1 if x - 1 > 0 else x + 1
                 x = x - 1
             else: #RIGHT
-                # x = x + 1 if x + 1 < size[0] else x - 1
                 x = x + 1
 
-            # print("at {0},{1} drawing".format(x, y))
             self.ColourPixelAt(x=x, y=y, width=1, colour=c)
-            iterations = iterations + 1
-            if iterations % 500000 == 0:
-                Progress()
+            iterations += 1
+            if iterations % 500000 == 0: Progress()
 
-        lastxy = [x, y]
+        self.lastxy = [x, y]
         # print("Completion took {0} iterations...".format(iterations))
 
     """
@@ -283,60 +270,91 @@ class Bodies:
                 ["up",    xy[1]-padding+(random.randint(1, 5*s)*ur)]
             ], colour=c)
 
-"""Setting up classes for runtime"""
-BG, Bodies = BG(), Bodies()
 
-rs   = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
-imBB = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
-# I've forgotten what these do
+"""Managing the overall application"""
+class BitmapManager:
 
-xs, ys = im.size[0], im.size[1]
-size = [xs, ys]
+    Template = None
 
-draw = ImageDraw.Draw(im)
-lastxy, GetFromLast = [], False
+    """Outputting into the ./development_progress folder in order for a working product"""
+    def Progress(self, optionalOutput=False):
+        global current_progress
+        filename = "development_progress/PROGRESS_{0}.jpg".format(current_progress)
+        im.save(filename)
+        print("-- sp -- :: {0}".format(optional_output))
+        current_progress = current_progress + 1
 
-"""Implementing previous classes"""
-sys.path.append(os.path.abspath("../BITMAP"))
-from Bitmap import *
+    """Placing a Managed image into self.Template"""
+    def Template(self, location):
+        self.Template = Image.open(location)
 
-BitmapTemplate = Image.open("../BITMAP/alphabet-bitmap-ds/b.jpg")
-PA = PixelArray(np.array(BitmapTemplate))
-PA.AARemove()
-PA.SaveOG()
-PA.SortSquares()
-PA.PrintSquareMap()
-PA.Path()
-Series = PA.PathFormat()
+    """Setting up the location for outputting into, with append"""
+    def Output(self, location):
+        self.OutputName = location
 
-#   O < < (YEET ON THIS CODE)
-# \_|_/   (-----------------)
-#   |     (-----------------)
-#  / \    (-----------------)
-# /  |    (-----------------)
+    """
+    Take the self.Template, and run the process to return the Series variable
+    PixelArray (dependency injection, bitmap.PixelArray class)
+    """
+    def ExtractSeries(self, PA):
+        # Creating a new PixelArray for the self.Template
+        Pix = PA(np.array(self.Template))
+        Pix.AARemove()
+        Pix.SaveOG()
+        Pix.SortSquares()
+        Pix.PrintSquareMap()
+        Pix.Path()
 
-z, draw = 0, ImageDraw.Draw(imBB)
+        Series = Pix.PathFormat()
+        return Series
 
-# pp(Series)
+    """
+    Setting up an internal variable for our new image.
+    This is going to be our primary output.
+    """
+    def Prep(self, color=(255, 255, 255)):
+        self.OutputImage  = Image.new("RGB", (self.Template.size[0], self.Template.size[1]), color=color)
+        self.TemplateSize = [self.Template.size[0], self.Template.size[1]]
+        return self
 
-for S in Series:
-    X, Y, Angle, Direction, SN, Dir = S
-    Bounds = {
-        "up":    Direction[0],
-        "down":  Direction[1],
-        "left":  Direction[2],
-        "right": Direction[3]}
-    Bodies.brush([X, Y], angle=Angle,
-        power="high",
-        boundby=Bounds,
-        colour="random",
-        getfromlast=(False if z == 0 else True))
-    z += 1
+    """
+    Taking a PixelArray series and applying it to the self.OutputImage
+    blank canvas
+    """
+    def ApplySeries(self, Series):
+        global size, draw
+        Background, Body = BG(), Bodies()
+        size, draw = self.TemplateSize, ImageDraw.Draw(
+            # The object which is manipulated by ApplySeries
+            self.OutputImage
+        )
 
-PA.Trim(64, [21, 210, 123])
-PA.SaveOG()
+        z = 0
+        for DrawData in Series:
+            # Extracting from drawing format.
+            X, Y, Angle, Direction, SN, Dir = DrawData
+            Bounds = {
+                "up":    Direction[0],
+                "down":  Direction[1],
+                "left":  Direction[2],
+                "right": Direction[3]}
+            Body.Brush(xy=[X, Y], angle=Angle,
+                power="medium",
+                boundby=Bounds,
+                colour="random",
+                getfromlast=(False if z == 0 else True))
+            z += 1
+        return self
 
-im.save("op-af.png")
-imBB.save("op-bb.png")
-# im.save("op-af.jpeg")
-# im.save("op-af.jpg")
+    """
+    Taking the self.OutputImage and applying a naming
+    prefix to place it in the required place.
+    """
+    def Save(self, append):
+        self.CacheAppend = append
+        self.OutputImage.save("{0}-{1}.png".format(self.OutputName, append))
+        return self
+
+    def SaveTemplate(self):
+        self.Template.save("{0}-OGTemplate-{1}.png".format(self.OutputName, self.CacheAppend))
+        return self
