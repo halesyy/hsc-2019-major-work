@@ -1,63 +1,62 @@
 from PIL import Image, ImageDraw
 import random, time, math, textwrap, sys, os
 
-inColour  = None
-outColour = None
+class Colour:
 
-def RandomColour():
-    c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
-    # c = ["0", "1", "2", "3", "4", "5"] #darker
-    # c = ["a", "b", "c", "d", "e", "f"] #brighter
-    # c = random.choice(c)
-    # colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
-    colour = "#"
-    for i in range(0,6): colour += random.choice(c)
-    return colour
+    colour1 = None
+    colour2 = None
 
-def Complementary(hex):
-    # - #abcdef
-    hex  = hex.replace('#', '')
-    hexp = textwrap.wrap(hex, 2)
-    for i, h in enumerate(hexp):
-        hexp[i] = 255-int("0x{0}".format(h), 0)
-    # print(hexp)
-    for i, h in enumerate(hexp):
-        # print(i, h)
-        # print(int(h))
+    """Returning a random hex colour value"""
+    def Random(self):
+        c = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+        # c = ["0", "1", "2", "3", "4", "5"] #darker
+        # c = ["a", "b", "c", "d", "e", "f"] #brighter
+        # c = random.choice(c)
+        # colour = "#{0}{1}{2}{3}{4}{5}".format(c,c,c,c,c,c)
+        colour = "#"
+        for i in range(0,6): colour += random.choice(c)
+        return colour
+
+    """Returns the complimentary colour of the given HEX colour"""
+    def GetComplimentary(self, hex):
+        # - #abcdef
+        hex  = hex.replace('#', '')
+        hexp = textwrap.wrap(hex, 2)
+        for i, h in enumerate(hexp):
+            hexp[i] = 255-int("0x{0}".format(h), 0)
         # print(hexp)
-        # print(hex(int(h)))
-        hexp[i] = h.to_bytes(1, byteorder='big').hex()
-    return "{0}{1}".format("#", "".join(hexp))
+        for i, h in enumerate(hexp):
+            # print(i, h)
+            # print(int(h))
+            # print(hexp)
+            # print(hex(int(h)))
+            hexp[i] = h.to_bytes(1, byteorder='big').hex()
+        return "{0}{1}".format("#", "".join(hexp))
+
+    """Manager for comp colours, in terms of getting first, second, and flushing variables"""
+    def Complementary(reset=True):
+        # - colour imparting
+        if self.colour2 != None and reset: self.colour1, self.colour2 = None, None
+        if self.colour1 == None: self.colour1 = RandomColour()
+        else: self.colour2 = Complementary(self.colour1)
+        # conditionally returning colour1 or 2
+        return self.colour1 if self.colour2 == None else return self.colour2
+
+class Manager:
+
+    """Outputting into the ./development_progress folder in order for a working product"""
+    def Progress(self, optionalOutput=False):
+        global current_progress
+        filename = "development_progress/PROGRESS_{0}.jpg".format(current_progress)
+        im.save(filename)
+        print("-- sp -- :: {0}".format(optional_output))
+        current_progress = current_progress + 1
 
 
-def ComRandom(reset=True):
-    global inColour, outColour
-    # - colour imparting
-    if outColour != None and reset: inColour, outColour = None, None
-    if inColour == None: inColour = RandomColour()
-    else: outColour = Complementary(inColour)
-    # - colour returning
-    if outColour == None:
-        return inColour
-    else:
-        return outColour
-
-# print(ComRandom())
-# print(ComRandom())
-# print(inColour, outColour)
-
-def Progress(optional_output=False):
-    global current_progress
-    filename = "development_progress/PROGRESS_{0}.jpg".format(current_progress)
-    im.save(filename)
-    print("-- sp -- :: {0}".format(optional_output))
-    current_progress = current_progress + 1
-
-#// -------------------------------------
-#// Background module, in charge of all
-#// functions which are involved in the
-#// management of the background-manips.
-#// -------------------------------------
+"""
+The "background" functions controlling the look of
+the furtherst-back layer of image handling.
+"""
 class BG:
     def stars(self, density):
         for i in range(0, density):
@@ -70,6 +69,10 @@ class BG:
             # colour = RandomColour()
             draw.rectangle([(rx1, ry1), (rx1+siz, ry1+siz)], colour)
 
+"""
+The body managers, as in all of the managers for the
+content of the interesting image, including brushes, etc..
+"""
 class Bodies:
     def RandomPaddedCoords(self, pixel_padding):
         global size
@@ -104,6 +107,12 @@ class Bodies:
     #// down_weight is a value which is then divided by 10000 to get the addition
     #// to creating the excess that the down movement is given leverage to, meaning
     #// 100 means it is 1.01 (1+100/10000) quicker.
+    """
+    To use the given weights variable to define the randomness of each
+    positional movement (up/down/left/right) starting from the given xy,
+    with the boundings telling the loop where to stop in terms of the
+    drawing needle's placement.
+    """
     def TrackingLine(self, weights, xy=False, boundby="a", colour='purple', getfromlast=False):
         global lastxy
 
@@ -162,8 +171,12 @@ class Bodies:
         lastxy = [x, y]
         # print("Completion took {0} iterations...".format(iterations))
 
-    # Setting up a presentation for the tracking line, to change at certain
-    # iterations.
+    """
+    Setting up a "presentation", providing the times in which to change
+    different aspects, when to save, stop, all dictated by the iteration #.
+    Once it hits one of the iteration #'s, will change intermal self.TrackingLine
+    function call weights to change the engine's dynamics.
+    """
     def SAS_TrackingLine(self, presentation, xy=False):
         if xy == False:
             x = random.randint(0, size[0])
@@ -223,15 +236,14 @@ class Bodies:
 
         print("Completion took {0} iterations...".format(iter))
 
-    # Brush stroke, simple
-    def brush(self, xy, angle, power="soft", boundby="a", colour='random', getfromlast=False):
+    """
+    Bodies.Brush()
+    A directional brush stroke, applying a "random" grade algorithm.
+    """
+    def Brush(self, xy, angle, power="soft", boundby="a", colour='random', getfromlast=False):
         powersets = {
-            "low": 0.7,
-            "medium": 4,
-            "high": 1*(10000),
-            "superhigh": 10000*10000
+            "low": 0.7, "medium": 4, "high": 1*10000, "superhigh": 10000*10000
         }
-
 
         while angle >= 360: angle -= 360
         base, amplify = 1, powersets[power]
@@ -255,7 +267,11 @@ class Bodies:
         setup = [setup[0], setup[2], setup[3], setup[1]]
         self.TrackingLine(setup, xy, boundby=boundby, colour=colour, getfromlast=getfromlast)
 
-    def tspurt(self, xy, colour="random", padding=10, power="medium"):
+    """
+    Bodies.Tspurt()
+    Applies a "spread" algorithm on the xy coordinate.
+    """
+    def Tspurt(self, xy, colour="random", padding=10, power="medium"):
         ur, s = True, 5
         c = RandomColour() if colour == "random" else colour
         for deg in range(0, 360, 9):
@@ -267,26 +283,25 @@ class Bodies:
                 ["up",    xy[1]-padding+(random.randint(1, 5*s)*ur)]
             ], colour=c)
 
-#// Image setup
+"""Setting up classes for runtime"""
 BG, Bodies = BG(), Bodies()
-im = Image.open("../BITMAP/alphabet-bitmap-ds/b.jpg")
-# To be safe, converting the >im< variable into
-# something universally accessible. FFM availability.
+
 rs   = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
 imBB = Image.new("RGB", (im.size[0], im.size[1]), color=(255, 255, 255))
-# rs.paste(im, im)
-# im = rs
-# Sizing manipulation.
+# I've forgotten what these do
+
 xs, ys = im.size[0], im.size[1]
 size = [xs, ys]
-draw = ImageDraw.Draw(im)
-pd, lastxy, GetFromLast = 12, [], False
 
-# Working on implementing the previous classes.
+draw = ImageDraw.Draw(im)
+lastxy, GetFromLast = [], False
+
+"""Implementing previous classes"""
 sys.path.append(os.path.abspath("../BITMAP"))
 from Bitmap import *
 
-PA = PixelArray(np.array(im))
+BitmapTemplate = Image.open("../BITMAP/alphabet-bitmap-ds/b.jpg")
+PA = PixelArray(np.array(BitmapTemplate))
 PA.AARemove()
 PA.SaveOG()
 PA.SortSquares()
@@ -302,6 +317,8 @@ Series = PA.PathFormat()
 
 z, draw = 0, ImageDraw.Draw(imBB)
 
+# pp(Series)
+
 for S in Series:
     X, Y, Angle, Direction, SN, Dir = S
     Bounds = {
@@ -310,7 +327,7 @@ for S in Series:
         "left":  Direction[2],
         "right": Direction[3]}
     Bodies.brush([X, Y], angle=Angle,
-        power="medium",
+        power="high",
         boundby=Bounds,
         colour="random",
         getfromlast=(False if z == 0 else True))

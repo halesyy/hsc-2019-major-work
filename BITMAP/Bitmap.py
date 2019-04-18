@@ -28,7 +28,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity, by = 0, 16
+Complexity, by = 0, 8
 split = 1 / by
 squares = int(1 / split)
 squaresx = squares
@@ -180,7 +180,7 @@ class PixelArray(object):
 
         for k, sqr in enumerate(self.Squares):
             #SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
-            print(k, " empty check in trim: ", self.Empty(k))
+            # print(k, " empty check in trim: ", self.Empty(k))
             if not self.Empty(k):
                 self.SQCHange(s=k, x=0, y=0, to=to)
 
@@ -362,7 +362,7 @@ class PixelArray(object):
 
         Right -= round(xSplit/2)
         Down  -= round(ySplit/2)
-        print("centre position: ", squareNo, Right, Down)
+        # print("centre position: ", squareNo, Right, Down)
 
         return [Right, Down]
 
@@ -427,8 +427,8 @@ class PixelArray(object):
                     self.DirectionSequenceDone = True
                     self.DirectionSequence = DirectionSequence
                     # print("finished in {0}".format(i))
-                    self.PrintSquareMap(highlight=Original)
-                    print("\n\n")
+                    # self.PrintSquareMap(highlight=Original)
+                    # print("\n\n")
                     # pp(LinearDirections)
                     # pp(StepInformation)
                     return DirectionSequence
