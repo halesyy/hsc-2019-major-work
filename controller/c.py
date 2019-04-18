@@ -14,7 +14,7 @@ from Bitmap import *
 from Draw import *
 
 Manager = BitmapManager()
-Manager.Template("../bitmap/alphabet-bitmap-ds/b.jpg")
+Manager.Template("../bitmap/alphabet-bitmap-ds/a.jpg")
 Manager.Output("alpha-test")
 # Series is the path data that can be used
 # in Draw to draw over a blank canvas.

@@ -2,6 +2,21 @@ from PIL import Image, ImageDraw
 import random, time, math, textwrap, sys, os
 import numpy as np
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Colour:
 
     colour1 = None
@@ -46,6 +61,18 @@ class Colour:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 """
 The "background" functions controlling the look of
 the furtherst-back layer of image handling.
@@ -61,6 +88,26 @@ class BG:
             colour = RandomColour()
             # colour = RandomColour()
             draw.rectangle([(rx1, ry1), (rx1+siz, ry1+siz)], colour)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 """
 The body managers, as in all of the managers for the
@@ -269,6 +316,24 @@ class Bodies:
                 ["down",  xy[0]+padding+(random.randint(1, 5*s)*ur)],
                 ["up",    xy[1]-padding+(random.randint(1, 5*s)*ur)]
             ], colour=c)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 """Managing the overall application"""
