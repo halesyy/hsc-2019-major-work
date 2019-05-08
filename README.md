@@ -26,3 +26,8 @@ This is more formally referred in four principles: **Breaking, segmenting, reuni
 * ~~Creating a square-based BitMap accessor with meta-programming functions to help analyse the segments~~
 * ~~Coming up with a solution to the "travelling salesman" problem, allowing the computer to solve a pilgrim-like puzzle to navigate the bitmap segment to fill in the shape from the broken segment~~
 * Creating a parent integration family of functional algorithms to canvas an a segment onto a wholesome to-be appropriation
+
+### Week 2, Art Goal: Create the "Controller" application mind
+
+* Finally fix the re-writer, spending time at home to get a wholistic view and a visualization of the pathing that occurs during each step. 
+* Think of the integration of the controller, and whether dependency injection is really a good idea or not...
