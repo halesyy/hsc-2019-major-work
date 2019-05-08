@@ -12,7 +12,7 @@ import os, sys
 
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
-os.system("cls")
+os.system("clear")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -28,9 +28,9 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity, by = 2, 16
+Complexity, by = 0, 16
 split = 1 / by
-squares = int(1 / split)
+squares  = int(1 / split)
 squaresx = squares
 totalSquares = int(squares*squares)
 xs, ys = 0, 0
@@ -323,13 +323,16 @@ class PixelArray(object):
     # - to where to apply each period
     def SquareBounds(self, squareNo, direction):
 
+        print(str(squareNo) + " stopped by " + str(direction), end=" ")
         X = math.ceil((squareNo+1)/squaresx)
         Y = math.ceil((squareNo)%squaresx)+1
 
+        print(X, Y, end=" ")
         Right = xSplit * Y
         Down = ySplit * X
         Left = Right - xSplit
         Up = Down - ySplit
+        # print(Up, Down, Left, Right)
         if Left < 0: Left = 0
         if Up < 0: Up = 0
 
@@ -344,6 +347,7 @@ class PixelArray(object):
             "R":   [0, 0, 0, Right],
             "U":   [Up, 0, 0, 0]}
 
+        print(" - " + str(DirectionConvert[direction]))
         return DirectionConvert[direction]
 
     # - taking the square, and applying the direction sequence
@@ -360,8 +364,8 @@ class PixelArray(object):
         if Left < 0: Left = 0
         if Up < 0: Up = 0
 
-        Right -= round(xSplit/2)
-        Down  -= round(ySplit/2)
+        Right -= round(xSplit)
+        Down  -= round(ySplit)
         # print("centre position: ", squareNo, Right, Down)
 
         return [Right, Down]
@@ -427,7 +431,7 @@ class PixelArray(object):
                     self.DirectionSequenceDone = True
                     self.DirectionSequence = DirectionSequence
                     # print("finished in {0}".format(i))
-                    # self.PrintSquareMap(highlight=Original)
+                    self.PrintSquareMap(highlight=Original)
                     # print("\n\n")
                     # pp(LinearDirections)
                     # pp(StepInformation)
@@ -501,6 +505,7 @@ class PixelArray(object):
         if self.DirectionSequenceDone == False:
             print("Path has not been established...")
             return False
+
         AngleConvert = {
             "O": -1,
             "U": 0,
@@ -511,9 +516,8 @@ class PixelArray(object):
             "UL": 315,
             "BL": 225,
             "BR": 135}
-        # print(self.DirectionSequence)
-        i = 0
-        Series = []
+        i, Series = 0, []
+
         for DirectionSpace in self.DirectionSequence:
             if i >= 1:
                 Direction, SquareNo, PastDirection = DirectionSpace[0], DirectionSpace[1], self.DirectionSequence[i-1]
@@ -526,10 +530,24 @@ class PixelArray(object):
                 Angle = AngleConvert[Direction]
                 # Bounds = self.SquareBounds(self.DirectionApplySquareNo(SquareNo, Direction), Direction)
                 Bounds = self.SquareBounds(SquareNo, Direction)
-                X, Y = self.SquareCentre(OldSquareNo)
+                X, Y   = self.SquareCentre(OldSquareNo)
+
+                PackedFormatOBJ = {
+                    "oldSquareX": X,
+                    "oldSquareY": Y,
+                    "stoppingBounds": Bounds,
+                    "newSquareNo": SquareNo,
+                    "oldSquareNo": OldSquareNo,
+                    "direction": Direction,
+                    "pastDirection": PastDirection,
+                    "angle": Angle,
+                }
+                # pp(PackedFormatOBJ)
+
                 # print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', OldSquareNo, ',\'', Direction, '\'',  ']', end=", ")
                 Series.append([X, Y, Angle, Bounds, OldSquareNo, Direction])
             i += 1
+
         return Series
 
 

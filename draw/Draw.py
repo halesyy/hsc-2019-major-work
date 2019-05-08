@@ -135,7 +135,7 @@ class Bodies:
         #/ Draw: .line(xy, fill=None, width=0, joint=None), iterating each generated node and writing lines
         #/ to the lines which are NOT part of the array previously.
         for i in range(0, nodeAmount):
-            print(nodeStorage)
+            # print(nodeStorage)
             for b in range(0, nodeAmount):
                 if b != i and random.randint(0,10) > 9: #Parent does not equal the second check, connect B to I
                     firstNode = nodeStorage[i]
@@ -156,7 +156,7 @@ class Bodies:
         if xy == False: x, y = random.randint(0, size[0]), 1
         else: x, y = xy[0], xy[1]
 
-        print(getfromlast)
+        # print(getfromlast)
         if getfromlast == True:
             if self.lastxy == False:
                 pass
@@ -341,7 +341,9 @@ class BitmapManager:
 
     Template = None
 
-    """Outputting into the ./development_progress folder in order for a working product"""
+    """
+    Outputting into the ./development_progress folder in order for a working product
+    """
     def Progress(self, optionalOutput=False):
         global current_progress
         filename = "development_progress/PROGRESS_{0}.jpg".format(current_progress)
@@ -349,17 +351,21 @@ class BitmapManager:
         print("-- sp -- :: {0}".format(optional_output))
         current_progress = current_progress + 1
 
-    """Placing a Managed image into self.Template"""
+    """
+    Placing a Managed image into self.Template
+    """
     def Template(self, location):
         self.Template = Image.open(location)
 
-    """Setting up the location for outputting into, with append"""
+    """
+    Setting up the location for outputting into, with append
+    """
     def Output(self, location):
         self.OutputName = location
 
     """
     Take the self.Template, and run the process to return the Series variable
-    PixelArray (dependency injection, bitmap.PixelArray class)
+    PixelArray (dependency injection, bitmap.PixelArray class).
     """
     def ExtractSeries(self, PA):
         # Creating a new PixelArray for the self.Template
@@ -403,12 +409,16 @@ class BitmapManager:
                 "down":  Direction[1],
                 "left":  Direction[2],
                 "right": Direction[3]}
-            Body.Brush(xy=[X, Y], angle=Angle,
-                power="medium",
+            Body.Brush(xy=[Y, X], angle=Angle,
+                power="high",
                 boundby=Bounds,
                 colour="random",
                 getfromlast=(False if z == 0 else True))
+            # save
+            self.Save("renderprocess={0}".format(z))
+
             z += 1
+        print("total of {0}".format(z))
         return self
 
     """
