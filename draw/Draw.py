@@ -411,7 +411,7 @@ class BitmapManager:
                 "down":  Direction[1],
                 "left":  Direction[2],
                 "right": Direction[3]}
-            Body.Brush(xy=[Y, X], angle=Angle,
+            Body.Brush(xy=[X, Y], angle=Angle,
                 power="high",
                 boundby=Bounds,
                 colour="random",

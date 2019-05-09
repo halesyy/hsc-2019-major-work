@@ -28,7 +28,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity, by = 0, 16
+Complexity, by = 1, 32
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
