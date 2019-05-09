@@ -12,7 +12,7 @@ import os, sys
 
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
-os.system("cls")
+os.system("clear")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -28,7 +28,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity, by = 0, 8
+Complexity, by = 0, 16
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
