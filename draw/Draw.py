@@ -186,7 +186,7 @@ class Bodies:
         # RULES:
         CLR = Colour()
         c   = CLR.Complementary() if colour == "random" else colour
-        while (x < bounds["right"]) and (y > bounds["up"]) and (y < bounds["down"]) and (x > bounds["left"]):
+        while (x <= bounds["right"]) and (y >= bounds["up"]) and (y <= bounds["down"]) and (x >= bounds["left"]):
 
             movement = random.uniform(0, total_weight)
             if movement < weights[0]: #UP
@@ -375,8 +375,8 @@ class BitmapManager:
         Pix.SortSquares()
         Pix.PrintSquareMap()
         Pix.Path()
-
         Series = Pix.PathFormat()
+        self.PA = Pix
         return Series
 
     """

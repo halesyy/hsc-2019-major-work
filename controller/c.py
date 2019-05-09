@@ -21,7 +21,11 @@ Manager.Output("alpha-test")
 # Series is the path data that can be used
 # in Draw to draw over a blank canvas.
 Series = Manager.ExtractSeries(PixelArray)
+# Series = [
+#     [0, 0, 135, [0,32,0,32], 0, "BR"]
+# ]
 # pp(Series)
+Manager.PA.TestBounds()
 
 # Preparing a new canvas for us to plaster over.
 Manager.Prep().ApplySeries(Series)

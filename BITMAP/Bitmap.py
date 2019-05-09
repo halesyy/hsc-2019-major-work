@@ -28,7 +28,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity, by = 0, 16
+Complexity, by = 0, 8
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -319,13 +319,44 @@ class PixelArray(object):
             print(int(self.Contains(i, highlight=highlight)), end=" ")
             if ic % squares == 0: print("")
 
+
+    def SquareXYCache(self):
+        xtemp = 0
+        ytemp = 0
+        squarescache = [i for i in range(squaresx*squaresx)]
+
+        for i in range(squaresx*squaresx): # 0 -> 63
+            # want to increate X each run
+            # when going Y up, X = 0, Y += 1
+            squarescache[i] = [xtemp, ytemp]
+            #             |
+            #             |
+            # x = ->, y = v
+
+            if (xtemp+1) % squaresx == 0:
+                xtemp =  0
+                ytemp += 1
+            else:
+                xtemp += 1
+
+        return squarescache
+
+
     # - taking the square, and applying the direction sequence
     # - to where to apply each period
     def SquareBounds(self, squareNo, direction):
 
+        # Creating an array converter, since
+        # the dest-mathematical generality is just
+        # too simple for the creation.
+        SCHE = self.SquareXYCache()
+
         print(str(squareNo) + " stopped by " + str(direction), end=" ")
-        X = math.ceil((squareNo+1)/squaresx)
-        Y = math.ceil((squareNo)%squaresx)+1
+        # X = math.ceil((squareNo+1)/squaresx)
+        # Y = math.ceil((squareNo)%squaresx)+1
+        # X = math.floor((squareNo)/squaresx)
+        # Y = math.floor((squareNo)%squaresx)
+        X, Y = SCHE[squareNo]
 
         print(X, Y, end=" ")
         Right = xSplit * Y
@@ -350,22 +381,30 @@ class PixelArray(object):
         print(" - " + str(DirectionConvert[direction]))
         return DirectionConvert[direction]
 
+    def TestBounds(self):
+        for i in range(squaresx*squaresx):
+            self.SquareBounds(i, "U")
+            if i%squaresx == 0: print()
+
+
     # - taking the square, and applying the direction sequence
     # - to where to apply each period
     def SquareCentre(self, squareNo):
 
-        X = math.ceil((squareNo+1)/squaresx)
-        Y = math.ceil((squareNo)%squaresx)+1
+        # X = math.ceil((squareNo+1)/squaresx)
+        # Y = math.ceil((squareNo)%squaresx)+1
+        SCHE = self.SquareXYCache()
+        X, Y = SCHE[squareNo]
 
-        Right = xSplit * Y
-        Down = ySplit * X
+        Right = xSplit * X
+        Down = ySplit * Y
         Left = Right - xSplit
         Up = Down - ySplit
         if Left < 0: Left = 0
         if Up < 0: Up = 0
 
-        Right -= round(xSplit)
-        Down  -= round(ySplit)
+        Right -= round(xSplit/2)
+        Down  -= round(ySplit/2)
         # print("centre position: ", squareNo, Right, Down)
 
         return [Right, Down]
@@ -525,7 +564,8 @@ class PixelArray(object):
                 # we're going from PastDirection, to the SquareNo in Direction
                 OldSquareNo = PastDirection[1]
                 # OldSquareNo -> SquareNo, by Direction
-                # print(OldSquareNo, '->', SquareNo, 'by', Direction)
+                print(OldSquareNo, '->', SquareNo, 'by', Direction)
+
 
                 Angle = AngleConvert[Direction]
                 # Bounds = self.SquareBounds(self.DirectionApplySquareNo(SquareNo, Direction), Direction)
