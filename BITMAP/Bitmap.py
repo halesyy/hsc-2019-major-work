@@ -12,7 +12,7 @@ import os, sys
 
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
-os.system("clear")
+os.system("cls")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -75,7 +75,8 @@ class PixelArray(object):
         print("from ss: ", str(squares), )
         Squares = [None for f in range(0, squares*squares)]
         startX, startY, iteration = 0, 0, 0
-        for i in range(0, int(squares*squares)):
+        # squares are stored from 0 -> squares*squares
+        for i in range(int(squares*squares)):
             # print(startX, startY)
             iteration += 1
             Squares[i] = self.SquareBundlerStartFrom(i, startX, startY)
@@ -314,6 +315,7 @@ class PixelArray(object):
         return mapArray
 
     def PrintSquareMap(self, highlight="no"):
+        print("HIGHLIGHTING: {0}".format(highlight))
         for i in range(len(self.Squares)):
             ic = i + 1
             print(int(self.Contains(i, highlight=highlight)), end=" ")
@@ -338,7 +340,7 @@ class PixelArray(object):
                 ytemp += 1
             else:
                 xtemp += 1
-
+        # pp(squarescache)
         return squarescache
 
 
@@ -351,19 +353,28 @@ class PixelArray(object):
         # too simple for the creation.
         SCHE = self.SquareXYCache()
 
-        print(str(squareNo) + " stopped by " + str(direction), end=" ")
+        # print(str(squareNo) + " stopped by " + str(direction), end=" ")
         # X = math.ceil((squareNo+1)/squaresx)
         # Y = math.ceil((squareNo)%squaresx)+1
         # X = math.floor((squareNo)/squaresx)
         # Y = math.floor((squareNo)%squaresx)
         X, Y = SCHE[squareNo]
+        X += 1
+        Y += 1
 
-        print(X, Y, end=" ")
-        Right = xSplit * Y
-        Down = ySplit * X
+        # right = the square's right-side
+        # Right =
+        # print(xSplit, ySplit)
+        TrueRight = xs - ((xSplit-1) * X)
+        TrueDown = ys - ((ySplit-1) * Y)
+        Right = xSplit * X
+        Down = ySplit * Y
+        # Right = xSplit * Y
+        # Down = ySplit * X
         Left = Right - xSplit
         Up = Down - ySplit
-        # print(Up, Down, Left, Right)
+
+        print("bounds for {0}, X,Y={1},{2} - ".format(squareNo, X, Y), Up, TrueDown, Left, TrueRight)
         if Left < 0: Left = 0
         if Up < 0: Up = 0
 
@@ -378,7 +389,7 @@ class PixelArray(object):
             "R":   [0, 0, 0, Right],
             "U":   [Up, 0, 0, 0]}
 
-        print(" - " + str(DirectionConvert[direction]))
+        # print(" - " + str(DirectionConvert[direction]))
         return DirectionConvert[direction]
 
     def TestBounds(self):
@@ -395,6 +406,8 @@ class PixelArray(object):
         # Y = math.ceil((squareNo)%squaresx)+1
         SCHE = self.SquareXYCache()
         X, Y = SCHE[squareNo]
+        X += 1
+        Y += 1 # higher-ref, since it index starts at 0
 
         Right = xSplit * X
         Down = ySplit * Y
@@ -405,8 +418,8 @@ class PixelArray(object):
 
         Right -= round(xSplit/2)
         Down  -= round(ySplit/2)
-        # print("centre position: ", squareNo, Right, Down)
-
+        print("centre position for {0}:".format(squareNo), Right, Down)
+        print()
         return [Right, Down]
 
 
@@ -471,6 +484,7 @@ class PixelArray(object):
                     self.DirectionSequence = DirectionSequence
                     # print("finished in {0}".format(i))
                     self.PrintSquareMap(highlight=Original)
+                    print(self.DirectionSequence)
                     # print("\n\n")
                     # pp(LinearDirections)
                     # pp(StepInformation)
@@ -546,7 +560,7 @@ class PixelArray(object):
             return False
 
         AngleConvert = {
-            "O": -1,
+            "O": 0,
             "U": 0,
             "D": 180,
             "L": 270,
@@ -564,7 +578,7 @@ class PixelArray(object):
                 # we're going from PastDirection, to the SquareNo in Direction
                 OldSquareNo = PastDirection[1]
                 # OldSquareNo -> SquareNo, by Direction
-                print(OldSquareNo, '->', SquareNo, 'by', Direction)
+                # print(OldSquareNo, '->', SquareNo, 'by', Direction)
 
 
                 Angle = AngleConvert[Direction]
@@ -587,6 +601,9 @@ class PixelArray(object):
                 # print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', OldSquareNo, ',\'', Direction, '\'',  ']', end=", ")
                 Series.append([X, Y, Angle, Bounds, OldSquareNo, Direction])
             i += 1
+        # else:
+        #     print("b4 else")
+        #     a = self.SquareBounds(DirectionSpace[1], DirectionSpace[0])
 
         return Series
 

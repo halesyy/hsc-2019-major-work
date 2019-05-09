@@ -363,6 +363,8 @@ class BitmapManager:
     def Output(self, location):
         self.OutputName = location
 
+    # def PA =
+
     """
     Take the self.Template, and run the process to return the Series variable
     PixelArray (dependency injection, bitmap.PixelArray class).
@@ -373,7 +375,7 @@ class BitmapManager:
         Pix.AARemove()
         Pix.SaveOG()
         Pix.SortSquares()
-        Pix.PrintSquareMap()
+        # Pix.PrintSquareMap()
         Pix.Path()
         Series = Pix.PathFormat()
         self.PA = Pix
@@ -413,10 +415,13 @@ class BitmapManager:
                 power="high",
                 boundby=Bounds,
                 colour="random",
-                getfromlast=(False if z == 0 else True))
+                # getfromlast=(False if z == 0 else True))
+                getfromlast=False)
             # save
-            self.Save("renderprocess={0}".format(z))
-
+            # self.Save("renderprocess={0}".format(z))
+            # if z == 5: break
+            print("painting dir {0}/{3} from {1},{2}".format(Angle, X, Y, Direction))
+            print()
             z += 1
         print("total of {0}".format(z))
         return self
