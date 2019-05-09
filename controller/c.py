@@ -15,7 +15,7 @@ from Draw import *
 
 Manager = BitmapManager()
 Manager.Template("../bitmap/alphabet-bitmap-ds/a.jpg")
-Manager.Output("alpha-test")
+Manager.Output("position-test")
 
 # Series is the path data that can be used
 # in Draw to draw over a blank canvas.
@@ -28,4 +28,4 @@ Parr = Manager.PA
 # Preparing a new canvas for us to plaster over.
 Manager.Prep().ApplySeries(Series)
 # Manager.Trim()
-Manager.Save("tdone").SaveTemplate()
+Manager.Save("complete").SaveTemplate()
