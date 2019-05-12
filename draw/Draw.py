@@ -417,11 +417,9 @@ class BitmapManager:
                 colour="random",
                 # getfromlast=(False if z == 0 else True))
                 getfromlast=False)
-            # save
-            # self.Save("renderprocess={0}".format(z))
-            # if z == 5: break
-            print("painting dir {0}/{3} from {1},{2}".format(Angle, X, Y, Direction))
-            print()
+
+            # print("painting dir {0}/{3} from {1},{2}".format(Angle, X, Y, Direction))
+            # print()
             z += 1
         print("total of {0}".format(z))
         return self

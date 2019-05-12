@@ -366,15 +366,15 @@ class PixelArray(object):
         # Right =
         # print(xSplit, ySplit)
         TrueRight = xs - ((xSplit-1) * X)
-        TrueDown = ys - ((ySplit-1) * Y)
-        Right = xSplit * X
-        Down = ySplit * Y
+        TrueDown  = ys - ((ySplit-1) * Y)
+        Right     = xSplit * X
+        Down      = ySplit * Y
         # Right = xSplit * Y
         # Down = ySplit * X
         Left = Right - xSplit
-        Up = Down - ySplit
+        Up   = Down - ySplit
 
-        print("bounds for {0}, X,Y={1},{2} - ".format(squareNo, X, Y), Up, TrueDown, Left, TrueRight)
+        # print("bounds for {0}, X,Y={1},{2} - ".format(squareNo, X, Y), Up, TrueDown, Left, TrueRight)
         if Left < 0: Left = 0
         if Up < 0: Up = 0
 
@@ -418,8 +418,8 @@ class PixelArray(object):
 
         Right -= round(xSplit/2)
         Down  -= round(ySplit/2)
-        print("centre position for {0}:".format(squareNo), Right, Down)
-        print()
+        # print("centre position for {0}:".format(squareNo), Right, Down)
+        # print()
         return [Right, Down]
 
 
