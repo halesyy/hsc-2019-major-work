@@ -38,3 +38,11 @@ This is more formally referred in four principles: **Breaking, segmenting, reuni
 * Write a really intuitive debugger, so I can add much more functionality quickly and rapidly in the future - the functions
 are linear, and not dynamically functional.
 * Re-write the app and think of the schema.
+* The crux of the performance is the attempt to resolve the
+traveling salesman problem through a random occurance under certain
+parameters, the idea I am thinking of that allows the program
+to take as much time, but once it's done (rather quick) it
+feeds back and iterates over the pattern to find any
+similarities and remove them to shorten the movement. This would
+just have the pure movements that aren't re-iterating over each
+other in copies.
