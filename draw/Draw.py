@@ -342,7 +342,7 @@ class BitmapManager:
     Template = None
 
     """
-    Outputting into the ./development_progress folder in order for a working product
+   | Outputting into the ./development_progress folder in order for a working product
     """
     def Progress(self, optionalOutput=False):
         global current_progress
@@ -350,6 +350,15 @@ class BitmapManager:
         im.save(filename)
         print("-- sp -- :: {0}".format(optional_output))
         current_progress = current_progress + 1
+
+    """
+   | Loading the config lbl
+    """
+    def LoadConfig(self, ConfigData):
+        self.CONFIG = ConfigData
+        # for key, value in ConfigData.items():
+        #     print(key, value)
+
 
     """
     Placing a Managed image into self.Template
@@ -365,13 +374,18 @@ class BitmapManager:
 
     # def PA =
 
+    def InitPixelArray(self, PA):
+        Pix = PA(np.array(self.Template))
+        Pix.SetBy(self.CONFIG.by)
+        self.PA = Pix
+
     """
     Take the self.Template, and run the process to return the Series variable
     PixelArray (dependency injection, bitmap.PixelArray class).
     """
-    def ExtractSeries(self, PA):
+    def ExtractSeries(self):
         # Creating a new PixelArray for the self.Template
-        Pix = PA(np.array(self.Template))
+        Pix = self.PA
         Pix.AARemove()
         Pix.SaveOG()
         Pix.SortSquares()
@@ -412,9 +426,9 @@ class BitmapManager:
                 "left":  Direction[2],
                 "right": Direction[3]}
             Body.Brush(xy=[X, Y], angle=Angle,
-                power="low",
+                power=self.CONFIG["loose"],
                 boundby=Bounds,
-                colour="random",
+                colour=self.CONFIG["colour"],
                 # getfromlast=(False if z == 0 else True))
                 getfromlast=False)
 

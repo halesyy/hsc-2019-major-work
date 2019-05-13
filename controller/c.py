@@ -14,12 +14,21 @@ from Bitmap import *
 from Draw import *
 
 Manager = BitmapManager()
-Manager.Template("../bitmap/alphabet-bitmap-ds/a.jpg")
+Manager.Template("../bitmap/alphabet-bitmap-ds/n.jpg")
 Manager.Output("position-test")
+
+MapConfig = {
+    "by": 8,
+    "colour": "#c21f1f",
+    "loose": "low"
+}
+
+Manager.LoadConfig(MapConfig)
+Manager.InitPixelArray(PixelArray) # dep: PixelArray
 
 # Series is the path data that can be used
 # in Draw to draw over a blank canvas.
-Series = Manager.ExtractSeries(PixelArray)
+Series = Manager.ExtractSeries()
 Parr = Manager.PA
 
 

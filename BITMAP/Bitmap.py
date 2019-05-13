@@ -40,6 +40,10 @@ class PixelArray(object):
     # Squares
     # OGPixelArray is a numpy array
 
+    def SetBy(self, toSet):
+        global by
+        by = toSet
+
     def __init__(self, PA):
         # cp-string for data collection and retention
         global xs, ys, xSplit, ySplit, squarePixels, totalSquares, squaresx, squares, split, by
