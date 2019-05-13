@@ -412,7 +412,7 @@ class BitmapManager:
                 "left":  Direction[2],
                 "right": Direction[3]}
             Body.Brush(xy=[X, Y], angle=Angle,
-                power="high",
+                power="low",
                 boundby=Bounds,
                 colour="random",
                 # getfromlast=(False if z == 0 else True))

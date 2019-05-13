@@ -28,7 +28,7 @@ from pathfinding.finder.a_star import AStarFinder
 # Meta retention-data,
 # not defined by the type of image,
 # but the self-manipulation.
-Complexity, by = 1, 32
+Complexity, by = 1, 16
 split = 1 / by
 squares  = int(1 / split)
 squaresx = squares
@@ -363,14 +363,10 @@ class PixelArray(object):
         Y += 1
 
         # right = the square's right-side
-        # Right =
-        # print(xSplit, ySplit)
         TrueRight = xs - ((xSplit-1) * X)
         TrueDown  = ys - ((ySplit-1) * Y)
         Right     = xSplit * X
         Down      = ySplit * Y
-        # Right = xSplit * Y
-        # Down = ySplit * X
         Left = Right - xSplit
         Up   = Down - ySplit
 
@@ -381,12 +377,12 @@ class PixelArray(object):
         DirectionConvert = {
             "O":   [0, 0, 0, 0],
             "L":   [0, 0, Left, 0],
-            "D":   [0, Down, 0, 0],
-            "UR":  [Up, 0, 0, Right],
+            "D":   [0, TrueDown, 0, 0],
+            "UR":  [Up, 0, 0, TrueRight],
             "UL":  [Up, 0, Left, 0],
-            "BL":  [0, Down, Left, 0],
-            "BR":  [0, Down, 0, Right],
-            "R":   [0, 0, 0, Right],
+            "BL":  [0, TrueDown, Left, 0],
+            "BR":  [0, TrueDown, 0, TrueRight],
+            "R":   [0, 0, 0, TrueRight],
             "U":   [Up, 0, 0, 0]}
 
         # print(" - " + str(DirectionConvert[direction]))
