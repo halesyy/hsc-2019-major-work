@@ -375,8 +375,14 @@ class BitmapManager:
     # def PA =
 
     def InitPixelArray(self, PA):
-        Pix = PA(np.array(self.Template))
-        Pix.SetBy(self.CONFIG.by)
+        if self.CONFIG["by"] != False:
+            by = self.CONFIG["by"]
+        else:
+            by = False
+                 #PA,                     seperator
+        print("{0} set ".format(by))
+        Pix = PA(np.array(self.Template), by)
+        # Pix.SetBy(self.CONFIG["by"])
         self.PA = Pix
 
     """
@@ -388,7 +394,7 @@ class BitmapManager:
         Pix = self.PA
         Pix.AARemove()
         Pix.SaveOG()
-        Pix.SortSquares()
+        Pix.SortSquares() # where 16 is set for some reason
         # Pix.PrintSquareMap()
         Pix.Path()
         Series = Pix.PathFormat()
@@ -399,8 +405,8 @@ class BitmapManager:
     Setting up an internal variable for our new image.
     This is going to be our primary output.
     """
-    def Prep(self, color=(255, 255, 255)):
-        self.OutputImage  = Image.new("RGB", (self.Template.size[0], self.Template.size[1]), color=color)
+    def Prep(self, color=(255, 0, 0, 0)):
+        self.OutputImage  = Image.new("RGBA", (self.Template.size[0], self.Template.size[1]), color=color)
         self.TemplateSize = [self.Template.size[0], self.Template.size[1]]
         return self
 

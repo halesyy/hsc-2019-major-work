@@ -46,3 +46,7 @@ feeds back and iterates over the pattern to find any
 similarities and remove them to shorten the movement. This would
 just have the pure movements that aren't re-iterating over each
 other in copies.
+* Change the "by" and global references so that they are dependent
+on class-based variabls so it is true OOP and easier to manage.
+* Re-write a lot of the functions to make them more programmatically
+concise, this is a cool compsci project.

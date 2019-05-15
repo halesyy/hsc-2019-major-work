@@ -35,6 +35,10 @@ squaresx = squares
 totalSquares = int(squares*squares)
 xs, ys = 0, 0
 
+
+
+
+
 class PixelArray(object):
     # - dynamically set variables
     # Squares
@@ -44,9 +48,16 @@ class PixelArray(object):
         global by
         by = toSet
 
-    def __init__(self, PA):
+    def __init__(self, PA, bySet = False):
         # cp-string for data collection and retention
         global xs, ys, xSplit, ySplit, squarePixels, totalSquares, squaresx, squares, split, by
+        by = bySet if bySet != False else by
+
+        # global re-distributer
+        split = 1 / by
+        squares  = int(1 / split)
+        squaresx = squares
+        totalSquares = int(squares*squares)
 
         self.OGPixelArray = PA
         self.BitMap = Image.fromarray(PA)
@@ -74,6 +85,12 @@ class PixelArray(object):
                 else: PixelArr[i, b] = [255, 255, 255]
         self.OGPixelArray = PixelArr
 
+
+
+
+
+
+
     def SortSquares(self):
         PixelArr = self.OGPixelArray
         print("from ss: ", str(squares), )
@@ -90,6 +107,11 @@ class PixelArray(object):
             else:
                 startX = startX + xSplit
         self.Squares = Squares
+
+
+
+
+
 
     def SquareBundlerStartFrom(self, squareNo, xStart, yStart):
         # Presetting the values for the bundled variables in a
@@ -119,6 +141,9 @@ class PixelArray(object):
                 insertX += 1
         # bundled[0, 0] = [255, 255, 255]
         return bundled
+
+
+
 
     def SquareToPixelArr(self, SquareNo, Coords):
         # print(self.OGPixelArray)
