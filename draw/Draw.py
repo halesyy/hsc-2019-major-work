@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw
 import random, time, math, textwrap, sys, os
 import numpy as np
+from multiprocessing import Process
 
 
 
@@ -431,6 +432,16 @@ class BitmapManager:
                 "down":  Direction[1],
                 "left":  Direction[2],
                 "right": Direction[3]}
+
+            # Process(target=Body.Brush, args=(
+            #     [X, Y], Angle,
+            #     self.CONFIG["loose"],
+            #     Bounds,
+            #     self.CONFIG["colour"],
+            #     # getfromlast=(False if z == 0 else True))
+            #     False
+            # )).start()
+            #xy, angle, power="soft", boundby="a", colour='random', getfromlast=False
             Body.Brush(xy=[X, Y], angle=Angle,
                 power=self.CONFIG["loose"],
                 boundby=Bounds,

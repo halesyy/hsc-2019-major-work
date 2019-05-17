@@ -93,7 +93,7 @@ class PixelArray(object):
 
     def SortSquares(self):
         PixelArr = self.OGPixelArray
-        print("from ss: ", str(squares), )
+        # print("from ss: ", str(squares), )
         Squares = [None for f in range(0, squares*squares)]
         startX, startY, iteration = 0, 0, 0
         # squares are stored from 0 -> squares*squares
@@ -195,76 +195,35 @@ class PixelArray(object):
 
 
 
-    def Trim(self, NewBy, to=[0, 0, 0]):
-        global by, split, squares, totalSquares, xs, ys, xSplit, ySplit
-        OldSquares, OldBy = self.Squares, by
+    # def Trim(self, NewBy, to=[0, 0, 0]):
+    #     global by, split, squares, totalSquares, xs, ys, xSplit, ySplit
+    #     OldSquares, OldBy = self.Squares, by
+    #
+    #     # NEW, FOR SPLIT TRIMMING
+    #     by = NewBy
+    #     split = 1 / by
+    #     squares, squaresx = int(1 / split), int(1 / split)
+    #     totalSquares = int(squares*squares)
+    #     xSplit = int((xs) / (1 / split))
+    #     ySplit = int((ys) / (1 / split))
+    #     self.SortSquares()
+    #
+    #     for k, sqr in enumerate(self.Squares):
+    #         #SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
+    #         # print(k, " empty check in trim: ", self.Empty(k))
+    #         if not self.Empty(k):
+    #             self.SQCHange(s=k, x=0, y=0, to=to)
+    #
+    #     # OLD, GOING BACK TO OLD DATA
+    #     by = OldBy
+    #     split = 1 / by
+    #     squares, squaresx = int(1 / split), int(1 / split)
+    #     totalSquares = int(squares*squares)
+    #     xSplit = int((xs) / (1 / split))
+    #     ySplit = int((ys) / (1 / split))
+    #     self.Squares = OldSquares
+    #     self.SortSquares()
 
-        # NEW, FOR SPLIT TRIMMING
-        by = NewBy
-        split = 1 / by
-        squares, squaresx = int(1 / split), int(1 / split)
-        totalSquares = int(squares*squares)
-        xSplit = int((xs) / (1 / split))
-        ySplit = int((ys) / (1 / split))
-        self.SortSquares()
-
-        for k, sqr in enumerate(self.Squares):
-            #SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
-            # print(k, " empty check in trim: ", self.Empty(k))
-            if not self.Empty(k):
-                self.SQCHange(s=k, x=0, y=0, to=to)
-
-        # OLD, GOING BACK TO OLD DATA
-        by = OldBy
-        split = 1 / by
-        squares, squaresx = int(1 / split), int(1 / split)
-        totalSquares = int(squares*squares)
-        xSplit = int((xs) / (1 / split))
-        ySplit = int((ys) / (1 / split))
-        self.Squares = OldSquares
-        self.SortSquares()
-
-
-
-
-
-
-    def Start_RandomLineBetweenFilledSquares(self, first, second):
-        AllSqrs1 = self.AllColourInSquare(first)
-        AllSqrs2 = self.AllColourInSquare(second)
-        ASC1 = random.choice(AllSqrs1)
-        ASC2 = random.choice(AllSqrs2)
-        # draw time
-        Draw = self.Open()
-        colour, width = "#c21f1f", 1
-        Draw.line([ASC1["insertX"], ASC1["insertY"], ASC2["insertX"], ASC2["insertY"]], fill=colour, width=width)
-        self.Close()
-        # saving data
-        self.lastFinishingPoint = [ASC2["insertX"], ASC2["insertY"]]
-
-    def Next_RandomLineFromLastInFilledSquares(self, nextSquare):
-        lastFinishingPoint = self.lastFinishingPoint
-        Next = self.AllColourInSquare(nextSquare)
-        ASC1 = random.choice(Next)
-        # draw time
-        Draw = self.Open()
-        colour, width = "#c21f1f", 1
-        Draw.line([lastFinishingPoint[0], lastFinishingPoint[1], ASC1["insertX"], ASC1["insertY"]], fill=colour, width=width)
-        self.Close()
-        # saving data
-        self.lastFinishingPoint = [ASC1["insertX"], ASC1["insertY"]]
-
-    def PathVisualize(self):
-        i = 0
-        for DirectionSpace in self.DirectionSequence:
-            Direction, SquareNo = DirectionSpace[0], DirectionSpace[1]
-            if i == 0:
-                First = SquareNo
-            elif i == 1:
-                self.Start_RandomLineBetweenFilledSquares(first=First, second=SquareNo)
-            # elif i > 1:
-            #     self.Next_RandomLineFromLastInFilledSquares(SquareNo)
-            i += 1
 
 
 
@@ -412,7 +371,8 @@ class PixelArray(object):
             "BL":  [0, TrueDown, Left, 0],
             "BR":  [0, TrueDown, 0, TrueRight],
             "R":   [0, 0, 0, TrueRight],
-            "U":   [Up, 0, 0, 0]}
+            "U":   [Up, 0, 0, 0],
+            }
 
         # print(" - " + str(DirectionConvert[direction]))
         return DirectionConvert[direction]
@@ -459,15 +419,13 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        # 16 -> 3
-        # 08 -> 1.2
-        #
 
-        Compression = 5 # overall tests, for the "sloppiness"
-        Leveler     = 3 # the expected overhead of moves required
+        # Compression = 5 # overall tests, for the "sloppiness"
+        # Leveler     = 3 # the expected overhead of moves required
                         # to finally get to the ending area of
                         # total control.
-        Leveler     = (by/8)*(1.8+Complexity) if by >= 8 else 3
+        # Leveler     = (by/8)*(1.8+Complexity) if by >= 8 else 3
+        # Leveler     = 10000 # fin
         # leveler-specific itemic values
         # if by == 8: Leveler = 1.5
 
@@ -482,74 +440,73 @@ class PixelArray(object):
         # | - finds a dead end and goes till
         # | - it covers every square and resolves
         # | - the path
-        Brute, OverallBrute = round(len(ConsiderableSquares1d)*Leveler), 10000*Compression # Brute=overall attempts, Overall=individual attempts at pathfinding
+        # Brute, OverallBrute = round(len(ConsiderableSquares1d)*Leveler), 10000*Compression # Brute=overall attempts, Overall=individual attempts at pathfinding
         # Brute, OverallBrute = 2, 1
         CoveredSquares = []
         AllCovered = False
 
-
-        for i in range(OverallBrute):
-
-            Movement, CurrentPlace = "O", random.choice(ConsiderableSquares1d)
-            DirectionSequence = [["O", CurrentPlace]] # the operations of movement dir's
-            CoveredArea = [CurrentPlace] # the covered area through pathfinding
-            # recording the direction and meta info
-            StepInformation, Original, LinearDirections = [], CurrentPlace, [CurrentPlace]
-            if AllCovered: break
-
-            for i in range(Brute):
-                # checking if all CoveredArea numbers makeup the entire length
-                AllCovered = True
-                for ConsLoc in ConsiderableSquares1d:
-                    if ConsLoc not in CoveredArea:
-                        AllCovered = False
-
-                if AllCovered == True:
-                    self.DirectionSequenceDone = True
-                    self.DirectionSequence = DirectionSequence
-                    # print("finished in {0}".format(i))
-                    self.PrintSquareMap(highlight=Original)
-                    print(self.DirectionSequence)
-                    # print("\n\n")
-                    # pp(LinearDirections)
-                    # pp(StepInformation)
-                    return DirectionSequence
-                else: self.DirectionSequenceDone = False
-
-                Movements = {
-                    "U":   CurrentPlace-squaresx,
-                    "R":   (CurrentPlace+1)           if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
-                    "UR":  CurrentPlace-squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
-                    "UL":  CurrentPlace-squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
-                    "BL":  CurrentPlace+squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
-                    "BR":  CurrentPlace+squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
-                    "L":   CurrentPlace-1             if ((CurrentPlace)%squaresx!=0) else -1, #lc
-                    "D":   CurrentPlace+squaresx}
-
-                for Movement, Place in sorted(Movements.items(), key=lambda x: random.random()):
-                    if Place in ConsiderableSquares1d:
-                        DirectionSequence.append([Movement, Place])
-                        CoveredArea.append(Place)
-
-                        # print(Movement, Place)
-
-                        StepInformation.append({
-                            "before": CurrentPlace,
-                            "after": Place,
-                            "movements": Movements,
-                            "newPlace": Place,
-                            "beforePlace": CurrentPlace,
-                            "direction": Movement
-                        })
-
-                        CurrentPlace = Place
-
-                        # placing into direction
-                        LinearDirections.append("{0}:{1}".format(Movement, Place))
-                        break
+        # FinishPath = 100000
+        # Brute = FinishPath
 
 
-                else: print("n")
+
+        Movement, CurrentPlace = "O", random.choice(ConsiderableSquares1d)
+        DirectionSequence = [["O", CurrentPlace]] # the operations of movement dir's
+        CoveredArea = [CurrentPlace] # the covered area through pathfinding
+        # recording the direction and meta info
+        StepInformation, Original, LinearDirections = [], CurrentPlace, [CurrentPlace]
+
+        while True:
+            AllCovered = True
+            for ConsLoc in ConsiderableSquares1d:
+                if ConsLoc not in CoveredArea:
+                    AllCovered = False
+                    break
+
+            if AllCovered == True:
+                self.DirectionSequenceDone = True
+                self.DirectionSequence = DirectionSequence
+                # self.PrintSquareMap(highlight=Original)
+                # print(self.DirectionSequence)
+                print("Done...")
+                return DirectionSequence
+
+            Movements = {
+                # "UU":  CurrentPlace-squaresx-squaresx,
+                "U":   CurrentPlace-squaresx,
+                "R":   (CurrentPlace+1)           if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+                "UR":  CurrentPlace-squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+                "UL":  CurrentPlace-squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
+                "BL":  CurrentPlace+squaresx-1    if ((CurrentPlace)%squaresx!=0) else -1, #lc
+                "BR":  CurrentPlace+squaresx+1    if ((CurrentPlace+1)%squaresx!=0) else -1, #rc
+                "L":   CurrentPlace-1             if ((CurrentPlace)%squaresx!=0) else -1, #lc
+                "D":   CurrentPlace+squaresx}
+
+            # Random sort.
+            # for Movement, Place in Movements.items():
+            for Movement, Place in sorted(Movements.items(), key=lambda x: random.random()):
+                if Place in ConsiderableSquares1d:
+                    DirectionSequence.append([Movement, Place])
+                    CoveredArea.append(Place)
+
+                    # print(Movement, Place)
+
+                    StepInformation.append({
+                        "before": CurrentPlace,
+                        "after": Place,
+                        "movements": Movements,
+                        "newPlace": Place,
+                        "beforePlace": CurrentPlace,
+                        "direction": Movement
+                    })
+
+                    CurrentPlace = Place
+
+                    # placing into direction
+                    LinearDirections.append("{0}:{1}".format(Movement, Place))
+                    break
+            else:
+                print("No movement possible...")
 
 
 
@@ -587,6 +544,7 @@ class PixelArray(object):
         AngleConvert = {
             "O": 0,
             "U": 0,
+            # "UU": 0,
             "D": 180,
             "L": 270,
             "R": 90,
