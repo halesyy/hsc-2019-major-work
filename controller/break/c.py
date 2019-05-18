@@ -23,6 +23,7 @@ ImageArr = np.array(PilImage)
 iSplit = iSplitter()
 iSplit.fromArray(ImageArr)
 iSplit.SortColors()
+iSplit.GroupStart()
 
 # Manager = BitmapManager()
 # Manager.Template("../../bitmap/alphabet-bitmap-ds/k.jpg")
