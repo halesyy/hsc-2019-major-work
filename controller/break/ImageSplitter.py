@@ -82,17 +82,13 @@ class iSplitter:
             "L": [x-1, y],
             "R": [x+1, y],
         }
-        did = 0
+
         for movement, xy in Movements.items():
             # print(movement, xy)
             nx, ny = xy
             if (nx >= 0 and nx < self.Width) and (ny >= 0 and ny < self.Height) and self.Cache[ny][nx][0] != -1:
                 self.GroupFrom(nx, ny)
-                did += 1
 
-        if did == 0: return False
-        if did == 4: return True
-        else: return False
 
 
 
