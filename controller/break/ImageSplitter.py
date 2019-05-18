@@ -18,8 +18,8 @@ Role of this class:
 import pprint as pprint
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
-import random
-
+import random, sys
+sys.setrecursionlimit(300000) # doing a lot...
 class iSplitter:
     def __init__(self):
         self.Groups = []
@@ -52,31 +52,49 @@ class iSplitter:
     def GroupStart(self):
         # group = []
         xr, yr = random.randint(0, self.XRange), random.randint(0, self.YRange)
-        self.GroupFrom(xr, yr)
+        self.CurrentGroup = 0
+        self.Groups.append([]) # store
 
+        self.GroupFrom(xr, yr)
+        print("Done")
         # print(self.Width, self.Height)
         # print(group)
         # print("{0} {1} {2}".format((parent_col[0]*diff_range_up), (parent_col[1]*diff_range_up), (parent_col[2]*diff_range_up)))
         # print("{0} {1} {2}".format((parent_col[0]*diff_range_down), (parent_col[1]*diff_range_down), (parent_col[2]*diff_range_down)))
         # print(parent_col)
 
-    def GroupFrom(x, y):
-        
+    def GroupFrom(self, x, y):
+        currentgroup = self.CurrentGroup
+        # print(x, y)
         parent_col = self.Cache[y][x]
 
         diff_range_up   = 1.20 # 20% difference allowed
         diff_range_down = 2 - diff_range_up
 
         #app+delete
-        group.append([yr, xr, parent_col])
-        del self.Cache[yr][xr]
-        print(self.Width)
-        Movements = {
-            "U": [xr, yr-(self.Width-1)],
-            "D": [xr, yr+(self.Width-1)],
-            "L": [xr-1, yr],
-            "R": [xr+1, yr],
-        }
+        self.Groups[currentgroup].append([y, x, parent_col])
+        self.Cache[y][x] = [-1, -1, -1]
+        # print(self.Width)
 
-        print(xr, yr)
-        pp(Movements)
+        Movements = {
+            "U": [x, y-1],
+            "D": [x, y+1],
+            "L": [x-1, y],
+            "R": [x+1, y],
+        }
+        did = 0
+        for movement, xy in Movements.items():
+            # print(movement, xy)
+            nx, ny = xy
+            if (nx >= 0 and nx < self.Width) and (ny >= 0 and ny < self.Height) and self.Cache[ny][nx][0] != -1:
+                self.GroupFrom(nx, ny)
+                did += 1
+
+        if did == 0: return False
+        if did == 4: return True
+        else: return False
+
+
+
+        # print(x, y)
+        # pp(Movements)

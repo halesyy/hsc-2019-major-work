@@ -466,7 +466,7 @@ class PixelArray(object):
             if AllCovered == True:
                 self.DirectionSequenceDone = True
                 self.DirectionSequence = DirectionSequence
-                # self.PrintSquareMap(highlight=Original)
+                self.PrintSquareMap(highlight=Original)
                 # print(self.DirectionSequence)
                 print("Done...")
                 return DirectionSequence

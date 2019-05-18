@@ -17,7 +17,8 @@ from Bitmap import *
 from Draw import *
 
 Manager = BitmapManager()
-Manager.Template("../bitmap/alphabet-bitmap-ds/k.jpg")
+# Manager.Template("../bitmap/alphabet-bitmap-ds/k.jpg")
+Manager.Template("break/test-images/koci.jpeg")
 Manager.Output("position-test")
 
 #conf
@@ -36,7 +37,8 @@ Parr = Manager.PA
 #conf.save
 Manager.Prep().ApplySeries(Series)
 BitmapDrawn = Manager.GetImage()
-BitmapDrawn.show()
+# BitmapDrawn.show()
+Manager.Save("complete").SaveTemplate()
 
 
 ES = time.time()
