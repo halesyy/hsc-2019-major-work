@@ -467,3 +467,6 @@ class BitmapManager:
     def SaveTemplate(self):
         self.Template.save("{0}-OGTemplate-{1}.png".format(self.OutputName, self.CacheAppend))
         return self
+
+    def GetImage(self):
+        return self.OutputImage

@@ -484,6 +484,8 @@ class PixelArray(object):
 
             # Random sort.
             # for Movement, Place in Movements.items():
+            # Movements = random.shuffle(Movements)
+            # for Movement, Place in Movements.items():
             for Movement, Place in sorted(Movements.items(), key=lambda x: random.random()):
                 if Place in ConsiderableSquares1d:
                     DirectionSequence.append([Movement, Place])
