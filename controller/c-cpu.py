@@ -31,10 +31,10 @@ if __name__ == "__main__":
     Manager.InitPixelArray(PixelArray) # dep: PixelArray
 
     pool = Pool(processes=1)
-    for i in range(60):
+    for i in range(360):
         pool.apply_async(Manager.ExtractSeries)
 
     pool.close()
     pool.join() #60% of time used
     ES = time.time()
-    print("\ntime to execute: {0}".format(ES - TS))
+    print("\nTime to execute: {0} seconds".format(round(ES - TS, 2)))
