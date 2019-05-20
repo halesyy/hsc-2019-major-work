@@ -31,7 +31,7 @@ if __name__ == "__main__":
     Manager.InitPixelArray(PixelArray) # dep: PixelArray
 
     pool = Pool(processes=8)
-    [pool.apply_async(Manager.ExtractSeries) for i in range(1000)]
+    [pool.apply_async(Manager.ExtractSeries) for i in range(185)]
     # for i in range(1000):
     #     pool.apply_async(Manager.ExtractSeries)
 
