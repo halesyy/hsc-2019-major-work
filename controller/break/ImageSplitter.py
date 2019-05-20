@@ -19,7 +19,7 @@ import pprint as pprint
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
 import random, sys
-sys.setrecursionlimit(300000) # doing a lot...
+# sys.setrecursionlimit(300000) # doing a lot...
 class iSplitter:
     def __init__(self):
         self.Groups = []
@@ -33,6 +33,7 @@ class iSplitter:
     def SortColors(self):
         colours = {}
         self.Cache = []
+        self.LocationCache = []
         y, x = 0, 0
         for yrow in self.ImgArr:
             x = 0
@@ -43,20 +44,69 @@ class iSplitter:
                 else: colours[hex] = 1
                 self.Cache[y].append([])
                 self.Cache[y][x] = xcolours
+                self.LocationCache.append([x, y]) # x/y
                 x += 1
             y += 1
         self.XRange = x
         self.YRange = y
         self.Colours = colours
 
+    def RemoveFromLocationCache(self, x, y):
+        try:
+            del self.LocationCache[(y*self.Width) + x]
+        except IndexError:
+            print("Oops, index is out! {0},{1}: {2}".format(x, y, (x*self.Width) + x))
+        self.Cache[y][x][0] = -1
+
+        return True
+
     def GroupStart(self):
+        # 1. iterating over
+        # meta-array in charge for random choices, basically when doing the
+        # color iteration, cache that xy data into a 2D array that can be randomly
+        # chosen then once it's used in the itertions, convert the inside X/Y
+        # into the index using the X*Ywid+X 2d->1d indexing algorithm and delete
+        # it so that the cache is removed
+        # iterate by the meta array's length and as it goes down it's good
+        # basically we're creating an abstraction layer that is abstractly
+        # interfering and copying data to group it by the colour and locationtype.
+        # the advantage is that we can simply start the grouping process from randomly
+        # choosing from one as the parent controller.
+
         # group = []
-        xr, yr = random.randint(0, self.XRange), random.randint(0, self.YRange)
+        # xr, yr = random.randint(0, self.XRange), random.randint(0, self.YRange)
+        xr, yr = random.choice(self.LocationCache)
         self.CurrentGroup = 0
         self.Groups.append([]) # store
+        toExpand = [[xr, yr]]
 
-        self.GroupFrom(xr, yr)
-        print("Done")
+        print(len(self.LocationCache))
+        # while len(self.LocationCache) != 0:
+        for i, expand in enumerate(toExpand):
+            # iterate through [x, y] and then set the next 4 to be expanded
+            # upon
+            print(len(self.LocationCache))
+            x, y = expand
+            self.RemoveFromLocationCache(x, y)
+            del toExpand[i]
+            # c = self.Cache[y][x]
+            Movements = {
+                "U": [x, y-1],
+                "D": [x, y+1],
+                "L": [x-1, y],
+                "R": [x+1, y],
+            }
+            for move, to in Movements.items():
+                xset, yset = to
+                if self.Cache[yset][xset][0] == -1:
+                    continue
+                else:
+                    toExpand.append([xset, yset])
+
+        print(len(self.LocationCache))
+
+        # self.GroupFrom(xr, yr)
+        # print("Done")
         # print(self.Width, self.Height)
         # print(group)
         # print("{0} {1} {2}".format((parent_col[0]*diff_range_up), (parent_col[1]*diff_range_up), (parent_col[2]*diff_range_up)))
