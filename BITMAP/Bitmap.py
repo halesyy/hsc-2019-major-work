@@ -12,7 +12,9 @@ import os, sys
 
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
-os.system("clear")
+
+# if os.name == "nt": os.system("cls")
+# else: os.system("clear")
 
 # Pathfinding!
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -466,7 +468,7 @@ class PixelArray(object):
             if AllCovered == True:
                 self.DirectionSequenceDone = True
                 self.DirectionSequence = DirectionSequence
-                self.PrintSquareMap(highlight=Original)
+                # self.PrintSquareMap(highlight=Original)
                 # print(self.DirectionSequence)
                 print("Done...")
                 return DirectionSequence

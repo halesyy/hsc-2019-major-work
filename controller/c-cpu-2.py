@@ -15,18 +15,9 @@ sys.path.append(os.path.abspath("../bitmap"))
 sys.path.append(os.path.abspath("../draw"))
 from Bitmap import *
 from Draw import *
-
-
-
-
-
-
-# Parallel async processing controller pool.
-# pool = Pool(processes=60)
+Manager = BitmapManager()
 
 def ControllOutput():
-
-    Manager = BitmapManager()
     Manager.Template("../bitmap/alphabet-bitmap-ds/{0}.jpg".format(random.choice(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])))
     Manager.Output("position-test")
 
@@ -45,20 +36,20 @@ def ControllOutput():
     # Manager.Trim()
     Manager.Save("complete").SaveTemplate()
 
-# pool = []
 
 
-# def p_MANAGE():
-    # p = Process(target=ControllOutput)
-    # p2 = Process(target=Manager.PA)
-    # p1.start()
-    # p2.start()
-    # pool.append(p1)
-#
 
-# for i in range(60): p_MANAGE()
-[Process(target=ControllOutput).start() for x in range(60)]
+# Parallel async processing controller pool.
+# pool = Pool(processes=60)
+if __name__ == "__main__":
+    procs = []
+    for x in range(60):
+        p = Process(target=ControllOutput)
+        p.start()
+        # procs.append(p)
+        # p.join()
+    for process in procs:
+        process.join()
 
-
-ES = time.time()
-print("\ntime to execute: {0}".format(ES - TS))
+    ES = time.time()
+    print("\ntime to execute: {0}".format(ES - TS))

@@ -6,47 +6,35 @@ development environment when I begin to develop the robot's mind, being able to 
 tie in arbritrary libraries and modules in at any point in time.
 """
 
-import sys, os, time
-from multiprocessing import Pool, cpu_count
-# from concurrent.futures import ThreadPoolExecutor
-TS = time.time()
+if __name__ == "__main__":
 
-sys.path.append(os.path.abspath("../bitmap"))
-sys.path.append(os.path.abspath("../draw"))
-from Bitmap import *
-from Draw import *
+    # IMPORTING LIBRARIES AND STARTING TIMER
+    import sys, os, time
+    TS = time.time()
+    from multiprocessing import Pool, cpu_count
+    sys.path.append(os.path.abspath("../bitmap"))
+    sys.path.append(os.path.abspath("../draw"))
+    from Bitmap import *
+    from Draw import *
 
-Manager = BitmapManager()
-Manager.Template("../bitmap/alphabet-bitmap-ds/k.jpg")
-# Manager.Template("break/test-images/koci.jpg")
-Manager.Output("position-test")
+    Manager = BitmapManager()
+    Manager.Template("../bitmap/alphabet-bitmap-ds/k.jpg")
+    Manager.Output("position-test")
 
-#// Configurator
-MapConfig = {
-    "by":      16,
-    "colour":  "random",
-    "loose":   "high"
-}
+    MapConfig = { #conf
+        "by":      16,
+        "colour":  "random",
+        "loose":   "high"
+    }
 
-Manager.LoadConfig(MapConfig) # a comparable file
-Manager.InitPixelArray(PixelArray) # dep: PixelArray
+    Manager.LoadConfig(MapConfig) # a comparable file
+    Manager.InitPixelArray(PixelArray) # dep: PixelArray
 
-# Parallel async processing controller pool.
-pool = Pool(processes=60)
+    pool = Pool(processes=1)
+    for i in range(60):
+        pool.apply_async(Manager.ExtractSeries)
 
-# Series is the path data that can be used
-# in Draw to draw over a blank canvas.
-for i in range(60):
-    pool.apply_async(Manager.ExtractSeries)
-    # pool.apply_async(Manager.PA)
-
-pool.close()
-pool.join()
-
-# Preparing a new canvas for us to plaster over.
-# Manager.Prep().ApplySeries(Series)
-# Manager.Trim()
-# Manager.Save("complete").SaveTemplate()
-
-ES = time.time()
-print("\ntime to execute: {0}".format(ES - TS))
+    pool.close()
+    pool.join() #60% of time used
+    ES = time.time()
+    print("\ntime to execute: {0}".format(ES - TS))

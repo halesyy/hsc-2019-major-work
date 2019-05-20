@@ -18,7 +18,7 @@ from Draw import *
 
 Manager = BitmapManager()
 # Manager.Template("../bitmap/alphabet-bitmap-ds/k.jpg")
-Manager.Template("break/test-images/koci.jpeg")
+Manager.Template("break/test-images/koci.jpg")
 Manager.Output("position-test")
 
 #conf
