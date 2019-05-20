@@ -394,7 +394,7 @@ class BitmapManager:
         # Creating a new PixelArray for the self.Template
         Pix = self.PA
         Pix.AARemove()
-        Pix.SaveOG()
+        # Pix.SaveOG()
         Pix.SortSquares() # where 16 is set for some reason
         # Pix.PrintSquareMap()
         Pix.Path()
