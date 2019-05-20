@@ -22,7 +22,7 @@ if __name__ == "__main__":
     Manager.Output("position-test")
 
     MapConfig = { #conf
-        "by":      16,
+        "by":      32,
         "colour":  "random",
         "loose":   "high"
     }
@@ -30,8 +30,8 @@ if __name__ == "__main__":
     Manager.LoadConfig(MapConfig) # a comparable file
     Manager.InitPixelArray(PixelArray) # dep: PixelArray
 
-    pool = Pool(processes=8)
-    [pool.apply_async(Manager.ExtractSeries) for i in range(185)]
+    pool = Pool(processes=1)
+    [pool.apply_async(Manager.ExtractSeries) for i in range(500)]
     # for i in range(1000):
     #     pool.apply_async(Manager.ExtractSeries)
 

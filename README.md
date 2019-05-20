@@ -50,3 +50,5 @@ other in copies.
 on class-based variabls so it is true OOP and easier to manage.
 * Re-write a lot of the functions to make them more programmatically
 concise, this is a cool compsci project.
+* Add a runtime meta-editor that records important variables during runtime and log in the time it took
+to execute, so that I can start writing an A.I. library for overall code optimization. Meta-programming!
