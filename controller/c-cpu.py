@@ -30,9 +30,10 @@ if __name__ == "__main__":
     Manager.LoadConfig(MapConfig) # a comparable file
     Manager.InitPixelArray(PixelArray) # dep: PixelArray
 
-    pool = Pool(processes=1)
-    for i in range(60):
-        pool.apply_async(Manager.ExtractSeries)
+    pool = Pool(processes=8)
+    [pool.apply_async(Manager.ExtractSeries) for i in range(1000)]
+    # for i in range(1000):
+    #     pool.apply_async(Manager.ExtractSeries)
 
     pool.close()
     pool.join() #60% of time used
