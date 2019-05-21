@@ -18,7 +18,9 @@ Role of this class:
 import pprint as pprint
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
+from PIL import Image, ImageDraw
 import random, sys
+import numpy as np
 # sys.setrecursionlimit(300000) # doing a lot...
 
 class iSplitter:
@@ -56,12 +58,31 @@ class iSplitter:
         try:
             del self.LocationCache[(y*self.Width) + x]
             self.Cache[y][x][0] = -1
-            self.Groups[self.CurrentGroup] = self.Cache[y][x]
+            self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
             return True
         except IndexError:
             # print("Oops, index is out! {0},{1}: {2}".format(x, y, (x*self.Width) + x))
             return False
         # return True
+
+
+    def CreateImageFromGroup(self, groupid):
+        group = self.Groups[groupid]
+        img = Image.new("RGB", (self.Width, self.Height), "purple")
+        imgarr = np.array(img)
+        print(group)
+        for xy in group:
+            x, y = xy # the x/y coords in self.Cache
+            print(x, y)
+            colorcache = self.Cache[y][x]
+            imgarr[y][x] = colorcache
+        img = Image.fromarray(imgarr)
+        img.show()
+
+    def DisplayGroupSize(self):
+        for i, groupArray in enumerate(self.Groups):
+            print("{0}: {1} length".format(i, len(groupArray)))
+
 
 
 
@@ -82,15 +103,24 @@ class iSplitter:
         sameAmountFor = 0
 
         while len(self.LocationCache) != 0:
-            print("g... {0}{1}".format(sameAmountFor, lastAm))
-            if sameAmountFor == 3:
-                lastAm, sameAmountFor = 0, 0
+            print("g... {0} - {1}, last for: {2}".format(self.CurrentGroup, lastAm, sameAmountFor))
+            input("...")
+
+            if sameAmountFor >= 5:
                 xr, yr = random.choice(self.LocationCache)
+                toExpand = [[xr, yr]]
+                sameAmountFor = 0
                 self.CurrentGroup += 1
+                self.Groups.append([]) #store
                 print("Changed group from while...")
 
-            for expand in toExpand:
+            if len(self.LocationCache) == lastAm:
+                sameAmountFor += 1
+            else:
+                sameAmountFor = 0
+            lastAm = len(self.LocationCache)
 
+            for expand in toExpand:
                 x, y = expand
                 x, y = int(x), int(y)
                 # Remove from the LocData + Cache, if False means that it failed to remove
@@ -105,11 +135,6 @@ class iSplitter:
                 }
 
                 # checking for the same # amt since last loop
-                if len(self.LocationCache) == lastAm:
-                    sameAmountFor += 1
-                else: sameAmountFor = 0
-                lastAm = len(self.LocationCache)
-
                 for move, to in Movements.items():
                     xset, yset = to
                     if xset < 0 or yset < 0: continue

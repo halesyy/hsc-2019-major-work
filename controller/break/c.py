@@ -17,13 +17,18 @@ from Bitmap import *
 from Draw import *
 from ImageSplitter import *
 
-PilImage = Image.open("test-images/koci.jpg")
+PilImage = Image.open("test-images/g.jpg")
 ImageArr = np.array(PilImage)
 
 iSplit = iSplitter()
 iSplit.fromArray(ImageArr)
 iSplit.SortColors()
 iSplit.GroupStart()
+iSplit.DisplayGroupSize()
+
+# iSplit.CreateImageFromGroup(0)
+# iSplit.CreateImageFromGroup(1)
+# iSplit.CreateImageFromGroup(2)
 
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))
