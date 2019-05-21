@@ -59,9 +59,11 @@ class iSplitter:
             del self.LocationCache[(y*self.Width) + x]
             self.Cache[y][x][0] = -1
             self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
+            print("True")
             return True
         except IndexError:
             # print("Oops, index is out! {0},{1}: {2}".format(x, y, (x*self.Width) + x))
+            print("False")
             return False
         # return True
 
