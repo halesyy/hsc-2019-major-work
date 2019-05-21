@@ -54,6 +54,12 @@ class iSplitter:
         self.YRange = y
         self.Colours = colours
 
+
+
+
+
+
+
     def RemoveFromLocationCacheAndSave(self, x, y):
         try:
             del self.LocationCache[(y*self.Width) + x]
@@ -66,6 +72,9 @@ class iSplitter:
             print("False")
             return False
         # return True
+
+
+
 
 
     def CreateImageFromGroup(self, groupid):
@@ -81,9 +90,18 @@ class iSplitter:
         img = Image.fromarray(imgarr)
         img.show()
 
+
+
+
+
+
+
     def DisplayGroupSize(self):
         for i, groupArray in enumerate(self.Groups):
             print("{0}: {1} length".format(i, len(groupArray)))
+
+
+
 
 
 
@@ -106,55 +124,52 @@ class iSplitter:
 
         while len(self.LocationCache) != 0:
             print("g... {0} - {1}, last for: {2}".format(self.CurrentGroup, lastAm, sameAmountFor))
+            print(toExpand)
             input("...")
 
-            if sameAmountFor >= 5:
-                xr, yr = random.choice(self.LocationCache)
-                toExpand = [[xr, yr]]
-                sameAmountFor = 0
-                self.CurrentGroup += 1
-                self.Groups.append([]) #store
-                print("Changed group from while...")
+            # if sameAmountFor >= 5: # managing more than 5
+            #     xr, yr = random.choice(self.LocationCache)
+            #     toExpand = [[xr, yr]]
+            #     pixel = self.Cache[yr][xr]
+            #     r,g,b = pixel
+            #     sameAmountFor = 0
+            #     self.CurrentGroup += 1
+            #     self.Groups.append([]) #store
+            #     print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
 
-            if len(self.LocationCache) == lastAm:
-                sameAmountFor += 1
-            else:
-                sameAmountFor = 0
+            sameAmountFor = sameAmountFor + 1 if len(self.LocationCache) == lastAm else 0
             lastAm = len(self.LocationCache)
 
             for expand in toExpand:
-                x, y = expand
-                x, y = int(x), int(y)
-                # Remove from the LocData + Cache, if False means that it failed to remove
-                # because of an indexing error in both. - Ignore the tuple
-                if self.RemoveFromLocationCacheAndSave(x, y) == False:
-                    continue
+                x, y = int(expand[0]), int(expand[1])
+                if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
+
+                # iterating over movements to see if applicable to next 4 adjacent squares to current expanding
                 Movements = {
                     "U": [x, y-1],
                     "D": [x, y+1],
                     "L": [x-1, y],
                     "R": [x+1, y],
                 }
-
-                # checking for the same # amt since last loop
                 for move, to in Movements.items():
                     xset, yset = to
                     if xset < 0 or yset < 0: continue
-                    self.Cache[yset][xset][0] = -1
+                    # self.Cache[yset][xset][0] = -1
                     # print(len(self.LocationCache))
                     # IMPORTANT Doing the check to either continue adding 4 or to stop at this node.
                     # 1. New movement area is set to -1, ignore!, 2. New pixel is over or under the threshold for continuing
                     nr,ng,nb = self.Cache[yset][xset]
                     if self.Cache[yset][xset][0] == -1 or (
                         # for ignoring
-                        (nr >= r*top_diff)      or
-                        (ng >= g*top_diff)      or
-                        (nb >= b*top_diff)      or
-                        (nr <= r*bottom_diff)   or
-                        (ng <= g*bottom_diff)   or
-                        (nb <= b*bottom_diff)
-                    ): continue
-                    else: toExpand.append([xset, yset])
+                        (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
+                        (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
+                    ):
+                        # toExpand.remove(expand)
+                        continue
+                    else:
+                        toExpand.append([xset, yset])
+
+            toExpand = []
 
 
 
