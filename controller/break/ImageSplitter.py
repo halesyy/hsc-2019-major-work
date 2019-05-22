@@ -60,18 +60,6 @@ class iSplitter:
 
 
 
-    def RemoveFromLocationCacheAndSave(self, x, y):
-        try:
-            del self.LocationCache[(y*self.Width) + x]
-            self.Cache[y][x][0] = -1
-            self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
-            print("True")
-            return True
-        except IndexError:
-            # print("Oops, index is out! {0},{1}: {2}".format(x, y, (x*self.Width) + x))
-            print("False")
-            return False
-        # return True
 
 
 
@@ -79,7 +67,7 @@ class iSplitter:
 
     def CreateImageFromGroup(self, groupid):
         group = self.Groups[groupid]
-        img = Image.new("RGB", (self.Width, self.Height), "purple")
+        img = Image.new("RGB", (self.Width, self.Height), "black")
         imgarr = np.array(img)
         print(group)
         for xy in group:
@@ -111,40 +99,49 @@ class iSplitter:
 
     def GroupStart(self):
         xr, yr = random.choice(self.LocationCache)
+
         self.CurrentGroup = 0
         self.Groups.append([]) #store
+
         toExpand = [[xr, yr]]
         pixel = self.Cache[yr][xr]
         r,g,b = pixel
 
         top_diff    = 1.20            # 20% over
         bottom_diff = 2.00 - top_diff # 20% under
+
         lastAm = len(self.LocationCache)
         sameAmountFor = 0
 
-        while len(self.LocationCache) != 0:
-            print("g... {0} - {1}, last for: {2}".format(self.CurrentGroup, lastAm, sameAmountFor))
-            print(toExpand)
-            input("...")
+        # iterating till "locationCache is empty"
+            # iterate through "toExpand"
+                # iterate through "Movements" to "apply to toExpand"
 
-            # if sameAmountFor >= 5: # managing more than 5
-            #     xr, yr = random.choice(self.LocationCache)
-            #     toExpand = [[xr, yr]]
-            #     pixel = self.Cache[yr][xr]
-            #     r,g,b = pixel
-            #     sameAmountFor = 0
-            #     self.CurrentGroup += 1
-            #     self.Groups.append([]) #store
-            #     print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
+        while len(self.LocationCache) != 0:
+
+            # print("g... group {0} - len {1}, has been same for: {2}".format(self.CurrentGroup, lastAm, sameAmountFor))
+            # print(toExpand)
+            # input("...")
+
+            if sameAmountFor >= 5: # managing more than 5
+                xr, yr = random.choice(self.LocationCache)
+                toExpand = [[xr, yr]]
+                pixel = self.Cache[yr][xr]
+                r,g,b = pixel
+                sameAmountFor = 0
+                self.CurrentGroup += 1
+                self.Groups.append([]) #store
+                print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
 
             sameAmountFor = sameAmountFor + 1 if len(self.LocationCache) == lastAm else 0
             lastAm = len(self.LocationCache)
 
-            for expand in toExpand:
+            for i, expand in enumerate(toExpand):
                 x, y = int(expand[0]), int(expand[1])
                 if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
+                del toExpand[i]
 
-                # iterating over movements to see if applicable to next 4 adjacent squares to current expanding
+                # Iterating over movements to see if applicable to next 4 adjacent squares to current expanding
                 Movements = {
                     "U": [x, y-1],
                     "D": [x, y+1],
@@ -153,7 +150,7 @@ class iSplitter:
                 }
                 for move, to in Movements.items():
                     xset, yset = to
-                    if xset < 0 or yset < 0: continue
+                    if xset < 0 or xset > self.Width or yset < 0 or yset > self.Height: continue
                     # self.Cache[yset][xset][0] = -1
                     # print(len(self.LocationCache))
                     # IMPORTANT Doing the check to either continue adding 4 or to stop at this node.
@@ -167,19 +164,31 @@ class iSplitter:
                         # toExpand.remove(expand)
                         continue
                     else:
+                        # print("Epanding...")
                         toExpand.append([xset, yset])
+                        # print(toExpand)
+                        # input("...")
 
-            toExpand = []
-
-
-
-
+            # toExpand = []
 
 
 
 
 
 
+
+    def RemoveFromLocationCacheAndSave(self, x, y):
+        try:
+            del self.LocationCache[(y*self.Width) + x]
+            self.Cache[y][x][0] = -1
+            self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
+            # print("True")
+            return True
+        except IndexError:
+            # print("Oops, index is out! {0},{1}: {2}".format(x, y, (x*self.Width) + x))
+            # print("False")
+            return False
+        # return True
 
 
 
