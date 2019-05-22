@@ -17,7 +17,7 @@ from Bitmap import *
 from Draw import *
 from ImageSplitter import *
 
-PilImage = Image.open("test-images/g.jpg")
+PilImage = Image.open("test-images/monagay.jpg")
 ImageArr = np.array(PilImage)
 
 iSplit = iSplitter()

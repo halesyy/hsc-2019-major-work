@@ -65,19 +65,17 @@ class iSplitter:
 
 
 
-    def CreateImageFromGroup(self, groupid):
+    def CreateImageFromGroup(self, groupid, max=False):
         group = self.Groups[groupid]
+        if max != False and len(group) < max: return False
         img = Image.new("RGB", (self.Width, self.Height), "black")
         imgarr = np.array(img)
-        print(group)
         for xy in group:
             x, y = xy # the x/y coords in self.Cache
-            print(x, y)
             colorcache = self.Cache[y][x]
             imgarr[y][x] = colorcache
         img = Image.fromarray(imgarr)
         return img
-        # img.show()
 
 
 
@@ -86,13 +84,16 @@ class iSplitter:
 
 
     def DisplayGroupSize(self):
-        for i, groupArray in enumerate(self.Groups):
-            print("{0}: {1} length".format(i, len(groupArray)))
+        pass
+        # for i, groupArray in enumerate(self.Groups):
+        #     print("{0}: {1} length".format(i, len(groupArray)))
 
     def SaveAllGroups(self):
+        # pass
         for gid, group in enumerate(self.Groups):
             saveas = "split-groups/{0}.jpg".format(gid)
-            image  = self.CreateImageFromGroup(gid)
+            image  = self.CreateImageFromGroup(gid, max=50)
+            if image == False: continue
             image.save(saveas)
 
 
@@ -102,7 +103,7 @@ class iSplitter:
     def GroupStart(self):
         xr, yr = random.choice(self.LocationCache).split(":")
         xr, yr = int(xr), int(yr)
-        print(xr, yr)
+        # print(xr, yr)
 
         self.CurrentGroup = 0
         self.Groups.append([]) #store
@@ -111,7 +112,7 @@ class iSplitter:
         pixel = self.Cache[yr][xr]
         r,g,b = pixel
 
-        top_diff    = 1.20            # 20% over
+        top_diff    = 1.60            # 20% over
         bottom_diff = 2.00 - top_diff # 20% under
 
         lastAm = len(self.LocationCache)
@@ -122,8 +123,6 @@ class iSplitter:
             # print("g... group {0} - len {1}, has been same for: {2}".format(self.CurrentGroup, lastAm, sameAmountFor))
             # print(toExpand)
             # input("...")
-            print(len(self.LocationCache))
-            input("...")
 
             if sameAmountFor >= 5: # managing more than 5
                 xr, yr = random.choice(self.LocationCache).split(":")
@@ -147,6 +146,7 @@ class iSplitter:
                 x, y = int(x), int(y)
                 toExpand.remove(expand)
                 if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
+                # print(len(self.LocationCache))
 
                 # Iterating over movements to see if applicable to next 4 adjacent squares to current expanding
                 Movements = {
