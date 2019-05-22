@@ -76,7 +76,8 @@ class iSplitter:
             colorcache = self.Cache[y][x]
             imgarr[y][x] = colorcache
         img = Image.fromarray(imgarr)
-        img.show()
+        return img
+        # img.show()
 
 
 
@@ -88,10 +89,11 @@ class iSplitter:
         for i, groupArray in enumerate(self.Groups):
             print("{0}: {1} length".format(i, len(groupArray)))
 
-
-
-
-
+    def SaveAllGroups(self):
+        for gid, group in enumerate(self.Groups):
+            saveas = "split-groups/{0}.jpg".format(gid)
+            image  = self.CreateImageFromGroup(gid)
+            image.save(saveas)
 
 
 

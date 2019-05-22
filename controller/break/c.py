@@ -26,10 +26,10 @@ iSplit.SortColors()
 iSplit.GroupStart()
 iSplit.DisplayGroupSize()
 
+iSplit.SaveAllGroups()
+# for gid, group in enumerate(iSplit.Groups):
+#     iSplit.CreateImageFromGroup(gid)
 
-for gid, group in enumerate(iSplit.Groups):
-    iSplit.CreateImageFromGroup(gid)
-    
 # iSplit.CreateImageFromGroup(0)
 # iSplit.CreateImageFromGroup(1)
 # iSplit.CreateImageFromGroup(2)
