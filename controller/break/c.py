@@ -24,8 +24,8 @@ iSplit = iSplitter()
 iSplit.fromArray(ImageArr)
 iSplit.SortColors()
 iSplit.GroupStart()
-# iSplit.DisplayGroupSize()
-# iSplit.SaveAllGroups()
+iSplit.DisplayGroupSize()
+iSplit.SaveAllGroups()
 
 # for gid, group in enumerate(iSplit.Groups):
 #     iSplit.CreateImageFromGroup(gid)

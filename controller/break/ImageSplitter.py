@@ -153,30 +153,31 @@ class iSplitter:
                 # print("x: {0}, y: {1}".format(x, y))
                 # input("...")
                 x, y = int(x), int(y)
-                toExpand.pop(i)
+                # toExpand.pop(i)
+                # print("before: {0}".format(len(toExpand)))
+                del toExpand[i]
+                # print("after: {0}\n".format(len(toExpand)))
+
                 # toExpand.remove(expand)
-                if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
-                # print(len(self.LocationCache))
-                try: # catching any indexing errors cause of the nature of this call
-                    self.Cache[y][x][0] = -1
+
+                # doing some quick tests to stop requirement of calling this
+                # toRemove = "{0}:{1}".format(x, y)
+
+                if self.RemoveFromLocationCacheAndSave(x, y) == False:
+                    continue
+
+                try:               self.Cache[y][x][0] = -1 # nature of this call is floppy
                 except IndexError: continue
 
-                # Iterating over movements to see if applicable to next 4 adjacent squares to current expanding
-                Movements = {
-                    "U": [x, y-1],
-                    "D": [x, y+1],
-                    "L": [x-1, y],
-                    "R": [x+1, y],
-                }
-                for move, to in Movements.items():
-                    xset, yset = to
-                    if xset < 0 or xset > self.Width or yset < 0 or yset > self.Height: continue
-                    try: # catching any indexing errors cause of the nature of this call
-                        nr,ng,nb = self.Cache[yset][xset]
+                Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
+                for newplace in Movements:
+                    xset, yset = newplace
+                    if xset < 0 or xset >= self.Width or yset < 0 or yset >= self.Height: continue
+
+                    try:               nr,ng,nb = self.Cache[yset][xset] # catching indexing errors
                     except IndexError: continue
 
-                    if self.Cache[yset][xset][0] == -1 or (
-                        # for ignoring
+                    if self.Cache[yset][xset][0] == -1  or ( # IGNORE
                         (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
                         (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
                     ):
@@ -184,9 +185,6 @@ class iSplitter:
                     else:
                         toExpand.append("{0}:{1}".format(xset,yset))
 
-            # toExpand = []
-        print("TOOK A TOTAL OF {0}".format(iters))
-        input("...")
 
 
 
@@ -210,32 +208,3 @@ class iSplitter:
             # print("False")
             return False
         # return True
-
-
-
-
-
-
-    def GroupFrom(self, x, y):
-        currentgroup = self.CurrentGroup
-        parent_col = self.Cache[y][x]
-
-        diff_range_up   = 1.20 # 20% difference allowed
-        diff_range_down = 2 - diff_range_up
-
-        #app+delete
-        self.Groups[currentgroup].append([y, x, parent_col])
-        self.Cache[y][x] = [-1, -1, -1]
-
-        Movements = {
-            "U": [x, y-1],
-            "D": [x, y+1],
-            "L": [x-1, y],
-            "R": [x+1, y],
-        }
-
-        for movement, xy in Movements.items():
-            # print(movement, xy)
-            nx, ny = xy
-            if (nx >= 0 and nx < self.Width) and (ny >= 0 and ny < self.Height) and self.Cache[ny][nx][0] != -1:
-                self.GroupFrom(nx, ny)
