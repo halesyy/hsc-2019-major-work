@@ -30,6 +30,7 @@ class iSplitter:
 
     def fromArray(self, arr):
         self.ImgArr = arr
+        self.ContainedImageArray = arr
         self.Width = arr.shape[1]  # these are whole, counting from 1->tot, not 0
         self.Height = arr.shape[0] # . . . . . . . .
 
@@ -72,7 +73,8 @@ class iSplitter:
         imgarr = np.array(img)
         for xy in group:
             x, y = xy # the x/y coords in self.Cache
-            colorcache = self.Cache[y][x]
+            colorcache = self.ContainedImageArray[y][x]
+            # print(colorcache)
             imgarr[y][x] = colorcache
         img = Image.fromarray(imgarr)
         return img
@@ -117,15 +119,16 @@ class iSplitter:
 
         lastAm = len(self.LocationCache)
         sameAmountFor = 0
+        iters = 0
 
         while len(self.LocationCache) != 0:
 
             # print("g... group {0} - len {1}, has been same for: {2}".format(self.CurrentGroup, lastAm, sameAmountFor))
             # print(toExpand)
             # input("...")
-
             if sameAmountFor >= 5: # managing more than 5
-                xr, yr = random.choice(self.LocationCache).split(":")
+                # xr, yr = random.choice(self.LocationCache).split(":")
+                xr, yr = self.LocationCache[0].split(":")
                 xr, yr = int(xr), int(yr)
 
                 toExpand = ["{0}:{1}".format(xr, yr)]
@@ -135,18 +138,28 @@ class iSplitter:
 
                 self.CurrentGroup += 1
                 self.Groups.append([]) #store
-                print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
+                print(self.CurrentGroup, end=", ")
+                # print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
 
             sameAmountFor = sameAmountFor + 1 if len(self.LocationCache) == lastAm else 0
             lastAm = len(self.LocationCache)
 
             for i, expand in enumerate(toExpand):
-                # print(expand)
+                # print("{0}: {1}".format(i, expand))
+                # print(toExpand)
+
+                iters += 1
                 x, y = expand.split(":")
+                # print("x: {0}, y: {1}".format(x, y))
+                # input("...")
                 x, y = int(x), int(y)
-                toExpand.remove(expand)
+                toExpand.pop(i)
+                # toExpand.remove(expand)
                 if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
                 # print(len(self.LocationCache))
+                try: # catching any indexing errors cause of the nature of this call
+                    self.Cache[y][x][0] = -1
+                except IndexError: continue
 
                 # Iterating over movements to see if applicable to next 4 adjacent squares to current expanding
                 Movements = {
@@ -172,7 +185,8 @@ class iSplitter:
                         toExpand.append("{0}:{1}".format(xset,yset))
 
             # toExpand = []
-
+        print("TOOK A TOTAL OF {0}".format(iters))
+        input("...")
 
 
 

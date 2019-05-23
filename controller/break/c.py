@@ -17,16 +17,16 @@ from Bitmap import *
 from Draw import *
 from ImageSplitter import *
 
-PilImage = Image.open("test-images/monagay.jpg")
+PilImage = Image.open("test-images/g.jpg")
 ImageArr = np.array(PilImage)
 
 iSplit = iSplitter()
 iSplit.fromArray(ImageArr)
 iSplit.SortColors()
 iSplit.GroupStart()
-iSplit.DisplayGroupSize()
+# iSplit.DisplayGroupSize()
+# iSplit.SaveAllGroups()
 
-iSplit.SaveAllGroups()
 # for gid, group in enumerate(iSplit.Groups):
 #     iSplit.CreateImageFromGroup(gid)
 
