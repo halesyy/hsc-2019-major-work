@@ -33,6 +33,8 @@ class iSplitter:
         self.ContainedImageArray = arr
         self.Width = arr.shape[1]  # these are whole, counting from 1->tot, not 0
         self.Height = arr.shape[0] # . . . . . . . .
+        self.W = arr.shape[1]
+        self.H = arr.shape[0]
 
     def SortColors(self):
         colours = {}
@@ -105,8 +107,6 @@ class iSplitter:
     def GroupStart(self):
         xr, yr = random.choice(self.LocationCache).split(":")
         xr, yr = int(xr), int(yr)
-        # print(xr, yr)
-
         self.CurrentGroup = 0
         self.Groups.append([]) #store
 
@@ -121,15 +121,12 @@ class iSplitter:
         sameAmountFor = 0
         iters = 0
 
+        # TODO: re-write to only use the while loop, a much faster use
         while len(self.LocationCache) != 0:
+            iters += 1
 
-            # print("g... group {0} - len {1}, has been same for: {2}".format(self.CurrentGroup, lastAm, sameAmountFor))
-            # print(toExpand)
-            # input("...")
-            if sameAmountFor >= 5: # managing more than 5
-                # xr, yr = random.choice(self.LocationCache).split(":")
-                xr, yr = self.LocationCache[0].split(":")
-                xr, yr = int(xr), int(yr)
+            if len(toExpand) == 0:
+                xr, yr = [int(x) for x in self.LocationCache[0].split(":")]
 
                 toExpand = ["{0}:{1}".format(xr, yr)]
                 pixel = self.Cache[yr][xr]
@@ -139,23 +136,51 @@ class iSplitter:
                 self.CurrentGroup += 1
                 self.Groups.append([]) #store
                 print(self.CurrentGroup, end=", ")
-                # print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
 
+            # expanding = toExpand[0]
+            # del toExpand[0]
+            expanding = toExpand.pop(0)
             sameAmountFor = sameAmountFor + 1 if len(self.LocationCache) == lastAm else 0
             lastAm = len(self.LocationCache)
 
-            for i, expand in enumerate(toExpand):
+            x, y = [int(x) for x in expanding.split(":")]
+            if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
+
+            Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
+            Movements = filter(lambda v: False if (v[0]<0 or v[0]>=self.W) or (v[1]<0 or v[1]>=self.H) else True, Movements)
+            # print(Movements)
+            for xy in Movements:
+                xmove, ymove = xy
+
+                try: nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
+                except IndexError: continue
+
+                # print(xy)
+                if self.Cache[ymove][xmove][0] == -1 or ( # IGNORE
+                    (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
+                    (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
+                ):
+                    continue
+                else:
+                    toExpand.append("{0}:{1}".format(xmove, ymove))
+
+            # print("\n")
+            # if sameAmountFor >= 5: # managing more than 5
+                # xr, yr = random.choice(self.LocationCache).split(":")
+
+                # print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
+
+
+            # for i, expand in enumerate(toExpand):
                 # print("{0}: {1}".format(i, expand))
                 # print(toExpand)
-
-                iters += 1
-                x, y = expand.split(":")
+                # x, y = expand.split(":")
                 # print("x: {0}, y: {1}".format(x, y))
                 # input("...")
-                x, y = int(x), int(y)
+                # x, y = int(x), int(y)
                 # toExpand.pop(i)
                 # print("before: {0}".format(len(toExpand)))
-                del toExpand[i]
+                # del toExpand[i]
                 # print("after: {0}\n".format(len(toExpand)))
 
                 # toExpand.remove(expand)
@@ -163,27 +188,27 @@ class iSplitter:
                 # doing some quick tests to stop requirement of calling this
                 # toRemove = "{0}:{1}".format(x, y)
 
-                if self.RemoveFromLocationCacheAndSave(x, y) == False:
-                    continue
+                # if self.RemoveFromLocationCacheAndSave(x, y) == False:
+                #     continue
 
-                try:               self.Cache[y][x][0] = -1 # nature of this call is floppy
-                except IndexError: continue
-
-                Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
-                for newplace in Movements:
-                    xset, yset = newplace
-                    if xset < 0 or xset >= self.Width or yset < 0 or yset >= self.Height: continue
-
-                    try:               nr,ng,nb = self.Cache[yset][xset] # catching indexing errors
-                    except IndexError: continue
-
-                    if self.Cache[yset][xset][0] == -1  or ( # IGNORE
-                        (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
-                        (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
-                    ):
-                        continue
-                    else:
-                        toExpand.append("{0}:{1}".format(xset,yset))
+                # try:               self.Cache[y][x][0] = -1 # nature of this call is floppy
+                # except IndexError: continue
+                #
+                # Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
+                # for newplace in Movements:
+                #     xset, yset = newplace
+                #     if xset < 0 or xset >= self.Width or yset < 0 or yset >= self.Height: continue
+                #
+                #     try:               nr,ng,nb = self.Cache[yset][xset] # catching indexing errors
+                #     except IndexError: continue
+                #
+                #     if self.Cache[yset][xset][0] == -1  or ( # IGNORE
+                #         (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
+                #         (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
+                #     ):
+                #         continue
+                #     else:
+                #         toExpand.append("{0}:{1}".format(xset,yset))
 
 
 
