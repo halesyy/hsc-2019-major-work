@@ -1,6 +1,7 @@
 """
 Jack Hales, halesyy@gmail.com
-Controller (c.py) for splitting up an image, interacting with iSplitter class.
+Controller (c.py) for splitting up an image,
+interacting with iSplitter class.
 """
 
 import sys, os, time
@@ -18,8 +19,8 @@ PilImage = Image.open("test-images/200.jpg")
 ImageArr = np.array(PilImage)
 
 iSplit = iSplitter()
-iSplit.fromArray(ImageArr).groupStart()
-iSplit.SaveAllGroups()
+iSplit.fromArray(ImageArr).group()
+iSplit.saveAllGroups(max=250)
 
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))

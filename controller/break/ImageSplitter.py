@@ -86,19 +86,10 @@ class iSplitter:
 
 
 
-
-
-
-    def DisplayGroupSize(self):
-        pass
-        # for i, groupArray in enumerate(self.Groups):
-        #     print("{0}: {1} length".format(i, len(groupArray)))
-
-    def SaveAllGroups(self):
-        # pass
+    def saveAllGroups(self, max=50):
         for gid, group in enumerate(self.Groups):
             saveas = "split-groups/{0}.jpg".format(gid)
-            image  = self.CreateImageFromGroup(gid, max=50)
+            image  = self.CreateImageFromGroup(gid, max=max)
             if image == False: continue
             image.save(saveas)
 
@@ -106,7 +97,7 @@ class iSplitter:
 
 
 
-    def groupStart(self):
+    def group(self):
         xr, yr = random.choice(self.LocationCache).split(":")
         xr, yr = int(xr), int(yr)
         self.CurrentGroup = 0
@@ -128,7 +119,7 @@ class iSplitter:
             iters += 1
 
             if len(toExpand) == 0:
-                xr, yr = [int(x) for x in self.LocationCache[0].split(":")]
+                xr, yr = map(int, self.LocationCache[0].split(":"))
 
                 toExpand = ["{0}:{1}".format(xr, yr)]
                 pixel = self.Cache[yr][xr]
@@ -157,7 +148,7 @@ class iSplitter:
                 try: nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
                 except IndexError: continue
 
-                print(xy)
+                # print(xy)
                 if self.Cache[ymove][xmove][0] == -1 or ( # IGNORE
                     (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
                     (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
@@ -179,6 +170,9 @@ class iSplitter:
         try:
             # del self.LocationCache[(y*self.Width) + x]
             # print("Removing {0}:{1}".format(x, y))
+            # print("Removing {0}".format(toRemove))
+            # xt,yt = map(int, toRemove.split(":"))
+            # self.LocationCache[(xt*self.Width) + xt)] = ""
             self.LocationCache.remove(toRemove)
             self.Cache[y][x][0] = -1
             self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
