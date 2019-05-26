@@ -35,6 +35,7 @@ class iSplitter:
         self.Height = arr.shape[0] # . . . . . . . .
         self.W = arr.shape[1]
         self.H = arr.shape[0]
+        return self.SortColors()
 
     def SortColors(self):
         colours = {}
@@ -56,6 +57,7 @@ class iSplitter:
         self.XRange = x
         self.YRange = y
         self.Colours = colours
+        return self
 
 
 
@@ -104,7 +106,7 @@ class iSplitter:
 
 
 
-    def GroupStart(self):
+    def groupStart(self):
         xr, yr = random.choice(self.LocationCache).split(":")
         xr, yr = int(xr), int(yr)
         self.CurrentGroup = 0
@@ -114,7 +116,7 @@ class iSplitter:
         pixel = self.Cache[yr][xr]
         r,g,b = pixel
 
-        top_diff    = 1.60            # 20% over
+        top_diff    = 1.2             # 20% over
         bottom_diff = 2.00 - top_diff # 20% under
 
         lastAm = len(self.LocationCache)
@@ -155,7 +157,7 @@ class iSplitter:
                 try: nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
                 except IndexError: continue
 
-                # print(xy)
+                print(xy)
                 if self.Cache[ymove][xmove][0] == -1 or ( # IGNORE
                     (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
                     (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
@@ -164,53 +166,7 @@ class iSplitter:
                 else:
                     toExpand.append("{0}:{1}".format(xmove, ymove))
 
-            # print("\n")
-            # if sameAmountFor >= 5: # managing more than 5
-                # xr, yr = random.choice(self.LocationCache).split(":")
-
-                # print("Changing group, 5 iterations in a row. New: {0}".format(self.CurrentGroup))
-
-
-            # for i, expand in enumerate(toExpand):
-                # print("{0}: {1}".format(i, expand))
-                # print(toExpand)
-                # x, y = expand.split(":")
-                # print("x: {0}, y: {1}".format(x, y))
-                # input("...")
-                # x, y = int(x), int(y)
-                # toExpand.pop(i)
-                # print("before: {0}".format(len(toExpand)))
-                # del toExpand[i]
-                # print("after: {0}\n".format(len(toExpand)))
-
-                # toExpand.remove(expand)
-
-                # doing some quick tests to stop requirement of calling this
-                # toRemove = "{0}:{1}".format(x, y)
-
-                # if self.RemoveFromLocationCacheAndSave(x, y) == False:
-                #     continue
-
-                # try:               self.Cache[y][x][0] = -1 # nature of this call is floppy
-                # except IndexError: continue
-                #
-                # Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
-                # for newplace in Movements:
-                #     xset, yset = newplace
-                #     if xset < 0 or xset >= self.Width or yset < 0 or yset >= self.Height: continue
-                #
-                #     try:               nr,ng,nb = self.Cache[yset][xset] # catching indexing errors
-                #     except IndexError: continue
-                #
-                #     if self.Cache[yset][xset][0] == -1  or ( # IGNORE
-                #         (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
-                #         (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
-                #     ):
-                #         continue
-                #     else:
-                #         toExpand.append("{0}:{1}".format(xset,yset))
-
-
+        print("Took a total of {0} iterations...".format(iters))
 
 
 

@@ -1,9 +1,6 @@
 """
 Jack Hales, halesyy@gmail.com
-The single tie point, meant to make the codebase cleaner and easier to debug. This
-is the file combining the 'bitmap' class with the 'draw' class, to create a more rapid
-development environment when I begin to develop the robot's mind, being able to quickly
-tie in arbritrary libraries and modules in at any point in time.
+Controller (c.py) for splitting up an image, interacting with iSplitter class.
 """
 
 import sys, os, time
@@ -17,22 +14,12 @@ from Bitmap import *
 from Draw import *
 from ImageSplitter import *
 
-PilImage = Image.open("test-images/g.jpg")
+PilImage = Image.open("test-images/200.jpg")
 ImageArr = np.array(PilImage)
 
 iSplit = iSplitter()
-iSplit.fromArray(ImageArr)
-iSplit.SortColors()
-iSplit.GroupStart()
-iSplit.DisplayGroupSize()
+iSplit.fromArray(ImageArr).groupStart()
 iSplit.SaveAllGroups()
-
-# for gid, group in enumerate(iSplit.Groups):
-#     iSplit.CreateImageFromGroup(gid)
-
-# iSplit.CreateImageFromGroup(0)
-# iSplit.CreateImageFromGroup(1)
-# iSplit.CreateImageFromGroup(2)
 
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))
