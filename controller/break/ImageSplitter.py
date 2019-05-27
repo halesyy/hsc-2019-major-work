@@ -30,7 +30,7 @@ class iSplitter:
 
     def fromArray(self, arr):
         self.ImgArr = arr
-        self.ContainedImageArray = arr
+        self.ContainedImage = Image.fromarray(arr)
         self.Width = arr.shape[1]  # these are whole, counting from 1->tot, not 0
         self.Height = arr.shape[0] # . . . . . . . .
         self.W = arr.shape[1]
@@ -75,10 +75,10 @@ class iSplitter:
         if max != False and len(group) < max: return False
         img = Image.new("RGB", (self.Width, self.Height), "black")
         imgarr = np.array(img)
+        contained = np.array(self.ContainedImage)
         for xy in group:
             x, y = xy # the x/y coords in self.Cache
-            colorcache = self.ContainedImageArray[y][x]
-            # print(colorcache)
+            colorcache = contained[y][x]
             imgarr[y][x] = colorcache
         img = Image.fromarray(imgarr)
         return img
@@ -98,8 +98,7 @@ class iSplitter:
 
 
     def group(self):
-        xr, yr = random.choice(self.LocationCache).split(":")
-        xr, yr = int(xr), int(yr)
+        xr, yr = map(int, random.choice(self.LocationCache).split(":"))
         self.CurrentGroup = 0
         self.Groups.append([]) #store
 
@@ -107,11 +106,10 @@ class iSplitter:
         pixel = self.Cache[yr][xr]
         r,g,b = pixel
 
-        top_diff    = 1.2             # 20% over
+        top_diff    = 1.45            # 20% over
         bottom_diff = 2.00 - top_diff # 20% under
 
-        lastAm = len(self.LocationCache)
-        sameAmountFor = 0
+        # lastAm = len(self.LocationCache)
         iters = 0
 
         # TODO: re-write to only use the while loop, a much faster use
@@ -124,7 +122,6 @@ class iSplitter:
                 toExpand = ["{0}:{1}".format(xr, yr)]
                 pixel = self.Cache[yr][xr]
                 r,g,b = pixel
-                sameAmountFor = 0
 
                 self.CurrentGroup += 1
                 self.Groups.append([]) #store
@@ -133,26 +130,28 @@ class iSplitter:
             # expanding = toExpand[0]
             # del toExpand[0]
             expanding = toExpand.pop(0)
-            sameAmountFor = sameAmountFor + 1 if len(self.LocationCache) == lastAm else 0
-            lastAm = len(self.LocationCache)
+            # sameAmountFor = sameAmountFor + 1 if len(self.LocationCache) == lastAm else 0
+            # lastAm = len(self.LocationCache)
 
             x, y = [int(x) for x in expanding.split(":")]
             if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
 
             Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
+            # removing the over-wide areas as well as under
             Movements = filter(lambda v: False if (v[0]<0 or v[0]>=self.W) or (v[1]<0 or v[1]>=self.H) else True, Movements)
             # print(Movements)
             for xy in Movements:
                 xmove, ymove = xy
 
-                try: nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
-                except IndexError: continue
+                try:                 nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
+                except IndexError:   continue
 
                 # print(xy)
                 if self.Cache[ymove][xmove][0] == -1 or ( # IGNORE
                     (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
                     (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
                 ):
+                    # self.Cache[ymove][xmove][0] = -1
                     continue
                 else:
                     toExpand.append("{0}:{1}".format(xmove, ymove))
