@@ -26,6 +26,7 @@ import numpy as np
 class iSplitter:
     def __init__(self):
         self.Groups = []
+        self.CurrentLCIndex = 0
         pass
 
     def fromArray(self, arr):
@@ -95,10 +96,30 @@ class iSplitter:
 
 
 
+    #/\/ Moves through the location cache
+    #/\/ efficiently.
+    #/\/ Managing from self.CurrentLCIndex
+    def GetLocationCacheNext(self):
+        newValueToCreep = False
+        for i in range(self.CurrentLCIndex, len(self.LocationCache)):
+            if self.LocationCache[i] == "":
+                # continue exec till finding it
+                continue
+            else:
+                # we just found it, return and remove
+                self.CurrentLCIndex = i
+                newValueToCreep = self.LocationCache[i]
+                self.LocationCache[i] = ""
+                break
+        return newValueToCreep
+
+
 
 
     def group(self):
-        xr, yr = map(int, random.choice(self.LocationCache).split(":"))
+        creepLocationString = self.GetLocationCacheNext()
+        xr, yr = map(int, creepLocationString.split(":"))
+        # xr, yr = map(int, random.choice(self.LocationCache).split(":"))
         self.CurrentGroup = 0
         self.Groups.append([]) #store
 
@@ -116,7 +137,9 @@ class iSplitter:
             iters += 1
 
             if len(toExpand) == 0:
-                xr, yr = map(int, self.LocationCache[0].split(":"))
+                creepLocationString = self.GetLocationCacheNext()
+                if creepLocationString == False: break # break out of loop, we're done
+                xr, yr = map(int, creepLocationString.split(":"))
                 toExpand = ["{0}:{1}".format(xr, yr)]
                 pixel = self.Cache[yr][xr]
                 r,g,b = pixel
@@ -161,8 +184,8 @@ class iSplitter:
             # print("Removing {0}:{1}".format(x, y))
             # print("Removing {0}".format(toRemove))
             # xt,yt = map(int, toRemove.split(":"))
-            # self.LocationCache[(xt*self.Width) + xt)] = ""
-            self.LocationCache.remove(toRemove)
+            self.LocationCache[(xt*self.Width) + xt] = ""
+            # self.LocationCache.remove(toRemove)
             # 1. iterate and keep a cache internally for
             #    the current iteation through locationcache from 0->onwards,
             # 2. simply access and set to = "" using above, then
@@ -175,6 +198,7 @@ class iSplitter:
             self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
             # print("True")
             return True
+
         except IndexError or ValueError:
             # print("Oops, index is out! {0},{1}: {2}".format(x, y, (x*self.Width) + x))
             # print("False")
