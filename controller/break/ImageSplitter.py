@@ -109,7 +109,6 @@ class iSplitter:
         top_diff    = 1.45            # 20% over
         bottom_diff = 2.00 - top_diff # 20% under
 
-        # lastAm = len(self.LocationCache)
         iters = 0
 
         # TODO: re-write to only use the while loop, a much faster use
@@ -118,40 +117,31 @@ class iSplitter:
 
             if len(toExpand) == 0:
                 xr, yr = map(int, self.LocationCache[0].split(":"))
-
                 toExpand = ["{0}:{1}".format(xr, yr)]
                 pixel = self.Cache[yr][xr]
                 r,g,b = pixel
-
+                #g+1
                 self.CurrentGroup += 1
-                self.Groups.append([]) #store
+                self.Groups.append([])
                 print(self.CurrentGroup, end=", ")
 
-            # expanding = toExpand[0]
-            # del toExpand[0]
             expanding = toExpand.pop(0)
-            # sameAmountFor = sameAmountFor + 1 if len(self.LocationCache) == lastAm else 0
-            # lastAm = len(self.LocationCache)
-
             x, y = [int(x) for x in expanding.split(":")]
             if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
-
             Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
-            # removing the over-wide areas as well as under
             Movements = filter(lambda v: False if (v[0]<0 or v[0]>=self.W) or (v[1]<0 or v[1]>=self.H) else True, Movements)
-            # print(Movements)
+
             for xy in Movements:
                 xmove, ymove = xy
 
-                try:                 nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
-                except IndexError:   continue
+                try: nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
+                except IndexError: continue
 
                 # print(xy)
                 if self.Cache[ymove][xmove][0] == -1 or ( # IGNORE
                     (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
                     (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
                 ):
-                    # self.Cache[ymove][xmove][0] = -1
                     continue
                 else:
                     toExpand.append("{0}:{1}".format(xmove, ymove))
@@ -173,6 +163,14 @@ class iSplitter:
             # xt,yt = map(int, toRemove.split(":"))
             # self.LocationCache[(xt*self.Width) + xt)] = ""
             self.LocationCache.remove(toRemove)
+            # 1. iterate and keep a cache internally for
+            #    the current iteation through locationcache from 0->onwards,
+            # 2. simply access and set to = "" using above, then
+            #    when getting a new one simply start iterating from left
+            #    to right, self caching the current index then moving
+            #    there and keep moving from left right till you find the next
+
+
             self.Cache[y][x][0] = -1
             self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
             # print("True")
