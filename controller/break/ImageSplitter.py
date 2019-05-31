@@ -111,6 +111,7 @@ class iSplitter:
                 newValueToCreep = self.LocationCache[i]
                 self.LocationCache[i] = ""
                 break
+        # print("returning {0}".format(newValueToCreep))
         return newValueToCreep
 
 
@@ -119,7 +120,6 @@ class iSplitter:
     def group(self):
         creepLocationString = self.GetLocationCacheNext()
         xr, yr = map(int, creepLocationString.split(":"))
-        # xr, yr = map(int, random.choice(self.LocationCache).split(":"))
         self.CurrentGroup = 0
         self.Groups.append([]) #store
 
@@ -132,13 +132,18 @@ class iSplitter:
 
         iters = 0
 
-        # TODO: re-write to only use the while loop, a much faster use
         while len(self.LocationCache) != 0:
+
             iters += 1
+            # print("at iter {0}, len: {1}".format(iters, len(toExpand)))
 
             if len(toExpand) == 0:
+                # print("Going to create a new group")
+
                 creepLocationString = self.GetLocationCacheNext()
-                if creepLocationString == False: break # break out of loop, we're done
+                if creepLocationString == False:
+                    break
+
                 xr, yr = map(int, creepLocationString.split(":"))
                 toExpand = ["{0}:{1}".format(xr, yr)]
                 pixel = self.Cache[yr][xr]
@@ -148,23 +153,26 @@ class iSplitter:
                 self.Groups.append([])
                 print(self.CurrentGroup, end=", ")
 
+            #/\/
+
             expanding = toExpand.pop(0)
+            # print("for exand {0}".format(expanding))
+            # print(toExpand)
             x, y = [int(x) for x in expanding.split(":")]
             if self.RemoveFromLocationCacheAndSave(x, y) == False: continue
             Movements = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]] #udlr
             Movements = filter(lambda v: False if (v[0]<0 or v[0]>=self.W) or (v[1]<0 or v[1]>=self.H) else True, Movements)
 
+
             for xy in Movements:
                 xmove, ymove = xy
 
-                try: nr,ng,nb = self.Cache[ymove][xmove] # catching indexing errors
-                except IndexError: continue
+                try:
+                    nr,ng,nb = self.Cache[ymove][xmove]
+                except IndexError:
+                    continue
 
-                # print(xy)
-                if self.Cache[ymove][xmove][0] == -1 or ( # IGNORE
-                    (nr >= r*top_diff)      or    (ng >= g*top_diff)      or    (nb >= b*top_diff)      or
-                    (nr <= r*bottom_diff)   or    (ng <= g*bottom_diff)   or    (nb <= b*bottom_diff)
-                ):
+                if (self.LocationCache[(ymove*(self.Width))+xmove] == "") or (self.Cache[ymove][xmove][0] == -1) or ((nr >= r*top_diff) or (ng >= g*top_diff) or (nb >= b*top_diff) or (nr <= r*bottom_diff) or (ng <= g*bottom_diff) or (nb <= b*bottom_diff)):
                     continue
                 else:
                     toExpand.append("{0}:{1}".format(xmove, ymove))
@@ -176,15 +184,15 @@ class iSplitter:
 
 
     def RemoveFromLocationCacheAndSave(self, x, y):
-        toRemove = "{0}:{1}".format(x, y)
-        if toRemove not in self.LocationCache: return False
+        # toRemove = "{0}:{1}".format(x, y)
+        # if toRemove not in self.LocationCache: return False
 
         try:
             # del self.LocationCache[(y*self.Width) + x]
             # print("Removing {0}:{1}".format(x, y))
             # print("Removing {0}".format(toRemove))
             # xt,yt = map(int, toRemove.split(":"))
-            self.LocationCache[(xt*self.Width) + xt] = ""
+            self.LocationCache[(y*(self.Width)) + x] = ""
             # self.LocationCache.remove(toRemove)
             # 1. iterate and keep a cache internally for
             #    the current iteation through locationcache from 0->onwards,
@@ -196,11 +204,9 @@ class iSplitter:
 
             self.Cache[y][x][0] = -1
             self.Groups[self.CurrentGroup].append([x, y]) #can get self.Cache[y][x]
-            # print("True")
             return True
 
         except IndexError or ValueError:
-            # print("Oops, index is out! {0},{1}: {2}".format(x, y, (x*self.Width) + x))
-            # print("False")
             return False
-        # return True
+
+        return True
