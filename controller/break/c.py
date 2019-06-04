@@ -15,12 +15,12 @@ from Bitmap import *
 from Draw import *
 from ImageSplitter import *
 
-PilImage = Image.open("test-images/200.jpg")
+PilImage = Image.open("test-images/starry.jpg")
 ImageArr = np.array(PilImage)
 
 iSplit = iSplitter()
 iSplit.fromArray(ImageArr).group()
-iSplit.saveAllGroups(max=250)
+iSplit.saveAllGroups(max=2000, endat=25)
 
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))

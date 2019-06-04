@@ -87,12 +87,16 @@ class iSplitter:
 
 
 
-    def saveAllGroups(self, max=50):
+    def saveAllGroups(self, max=50, endat=-1):
+        endcheck = 0
         for gid, group in enumerate(self.Groups):
-            saveas = "split-groups/{0}.jpg".format(gid)
+            if endat == endcheck: return True
+            saveas = "split-groups/{0}.jpg".format(endcheck)
             image  = self.CreateImageFromGroup(gid, max=max)
             if image == False: continue
             image.save(saveas)
+            print("Saved {0}".format(endcheck))
+            endcheck += 1
 
 
 
@@ -127,15 +131,13 @@ class iSplitter:
         pixel = self.Cache[yr][xr]
         r,g,b = pixel
 
-        top_diff    = 1.45            # 20% over
+        top_diff = 1.6 # 20% over
         bottom_diff = 2.00 - top_diff # 20% under
 
         iters = 0
 
         while len(self.LocationCache) != 0:
-
             iters += 1
-            # print("at iter {0}, len: {1}".format(iters, len(toExpand)))
 
             if len(toExpand) == 0:
                 # print("Going to create a new group")
@@ -151,7 +153,7 @@ class iSplitter:
                 #g+1
                 self.CurrentGroup += 1
                 self.Groups.append([])
-                print(self.CurrentGroup, end=", ")
+                # print(self.CurrentGroup, end=", ")
 
             #/\/
 
@@ -166,13 +168,14 @@ class iSplitter:
 
             for xy in Movements:
                 xmove, ymove = xy
+                lookfor = "{0}:{1}".format(xmove, ymove)
 
                 try:
                     nr,ng,nb = self.Cache[ymove][xmove]
                 except IndexError:
                     continue
 
-                if (self.LocationCache[(ymove*(self.Width))+xmove] == "") or (self.Cache[ymove][xmove][0] == -1) or ((nr >= r*top_diff) or (ng >= g*top_diff) or (nb >= b*top_diff) or (nr <= r*bottom_diff) or (ng <= g*bottom_diff) or (nb <= b*bottom_diff)):
+                if (lookfor in toExpand) or (self.LocationCache[(ymove*(self.Width))+xmove] == "") or (self.Cache[ymove][xmove][0] == -1) or ((nr >= r*top_diff) or (ng >= g*top_diff) or (nb >= b*top_diff) or (nr <= r*bottom_diff) or (ng <= g*bottom_diff) or (nb <= b*bottom_diff)):
                     continue
                 else:
                     toExpand.append("{0}:{1}".format(xmove, ymove))
