@@ -462,10 +462,12 @@ class BitmapManager:
     def Save(self, append):
         self.CacheAppend = append
         self.OutputImage.save("{0}-{1}.png".format(self.OutputName, append))
+        # self.OutputImage.convert("RGB").save("{0}-{1}.jpg".format(self.OutputName, append))
         return self
 
     def SaveTemplate(self):
         self.Template.save("{0}-OGTemplate-{1}.png".format(self.OutputName, self.CacheAppend))
+        # self.Template.save("{0}-OGTemplate-{1}.jpeg".format(self.OutputName, self.CacheAppend))
         return self
 
     def GetImage(self):
