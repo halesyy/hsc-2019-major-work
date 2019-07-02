@@ -24,8 +24,6 @@ from ImageSplitter import *
 
 Manager = BitmapManager()
 Splitter = iSplitter()
-# Manager.Template("../bitmap/alphabet-bitmap-ds/k.jpg")\
-
 Manager.Template("../_breaker/test-images/300.jpg")
 Manager.Output("position-test") # as
 
@@ -36,18 +34,15 @@ Splitter.fromArray(arr=arr).group(top_diff=1.05)
 # top diff closer to 1 means = more diverse pixel range
 SplitBitmaps = Splitter.imagifyGroups(max=4, endat=-1)
 
-# print(SplitBitmaps)
 
 for groupx, group in enumerate(SplitBitmaps):
-    # print(group)
+    # break
     colour = group["color"]
-    rawimg = group["rawimage"]
-    if rawimg == False: continue
-    Manager.Template = rawimg
+    Manager.Template = group["rawimage"]
     MapConfig = {
-        "by": 15,
+        "by":     15,
         "colour": '#%02x%02x%02x' % (colour[0], colour[1], colour[2]),
-        "loose": "low"
+        "loose":  'low'
     }
     Manager.LoadConfig(MapConfig)
     Manager.InitPixelArray(PixelArray)
@@ -56,27 +51,6 @@ for groupx, group in enumerate(SplitBitmaps):
     Manager.Prep().ApplySeries(Series)
     BitmapDrawn = Manager.GetImage()
     Manager.Save("done")
-
-
-
-# MapConfig = {
-#     "by":      15,
-#     "colour":  [0, 0, 0],
-#     "loose":   "medium"
-# }
-#
-# # conf.load
-# Manager.LoadConfig(MapConfig) # a comparable file
-# Manager.InitPixelArray(PixelArray) # dep: PixelArray
-# Series = Manager.ExtractSeries()
-# Parr = Manager.PA
-#
-# #conf.save
-# Manager.Prep().ApplySeries(Series)
-# BitmapDrawn = Manager.GetImage()
-# # BitmapDrawn.show()
-# Manager.Save("complete").SaveTemplate()
-
 
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))

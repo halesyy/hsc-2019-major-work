@@ -395,7 +395,7 @@ class BitmapManager:
         Pix = self.PA
         Pix.AARemove()
         # Pix.SaveOG()
-        Pix.SortSquares() # where 16 is set for some reason
+        Pix.SortSquares()
         # Pix.PrintSquareMap()
         Pix.Path()
         Series = Pix.PathFormat()
