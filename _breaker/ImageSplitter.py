@@ -149,9 +149,8 @@ class iSplitter:
         pixel = self.Cache[yr][xr]
         r,g,b = pixel
 
-        # top_diff = 1.6 # 20% over
-        bottom_diff = 2.00 - top_diff # 20% under
-
+        # top_diff defined in the parameters
+        bottom_diff = 2.00 - top_diff
         iters = 0
 
         while len(self.LocationCache) != 0:
@@ -198,7 +197,7 @@ class iSplitter:
                 else:
                     toExpand.append("{0}:{1}".format(xmove, ymove))
 
-        print("Took a total of {0} iterations...".format(iters))
+        print("{0} iterations to group...".format(iters))
 
 
 

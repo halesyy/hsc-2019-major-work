@@ -13,13 +13,10 @@ import os, sys
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
 
-# if os.name == "nt": os.system("cls")
-# else: os.system("clear")
-
 # Pathfinding!
-from pathfinding.core.diagonal_movement import DiagonalMovement
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
+# from pathfinding.core.diagonal_movement import DiagonalMovement
+# from pathfinding.core.grid import Grid
+# from pathfinding.finder.a_star import AStarFinder
 
 #// Manual Colour-coding array
 #// To be in JSON file one day
@@ -36,10 +33,6 @@ squares  = int(1 / split)
 squaresx = squares
 totalSquares = int(squares*squares)
 xs, ys = 0, 0
-
-
-
-
 
 class PixelArray(object):
     # - dynamically set variables
@@ -421,7 +414,7 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        self.PrintSquareMap()
+        # self.PrintSquareMap()
         # Compression = 5 # overall tests, for the "sloppiness"
         # Leveler     = 3 # the expected overhead of moves required
                         # to finally get to the ending area of
@@ -470,7 +463,7 @@ class PixelArray(object):
                 self.DirectionSequence = DirectionSequence
                 # self.PrintSquareMap(highlight=Original)
                 # print(self.DirectionSequence)
-                print("Done...")
+                print("All covered!")
                 return DirectionSequence
 
             Movements = {

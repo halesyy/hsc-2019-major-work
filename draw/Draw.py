@@ -393,7 +393,7 @@ class BitmapManager:
     def ExtractSeries(self):
         # Creating a new PixelArray for the self.Template
         Pix = self.PA
-        Pix.AARemove()
+        # Pix.AARemove()
         # Pix.SaveOG()
         Pix.SortSquares()
         # Pix.PrintSquareMap()
@@ -433,24 +433,13 @@ class BitmapManager:
                 "left":  Direction[2],
                 "right": Direction[3]}
 
-            # Process(target=Body.Brush, args=(
-            #     [X, Y], Angle,
-            #     self.CONFIG["loose"],
-            #     Bounds,
-            #     self.CONFIG["colour"],
-            #     # getfromlast=(False if z == 0 else True))
-            #     False
-            # )).start()
             #xy, angle, power="soft", boundby="a", colour='random', getfromlast=False
             Body.Brush(xy=[X, Y], angle=Angle,
                 power=self.CONFIG["loose"],
                 boundby=Bounds,
                 colour=self.CONFIG["colour"],
-                # getfromlast=(False if z == 0 else True))
                 getfromlast=False)
 
-            # print("painting dir {0}/{3} from {1},{2}".format(Angle, X, Y, Direction))
-            # print()
             z += 1
         print("total of {0}".format(z))
         return self

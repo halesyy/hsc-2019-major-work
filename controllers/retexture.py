@@ -8,6 +8,7 @@ tie in arbritrary libraries and modules in at any point in time.
 
 import sys, os, time, pprint
 import numpy as np
+import random
 from PIL import Image
 pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
@@ -24,6 +25,11 @@ canvas = Image.new("RGBA", size=(x, y))
 # creating a canvas from the first image in the set
 # pasting from the furthest number to the closest number
 # thats about it really
+# for i in range(len(all)*3):
+#     filename = random.choice(all)
+#     img = Image.open(filename)
+#     canvas.paste(img, (0, 0), img)
+
 for filename in (all):
     img = Image.open(filename)
     canvas.paste(img, (0, 0), img)
