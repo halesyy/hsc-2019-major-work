@@ -442,6 +442,9 @@ class BitmapManager:
 
             z += 1
         print("total of {0}".format(z))
+        if z == 0:
+            print("total == 0, ignoring this piece of crap")
+            return False
         return self
 
     """
