@@ -25,7 +25,7 @@ from multiprocessing import Pool, cpu_count
 # extracting the colour based splits
 im = Manager.Template
 arr = np.array(im)
-Splitter.fromArray(arr=arr).group(top_diff=1.05)
+Splitter.fromArray(arr=arr).group(top_diff=1.04)
 # top diff closer to 1 means = more diverse pixel range
 SplitBitmaps = Splitter.imagifyGroups(max=4, endat=-1)
 
@@ -34,7 +34,7 @@ def impact(raw, colour, id):
     MapConfig = {
         "by":     40,
         "colour": '#%02x%02x%02x' % (colour[0], colour[1], colour[2]),
-        "loose":  'low'
+        "loose":  'medium'
     }
     Manager.LoadConfig(MapConfig)
     Manager.InitPixelArray(PixelArray)
