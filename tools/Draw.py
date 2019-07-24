@@ -381,7 +381,7 @@ class BitmapManager:
         else:
             by = False
                  #PA,                     seperator
-        print("{0} set ".format(by))
+        # print("{0} set ".format(by))
         Pix = PA(np.array(self.Template), by)
         # Pix.SetBy(self.CONFIG["by"])
         self.PA = Pix
@@ -441,7 +441,7 @@ class BitmapManager:
                 getfromlast=False)
 
             z += 1
-        print("total of {0}".format(z))
+        # print("total of {0}".format(z))
         if z == 0:
             print("total == 0, ignoring this piece of crap")
             return False

@@ -53,6 +53,7 @@ class PixelArray(object):
         squares  = int(1 / split)
         squaresx = squares
         totalSquares = int(squares*squares)
+        self.SquareMeta = np.zeros(totalSquares, dtype=dict)
 
         self.OGPixelArray = PA
         self.BitMap = Image.fromarray(PA)
@@ -102,6 +103,14 @@ class PixelArray(object):
             else:
                 startX = startX + xSplit
         self.Squares = Squares
+        self.GenerateSquareReports()
+
+    def GenerateSquareReports(self):
+        for squarex, square in enumerate(self.Squares):
+            self.SquareMeta[squarex] = {"empty": self.SquareEmpty(squarex)}
+
+
+
 
 
 
@@ -112,19 +121,22 @@ class PixelArray(object):
         # Presetting the values for the bundled variables in a
         # 2D Numpy Array
         bundled = np.zeros(shape=(xSplit, ySplit), dtype=object)
+
         # Where we will start from for finding the X/Y values
         PixelArr = self.OGPixelArray
         storeX, storeY = xStart, yStart
+
         # For Inserting
-        # print(squareNo)
         insertX, insertY, iteration = 0, 0, 0
         for i in range(0, (xSplit * ySplit)):
             iteration = i+1
-            # - storing into the "bundled" array to return later
-            # - storing in the bundle return [Y, X]
-            bundled[insertY, insertX] = PixelArr[storeY, storeX]
-            # - storing in the caches [Y, X]
-            # if squareNo == 0: print("{0}: {1}, {2}".format(squareNo, storeX, storeY))
+            #// Storing into the "bundled" array to return later
+            #// storing in the bundle return [Y, X]
+            pixel = PixelArr[storeY, storeX]
+            bundled[insertY, insertX] = pixel
+
+            #// Storing data for later converts, such as generalized
+            #// information store such as empty, etc...
             self.PixelArrCache[storeY, storeX] = {"square": squareNo, "insertY": storeY, "insertX": storeX, "squareLocX": insertY, "squareLocY": insertX}
             if (iteration % int(xSplit) == 0):
                 storeX = xStart
@@ -190,40 +202,6 @@ class PixelArray(object):
 
 
 
-    # def Trim(self, NewBy, to=[0, 0, 0]):
-    #     global by, split, squares, totalSquares, xs, ys, xSplit, ySplit
-    #     OldSquares, OldBy = self.Squares, by
-    #
-    #     # NEW, FOR SPLIT TRIMMING
-    #     by = NewBy
-    #     split = 1 / by
-    #     squares, squaresx = int(1 / split), int(1 / split)
-    #     totalSquares = int(squares*squares)
-    #     xSplit = int((xs) / (1 / split))
-    #     ySplit = int((ys) / (1 / split))
-    #     self.SortSquares()
-    #
-    #     for k, sqr in enumerate(self.Squares):
-    #         #SQCHange(self, s=0, x=0, y=0, to=[255, 255, 255]):
-    #         # print(k, " empty check in trim: ", self.Empty(k))
-    #         if not self.Empty(k):
-    #             self.SQCHange(s=k, x=0, y=0, to=to)
-    #
-    #     # OLD, GOING BACK TO OLD DATA
-    #     by = OldBy
-    #     split = 1 / by
-    #     squares, squaresx = int(1 / split), int(1 / split)
-    #     totalSquares = int(squares*squares)
-    #     xSplit = int((xs) / (1 / split))
-    #     ySplit = int((ys) / (1 / split))
-    #     self.Squares = OldSquares
-    #     self.SortSquares()
-
-
-
-
-
-
 
 
 
@@ -261,14 +239,26 @@ class PixelArray(object):
         faai = Image.fromarray(faa)
         faai.show()
 
+    #// real checker
+    def SquareEmpty(self, squareNo):
+        square = self.Squares[squareNo]
+        flat = np.hstack(np.hstack(square))
+        if 255 in flat: return False
+        else: return True
+
+    #// checking from the meta
     def Empty(self, squareNo):
-        isEmpty = 1
+        return self.SquareMeta[squareNo]["empty"]
+
+    def Emptyasdasd(self, squareNo):
+        # isEmpty = 1
         square = self.Squares[squareNo]
         for a in range(len(square)):
             for b in range(len(square[a])):
                 if square[a][b][0] == 255:
-                    isEmpty = 0
-        return bool(isEmpty)
+                    return False
+                    # isEmpty = 0
+        return True
 
     def Contains(self, squareNo, highlight="no"):
         if squareNo == highlight: return 2
@@ -463,7 +453,7 @@ class PixelArray(object):
                 self.DirectionSequence = DirectionSequence
                 # self.PrintSquareMap(highlight=Original)
                 # print(self.DirectionSequence)
-                print("All covered!")
+                # print("All covered!")
                 return DirectionSequence
 
             Movements = {

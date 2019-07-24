@@ -25,16 +25,16 @@ from multiprocessing import Pool, cpu_count
 # extracting the colour based splits
 im = Manager.Template
 arr = np.array(im)
-Splitter.fromArray(arr=arr).group(top_diff=1.04)
+Splitter.fromArray(arr=arr).group(top_diff=1.03)
 # top diff closer to 1 means = more diverse pixel range
-SplitBitmaps = Splitter.imagifyGroups(max=4, endat=-1)
+SplitBitmaps = Splitter.imagifyGroups(max=3, endat=-1)
 
 def impact(raw, colour, id):
     Manager.Template = raw
     MapConfig = {
-        "by":     40,
+        "by":     50,
         "colour": '#%02x%02x%02x' % (colour[0], colour[1], colour[2]),
-        "loose":  'medium'
+        "loose":  'low'
     }
     Manager.LoadConfig(MapConfig)
     Manager.InitPixelArray(PixelArray)
@@ -49,7 +49,8 @@ def impact(raw, colour, id):
 print("Total of {0} groups to sift".format(len(SplitBitmaps)))
 for groupx, group in enumerate(SplitBitmaps):
     # if groupx == 5: break
-    print("Doing {0}/{1}".format(groupx, len(SplitBitmaps)))
+    # print("Doing {0}/{1}".format(groupx, len(SplitBitmaps)))
+    print("{0}% - {1}/{2}".format( round(groupx/len(SplitBitmaps)*100, 2), groupx, len(SplitBitmaps) ))
     impact(group["rawimage"], group["color"], groupx)
     # Process(target=impact, args=(group["color"], groupx)).start()
 
