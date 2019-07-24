@@ -15,19 +15,7 @@ sys.path.append(os.path.abspath("../_breaker"))
 from Bitmap import *
 from Draw import *
 from ImageSplitter import *
-
-Manager = BitmapManager()
-Splitter = iSplitter()
-Manager.Template("../_breaker/test-images/200.jpg")
-Manager.Output("position-test") # as
-from multiprocessing import Pool, cpu_count
-
-# extracting the colour based splits
-im = Manager.Template
-arr = np.array(im)
-Splitter.fromArray(arr=arr).group(top_diff=1.03)
-# top diff closer to 1 means = more diverse pixel range
-SplitBitmaps = Splitter.imagifyGroups(max=3, endat=-1)
+from multiprocessing import Pool, Process, cpu_count
 
 def impact(raw, colour, id):
     Manager.Template = raw
@@ -46,13 +34,28 @@ def impact(raw, colour, id):
     BitmapDrawn = Manager.GetImage()
     Manager.Save("done")
 
-print("Total of {0} groups to sift".format(len(SplitBitmaps)))
-for groupx, group in enumerate(SplitBitmaps):
-    # if groupx == 5: break
-    # print("Doing {0}/{1}".format(groupx, len(SplitBitmaps)))
-    print("{0}% - {1}/{2}".format( round(groupx/len(SplitBitmaps)*100, 2), groupx, len(SplitBitmaps) ))
-    impact(group["rawimage"], group["color"], groupx)
-    # Process(target=impact, args=(group["color"], groupx)).start()
+
+
+
+
+if __name__ == "__main__":
+    Manager = BitmapManager()
+    Splitter = iSplitter()
+    Manager.Template("../_breaker/test-images/200.jpg")
+    Manager.Output("position-test") # as
+
+    im = Manager.Template
+    arr = np.array(im)
+    Splitter.fromArray(arr=arr).group(top_diff=1.03)
+    SplitBitmaps = Splitter.imagifyGroups(max=3, endat=-1)
+
+    print("Total of {0} groups to sift".format(len(SplitBitmaps)))
+    for groupx, group in enumerate(SplitBitmaps):
+        # if groupx == 5: break
+        # print("Doing {0}/{1}".format(groupx, len(SplitBitmaps)))
+        print("{0}% - {1}/{2}".format( round(groupx/len(SplitBitmaps)*100, 2), groupx, len(SplitBitmaps) ))
+        # impact(group["rawimage"], group["color"], groupx)
+        Process(target=impact, args=(group["rawimage"], group["color"], groupx)).start()
 
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))

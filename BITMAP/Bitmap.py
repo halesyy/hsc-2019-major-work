@@ -513,13 +513,7 @@ class PixelArray(object):
             "L":   CurrentPlace-1             if ((CurrentPlace)%squaresx!=0) else -1, #lc
             "D":   CurrentPlace+squaresx
         }
-        # print("from {0} in dir {1} makes {2}".format(SquareNo, Direction, Movements[Direction]))
         return Movements[Direction]
-
-
-
-
-
 
     # - | formating the self.DirectionSequence into
     # - | a fair format.
@@ -531,7 +525,6 @@ class PixelArray(object):
         AngleConvert = {
             "O": 0,
             "U": 0,
-            # "UU": 0,
             "D": 180,
             "L": 270,
             "R": 90,
@@ -547,12 +540,9 @@ class PixelArray(object):
                 # THIS IS THE MOST IMPORTANT KEYWORD THAT IS IN THIS ENTIRE CODEBASE VVV
                 # we're going from PastDirection, to the SquareNo in Direction
                 OldSquareNo = PastDirection[1]
-                # OldSquareNo -> SquareNo, by Direction
-                # print(OldSquareNo, '->', SquareNo, 'by', Direction)
 
 
                 Angle = AngleConvert[Direction]
-                # Bounds = self.SquareBounds(self.DirectionApplySquareNo(SquareNo, Direction), Direction)
                 Bounds = self.SquareBounds(SquareNo, Direction)
                 X, Y   = self.SquareCentre(OldSquareNo)
 
@@ -566,21 +556,10 @@ class PixelArray(object):
                     "pastDirection": PastDirection,
                     "angle": Angle,
                 }
-                # pp(PackedFormatOBJ)
-
-                # print('[', X, ',', Y, ',', Angle, ",", Bounds, ',', OldSquareNo, ',\'', Direction, '\'',  ']', end=", ")
                 Series.append([X, Y, Angle, Bounds, OldSquareNo, Direction])
             i += 1
-        # else:
-        #     print("b4 else")
-        #     a = self.SquareBounds(DirectionSpace[1], DirectionSpace[0])
 
         return Series
-
-
-
-
-
 
     # - iter functions to make it easier to iterate
     # | - pixelParcel (parcel) is a pack provided by the cache
