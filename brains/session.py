@@ -17,45 +17,71 @@ from Draw import *
 from ImageSplitter import *
 from multiprocessing import Pool, Process, cpu_count
 
-def impact(raw, colour, id):
+
+def impact(groupx, raw, colour, id, sortSquares=True):
+
+    Manager = BitmapManager()
+    # inserting the template into it
     Manager.Template = raw
     MapConfig = {
-        "by":     50,
+        "by":     8,
         "colour": '#%02x%02x%02x' % (colour[0], colour[1], colour[2]),
         "loose":  'low'
     }
+
+    # getting the series for the piece of data
     Manager.LoadConfig(MapConfig)
     Manager.InitPixelArray(PixelArray)
-    Series = Manager.ExtractSeries()
+    Series = Manager.ExtractSeries(sortSquares)
     if len(Series) == 0: return False
-    # if (len(Series) == 0): print("THIS IS NOT GOOD")
+
+    # setting output
     Manager.Output("save/{0}".format(groupx))
     Manager.Prep().ApplySeries(Series)
     BitmapDrawn = Manager.GetImage()
-    Manager.Save("done")
 
-
+    # combining to main image
+    # canvas = Image.open("memory/-1.png") # opening for rexexture processing purposes - blank canvas
+    canvas.paste(BitmapDrawn, (0, 0), BitmapDrawn)
+    canvas.save("texture-live.png") # saving for live
+    # canvas.save("memory/{0}.png".format(groupx)) # saving for retexture processing parse
 
 
 
 if __name__ == "__main__":
-    Manager = BitmapManager()
-    Splitter = iSplitter()
-    Manager.Template("../_breaker/test-images/200.jpg")
-    Manager.Output("position-test") # as
 
+    Splitter = iSplitter()
+
+    # getting out numpy image from getting
+    Manager = BitmapManager()
+    Manager.Template("../_breaker/test-images/400.jpg")
+    Manager.Output("position-test") # as
     im = Manager.Template
+
+    # numpified, image splitting!
     arr = np.array(im)
-    Splitter.fromArray(arr=arr).group(top_diff=1.03)
-    SplitBitmaps = Splitter.imagifyGroups(max=3, endat=-1)
+    Splitter.fromArray(arr=arr).group(top_diff=1.1)
+    SplitBitmaps = Splitter.imagifyGroups(max=150, endat=-1)
+
+    # setting up canvas
+    x, y = SplitBitmaps[0]["rawimage"].size
+    canvas = Image.new("RGBA", size=(x, y))
+    canvas.save("memory/-1.png")
 
     print("Total of {0} groups to sift".format(len(SplitBitmaps)))
     for groupx, group in enumerate(SplitBitmaps):
-        # if groupx == 5: break
-        # print("Doing {0}/{1}".format(groupx, len(SplitBitmaps)))
-        print("{0}% - {1}/{2}".format( round(groupx/len(SplitBitmaps)*100, 2), groupx, len(SplitBitmaps) ))
-        # impact(group["rawimage"], group["color"], groupx)
-        Process(target=impact, args=(group["rawimage"], group["color"], groupx)).start()
+        before = time.time()
+        print("{0}% - {1}/{2}".format( round(groupx/len(SplitBitmaps)*100, 2), groupx, len(SplitBitmaps) ), end=" ")
+        if groupx != -1:
+            impact(groupx, group["rawimage"], group["color"], groupx)
+            # canvas.save("texture-live.png")
+        else:
+            Process(target=impact, args=(groupx, group["rawimage"], group["color"], groupx)).start()
+        after = time.time()
+        print("!: {0} seconds".format(round(after - before, 2)))
 
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))
+
+# took 113 on processing, ~50%  decrease
+# took 202 on sequential, ~100% increase

@@ -14,7 +14,7 @@ pp = pprint.PrettyPrinter(indent=4)
 pp = pp.pprint
 import glob
 TS = time.time()
-all = glob.glob("save/*.png")
+all = glob.glob("memory/*.png")
 
 x, y = Image.open(all[0]).size
 canvas = Image.new("RGBA", size=(x, y))
@@ -23,6 +23,6 @@ for filename in (all):
     img = Image.open(filename)
     canvas.paste(img, (0, 0), img)
 
-canvas.save("texture.png")
+canvas.save("texture-processed.png")
 ES = time.time()
 print("\ntime to execute: {0}".format(ES - TS))

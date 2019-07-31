@@ -227,8 +227,8 @@ class PixelArray(object):
         im.save("og.png")
         return self
 
-    # - takes a square, and creates a new image and fills it
-    # - with the area data provided by the following functions.
+    #// - takes a square, and creates a new image and fills it
+    #// - with the area data provided by the following functions.
     def ShowSquareAlone(self, squareNo):
         fa = Image.new(mode="RGB", size=[16, 16])
         faa = np.array(fa)
@@ -248,10 +248,10 @@ class PixelArray(object):
 
     #// checking from the meta
     def Empty(self, squareNo):
+        # print(squareNo)
         return self.SquareMeta[squareNo]["empty"]
 
-    def Emptyasdasd(self, squareNo):
-        # isEmpty = 1
+    def Empty_OldAlgorithm(self, squareNo):
         square = self.Squares[squareNo]
         for a in range(len(square)):
             for b in range(len(square[a])):
@@ -264,7 +264,7 @@ class PixelArray(object):
         if squareNo == highlight: return 2
         return not self.Empty(squareNo)
 
-    # - inserting all the "contains" info into an array that can be edited
+    #// inserting all the "contains" info into an array that can be edited
     def ContainsArray(self, cast=bool):
         access = 0
         mapArray = [[]]
@@ -276,7 +276,7 @@ class PixelArray(object):
         # print("finished at {0}".format(i))
         return mapArray
 
-    # - inserting all the "contains" info into an array that can be edited
+    #// inserting all the "contains" info into an array that can be edited
     def ContainsArrayPoints(self):
         access = 0
         mapArray = [[]]
@@ -404,7 +404,7 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        # self.PrintSquareMap()
+        self.PrintSquareMap()
         # Compression = 5 # overall tests, for the "sloppiness"
         # Leveler     = 3 # the expected overhead of moves required
                         # to finally get to the ending area of
@@ -478,14 +478,14 @@ class PixelArray(object):
 
                     # print(Movement, Place)
 
-                    StepInformation.append({
-                        "before": CurrentPlace,
-                        "after": Place,
-                        "movements": Movements,
-                        "newPlace": Place,
-                        "beforePlace": CurrentPlace,
-                        "direction": Movement
-                    })
+                    # StepInformation.append({
+                    #     "before": CurrentPlace,
+                    #     "after": Place,
+                    #     "movements": Movements,
+                    #     "newPlace": Place,
+                    #     "beforePlace": CurrentPlace,
+                    #     "direction": Movement
+                    # })
 
                     CurrentPlace = Place
 

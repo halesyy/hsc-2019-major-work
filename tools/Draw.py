@@ -390,12 +390,13 @@ class BitmapManager:
     Take the self.Template, and run the process to return the Series variable
     PixelArray (dependency injection, bitmap.PixelArray class).
     """
-    def ExtractSeries(self):
+    def ExtractSeries(self, sortSquares=True):
         # Creating a new PixelArray for the self.Template
         Pix = self.PA
         # Pix.AARemove()
         # Pix.SaveOG()
-        Pix.SortSquares()
+        if sortSquares:
+            Pix.SortSquares()
         # Pix.PrintSquareMap()
         Pix.Path()
         Series = Pix.PathFormat()
