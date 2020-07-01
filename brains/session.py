@@ -24,7 +24,7 @@ def impact(groupx, raw, colour, id, sortSquares=True):
     # inserting the template into it
     Manager.Template = raw
     MapConfig = {
-        "by":     8,
+        "by":     80,
         "colour": '#%02x%02x%02x' % (colour[0], colour[1], colour[2]),
         "loose":  'low'
     }
@@ -54,14 +54,14 @@ if __name__ == "__main__":
 
     # getting out numpy image from getting
     Manager = BitmapManager()
-    Manager.Template("../_breaker/test-images/400.jpg")
+    Manager.Template("../_breaker/test-images/200.jpg")
     Manager.Output("position-test") # as
     im = Manager.Template
 
     # numpified, image splitting!
     arr = np.array(im)
-    Splitter.fromArray(arr=arr).group(top_diff=1.1)
-    SplitBitmaps = Splitter.imagifyGroups(max=150, endat=-1)
+    Splitter.fromArray(arr=arr).group(top_diff=1.10)
+    SplitBitmaps = Splitter.imagifyGroups(max=20, endat=-1)
 
     # setting up canvas
     x, y = SplitBitmaps[0]["rawimage"].size

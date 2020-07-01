@@ -11,14 +11,14 @@ import sys, os, time
 from multiprocessing import Process
 TS = time.time()
 
-sys.path.append(os.path.abspath("../bitmap"))
-sys.path.append(os.path.abspath("../draw"))
+sys.path.append(os.path.abspath("../../bitmap"))
+sys.path.append(os.path.abspath("../../tools"))
 from Bitmap import *
 from Draw import *
 Manager = BitmapManager()
 
 def ControllOutput():
-    Manager.Template("../bitmap/alphabet-bitmap-ds/{0}.jpg".format(random.choice(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])))
+    Manager.Template("../../bitmap/alphabet-bitmap-ds/{0}.jpg".format(random.choice(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])))
     Manager.Output("position-test")
 
     #// Configurator
@@ -43,7 +43,7 @@ def ControllOutput():
 # pool = Pool(processes=60)
 if __name__ == "__main__":
     procs = []
-    for x in range(60):
+    for x in range(250):
         p = Process(target=ControllOutput)
         p.start()
         # procs.append(p)

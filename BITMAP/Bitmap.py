@@ -404,7 +404,7 @@ class PixelArray(object):
     # - | does all the handling for passing
     # - | into the further creation realm
     def Path(self):
-        self.PrintSquareMap()
+        # self.PrintSquareMap()
         # Compression = 5 # overall tests, for the "sloppiness"
         # Leveler     = 3 # the expected overhead of moves required
                         # to finally get to the ending area of
